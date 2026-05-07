@@ -289,7 +289,7 @@ function SuppliersContent() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-[500px] w-[96vw] p-0 overflow-hidden rounded-2xl border-none shadow-2xl bg-white flex flex-col h-[90vh]">
+        <DialogContent className="max-w-[500px] w-[96vw] p-0 overflow-hidden rounded-2xl border-none shadow-2xl bg-white flex flex-col h-[90vh] text-left">
           <DialogHeader className="p-3 bg-primary text-white shrink-0">
             <DialogTitle className="text-sm font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती अद्ययावत करा'}</DialogTitle>
             <DialogDescription className="text-[8px] text-white/70 uppercase">सप्लायरचा सविस्तर तपशील भरा.</DialogDescription>
@@ -369,7 +369,7 @@ function SuppliersContent() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={TrendingDown} title="५) दूध कमी झालेले उत्पादक" color="text-rose-600" /><Button size="sm" onClick={() => addRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-7 text-[9px] font-black uppercase bg-rose-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><SectionTitle icon={TrendingDown} title="५) दूध घटलेले उत्पादक" color="text-rose-600" /><Button size="sm" onClick={() => addRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-7 text-[9px] font-black uppercase bg-rose-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
                     <ScrollArea className="w-full border-2 border-black rounded-lg">
                       <Table className="min-w-[700px] text-[10px] uppercase">
                         <TableHeader className="bg-rose-50 font-black">
@@ -422,7 +422,7 @@ function SuppliersContent() {
                     <ScrollArea className="w-full border-2 border-black rounded-lg">
                       <Table className="min-w-[600px] text-[10px] uppercase">
                         <TableHeader className="bg-emerald-50 font-black">
-                          <TableRow><TableHead>नाव</TableHead><TableHead>कोड</TableHead><TableHead>गाय</TableHead><TableHead>म्हैस</TableHead><TableHead>एकूण</TableHead><TableHead>उत्पादक</TableHead><TableHead className="w-[40px]"></TableHead></TableRow>
+                          <TableRow><TableHead>नाव</TableHead><TableHead>कोड</TableHead><TableHead>गाय</TableHead><TableHead>म्हेस</TableHead><TableHead>एकूण</TableHead><TableHead>उत्पादक</TableHead><TableHead className="w-[40px]"></TableHead></TableRow>
                         </TableHeader>
                         <TableBody>
                           {formData.localGavliInfo.map(g => (
