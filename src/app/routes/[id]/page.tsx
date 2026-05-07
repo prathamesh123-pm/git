@@ -26,8 +26,8 @@ import { cn } from "@/lib/utils"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 const SectionTitle = ({ icon: Icon, title, color = "text-primary" }: any) => (
-  <div className={cn("flex items-center gap-1.5 border-b pb-1 mb-2 mt-4", color === 'text-primary' ? 'border-primary/10' : 'border-black/10')}>
-    {Icon && <Icon className={cn("h-3.5 w-3.5", color)} />}
+  <div className={cn("flex items-center gap-1.5 border-b-2 pb-1 mb-3 mt-6", color === 'text-primary' ? 'border-primary/20' : 'border-black/20')}>
+    {Icon && <Icon className={cn("h-4 w-4", color)} />}
     <h3 className={cn("text-[10px] font-black uppercase tracking-widest", color)}>{title}</h3>
   </div>
 )
@@ -65,7 +65,7 @@ function SuppliersContent() {
   const [formData, setFormData] = useState({
     name: "", supplierId: "", address: "", mobile: "", operatorName: "",
     routeId: currentRouteId,
-    supplierType: "Gavali" as SupplierType, fssaiNumber: "", fssaiExpiry: "",
+    supplierType: "Center" as SupplierType, fssaiNumber: "", fssaiExpiry: "",
     scaleBrand: "", fatMachineBrand: "", chemicalsStock: "", batteryCondition: "",
     paymentCycle: "10 Days", spaceOwnership: "Self" as 'Self' | 'Rented', hygieneGrade: "A",
     competition: "", cattleFeedBrand: "None", iceBlocks: "0",
@@ -94,7 +94,7 @@ function SuppliersContent() {
     setFormData({
       name: "", supplierId: "", address: "", mobile: "", operatorName: "",
       routeId: currentRouteId,
-      supplierType: "Gavali", fssaiNumber: "", fssaiExpiry: "", scaleBrand: "", fatMachineBrand: "",
+      supplierType: "Center", fssaiNumber: "", fssaiExpiry: "", scaleBrand: "", fatMachineBrand: "",
       chemicalsStock: "", batteryCondition: "", paymentCycle: "10 Days", spaceOwnership: "Self",
       hygieneGrade: "A", competition: "", cattleFeedBrand: "None", iceBlocks: "0",
       cowQty: "0", cowFat: "0", cowSnf: "0", bufQty: "0", bufFat: "0", bufSnf: "0",
@@ -125,7 +125,7 @@ function SuppliersContent() {
       name: s.name || "", supplierId: s.supplierId || "", address: s.address || "",
       mobile: s.mobile || "", operatorName: s.operatorName || "",
       routeId: s.routeId || currentRouteId,
-      supplierType: s.supplierType || "Gavali", fssaiNumber: s.fssaiNumber || "",
+      supplierType: s.supplierType || "Center", fssaiNumber: s.fssaiNumber || "",
       fssaiExpiry: s.fssaiExpiry || "", scaleBrand: s.scaleBrand || "",
       fatMachineBrand: s.fatMachineBrand || "", chemicalsStock: s.chemicalsStock || "",
       batteryCondition: s.batteryCondition || "", paymentCycle: s.paymentCycle || "10 Days",
@@ -256,16 +256,16 @@ function SuppliersContent() {
           </ScrollArea>
         </Card>
 
-        <Card className="lg:col-span-8 border shadow-none bg-white rounded-xl overflow-hidden min-h-[400px]">
+        <Card className="lg:col-span-8 border shadow-none bg-white rounded-xl overflow-hidden min-h-[400px] flex flex-col items-center justify-center">
           {selectedSupplier ? (
-            <ScrollArea className="h-[600px]">
-              <div className="p-4 sm:p-8 space-y-6 printable-report bg-white text-left">
+            <ScrollArea className="w-full h-full">
+              <div className="p-4 sm:p-8 space-y-6 printable-report bg-white text-left max-w-[210mm] mx-auto border-2 border-black m-4">
                 <div className="flex justify-between items-center no-print border-b pb-2 mb-4">
                   <Badge className="bg-primary/10 text-primary border-none uppercase text-[8px] font-black">{selectedSupplier.supplierType} PROFILE</Badge>
                   <div className="flex gap-1.5">
-                    <Button variant="outline" size="sm" className="h-7 text-[8px] font-black uppercase" onClick={() => window.print()}><Printer className="h-3 w-3 mr-1" /> प्रिंट</Button>
-                    <Button variant="outline" size="sm" className="h-7 text-[8px] font-black uppercase" onClick={() => handleOpenEdit(selectedSupplier)}><Edit className="h-3 w-3 mr-1" /> बदला</Button>
-                    <Button variant="outline" size="sm" className="h-7 text-[8px] font-black uppercase text-rose-600" onClick={() => { if(confirm('हटवायचे?')) deleteDocumentNonBlocking(doc(db, 'users', user!.uid, 'suppliers', selectedSupplier.id)) }}><Trash2 className="h-3 w-3 mr-1" /> हटवा</Button>
+                    <Button variant="outline" size="sm" className="h-7 text-[8px] font-black uppercase" onClick={() => window.print()}><Printer className="h-3.5 w-3.5 mr-1" /> प्रिंट</Button>
+                    <Button variant="outline" size="sm" className="h-7 text-[8px] font-black uppercase" onClick={() => handleOpenEdit(selectedSupplier)}><Edit className="h-3.5 w-3.5 mr-1" /> बदला</Button>
+                    <Button variant="outline" size="sm" className="h-7 text-[8px] font-black uppercase text-rose-600" onClick={() => { if(confirm('हटवायचे?')) deleteDocumentNonBlocking(doc(db, 'users', user!.uid, 'suppliers', selectedSupplier.id)) }}><Trash2 className="h-3.5 w-3.5 mr-1" /> हटवा</Button>
                   </div>
                 </div>
                 <div className="text-center border-b-2 border-black pb-4 mb-6">
@@ -276,7 +276,7 @@ function SuppliersContent() {
                    <div className="space-y-1"><p className="text-[8px] uppercase text-muted-foreground">मोबाईल</p><p>{selectedSupplier.mobile || "-"}</p></div>
                    <div className="space-y-1"><p className="text-[8px] uppercase text-muted-foreground">ऑपरेटर</p><p>{selectedSupplier.operatorName || "-"}</p></div>
                 </div>
-                {/* Full Report Details... (truncated for brevity but logic is preserved) */}
+                <p className="text-center italic text-xs py-10 opacity-30 uppercase font-black tracking-widest">सविस्तर अहवाल पाहण्यासाठी बदला बटन दाबा किंवा प्रिंट करा.</p>
               </div>
             </ScrollArea>
           ) : (
@@ -344,7 +344,6 @@ function SuppliersContent() {
                     </div>
                   </div>
 
-                  {/* DYNAMIC TABLES WITH HORIZONTAL SCROLL */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between"><SectionTitle icon={Layers} title="४) २+ वर्ष जुने उत्पादक" /><Button size="sm" onClick={() => addRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-7 text-[9px] font-black uppercase bg-primary text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
                     <ScrollArea className="w-full border-2 border-black rounded-lg">
@@ -369,9 +368,8 @@ function SuppliersContent() {
                     </ScrollArea>
                   </div>
 
-                  {/* 5) REDUCED MILK TABLE */}
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={TrendingDown} title="५) दूध कमी झालेले उत्पादक" color="text-rose-600" /><Button size="sm" onClick={() => addRow('decreasingProducers', { name: "", old_m: 0, new_m: 0, old_a: 0, new_a: 0, reason: "" })} className="h-7 text-[9px] font-black uppercase bg-rose-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><SectionTitle icon={TrendingDown} title="५) दूध कमी झालेले उत्पादक" color="text-rose-600" /><Button size="sm" onClick={() => addRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-7 text-[9px] font-black uppercase bg-rose-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
                     <ScrollArea className="w-full border-2 border-black rounded-lg">
                       <Table className="min-w-[700px] text-[10px] uppercase">
                         <TableHeader className="bg-rose-50 font-black">
@@ -395,9 +393,8 @@ function SuppliersContent() {
                     </ScrollArea>
                   </div>
 
-                  {/* 8) STAFF INFO TABLE */}
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={Briefcase} title="८) डेअरी कर्मचारी माहिती" color="text-indigo-600" /><Button size="sm" onClick={() => addRow('localEmployees', { name: "", land: "", cows: 0, buffalo: 0, supply: 0 })} className="h-7 text-[9px] font-black uppercase bg-indigo-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><SectionTitle icon={Briefcase} title="८) डेअरी कर्मचारी माहिती" color="text-indigo-600" /><Button size="sm" onClick={() => addRow('localEmployees', { name: "", land: "", cows_count: 0, buffalo_count: 0, total_supply: 0 })} className="h-7 text-[9px] font-black uppercase bg-indigo-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
                     <ScrollArea className="w-full border-2 border-black rounded-lg">
                       <Table className="min-w-[500px] text-[10px] uppercase">
                         <TableHeader className="bg-indigo-50 font-black">
@@ -420,9 +417,8 @@ function SuppliersContent() {
                     </ScrollArea>
                   </div>
 
-                  {/* 9) LOCAL GAVLI TABLE */}
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={Users} title="९) स्थानिक गवळी माहिती" color="text-emerald-600" /><Button size="sm" onClick={() => addRow('localGavliInfo', { name: "", code: "", cow: 0, buf: 0, tot: 0, count: 0 })} className="h-7 text-[9px] font-black uppercase bg-emerald-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><SectionTitle icon={Users} title="९) स्थानिक गवळी माहिती" color="text-emerald-600" /><Button size="sm" onClick={() => addRow('localGavliInfo', { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0 })} className="h-7 text-[9px] font-black uppercase bg-emerald-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
                     <ScrollArea className="w-full border-2 border-black rounded-lg">
                       <Table className="min-w-[600px] text-[10px] uppercase">
                         <TableHeader className="bg-emerald-50 font-black">
@@ -446,9 +442,8 @@ function SuppliersContent() {
                     </ScrollArea>
                   </div>
 
-                  {/* 12) SUB-ROUTES TABLE */}
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={Truck} title="१२) अंतर्गत उप-रूट माहिती" color="text-amber-600" /><Button size="sm" onClick={() => addRow('subRoutes', { v: "", km: "", a: "", p: 0, c: 0, b: 0, m: 0 })} className="h-7 text-[9px] font-black uppercase bg-amber-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
+                    <div className="flex items-center justify-between"><SectionTitle icon={Truck} title="१२) अंतर्गत उप-रूट माहिती" color="text-amber-600" /><Button size="sm" onClick={() => addRow('subRoutes', { vehicleType: "", km: "", area: "", producerCount: 0, cowCount: 0, buffaloCount: 0, milkQty: 0 })} className="h-7 text-[9px] font-black uppercase bg-amber-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
                     <ScrollArea className="w-full border-2 border-black rounded-lg">
                       <Table className="min-w-[600px] text-[10px] uppercase">
                         <TableHeader className="bg-amber-50 font-black">
