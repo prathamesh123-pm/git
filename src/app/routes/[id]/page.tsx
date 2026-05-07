@@ -26,9 +26,9 @@ import { cn } from "@/lib/utils"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 const SectionTitle = ({ icon: Icon, title, color = "text-primary" }: any) => (
-  <div className={cn("flex items-center gap-1.5 border-b-2 pb-1 mb-3 mt-6", color === 'text-primary' ? 'border-primary/20' : 'border-black/20')}>
-    {Icon && <Icon className={cn("h-4 w-4", color)} />}
-    <h3 className={cn("text-[10px] font-black uppercase tracking-widest", color)}>{title}</h3>
+  <div className={cn("flex items-center gap-1 border-b-2 pb-0.5 mb-2 mt-4", color === 'text-primary' ? 'border-primary/20' : 'border-black/20')}>
+    {Icon && <Icon className={cn("h-3 w-3", color)} />}
+    <h3 className={cn("text-[9px] font-black uppercase tracking-widest", color)}>{title}</h3>
   </div>
 )
 
@@ -165,7 +165,10 @@ function SuppliersContent() {
   }
 
   const handleSave = () => {
-    if (!formData.name || !formData.supplierId || !db || !user) return;
+    if (!formData.name || !formData.supplierId || !db || !user) {
+      toast({ title: "त्रुटी", description: "नाव आणि आयडी आवश्यक आहे.", variant: "destructive" });
+      return;
+    }
     
     const additional_details = {
       morning_collection_time: formData.morning_collection_time,
@@ -222,33 +225,33 @@ function SuppliersContent() {
   const filteredSuppliers = useMemo(() => suppliersList.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase())), [suppliersList, searchQuery])
 
   return (
-    <div className="space-y-3 max-w-6xl mx-auto w-full pb-10 px-2 animate-in fade-in duration-500">
-      <div className="flex flex-col sm:flex-row items-center justify-between border-b pb-3 no-print gap-3">
+    <div className="space-y-2 max-w-6xl mx-auto w-full pb-10 px-1 animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row items-center justify-between border-b pb-2 no-print gap-2">
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Button variant="ghost" size="icon" onClick={() => router.push('/routes')} className="rounded-full h-8 w-8"><ArrowLeft className="h-4 w-4" /></Button>
-          <h2 className="text-sm font-black uppercase truncate">{route?.name || "रूट माहिती"}</h2>
+          <h2 className="text-xs font-black uppercase truncate">{route?.name || "रूट माहिती"}</h2>
         </div>
-        <Button onClick={handleOpenAdd} size="sm" className="h-9 px-4 rounded-xl font-black uppercase text-[10px] w-full sm:w-auto">
+        <Button onClick={handleOpenAdd} size="sm" className="h-8 px-3 rounded-lg font-black uppercase text-[10px] w-full sm:w-auto shadow-md">
           <Plus className="h-3.5 w-3.5 mr-1" /> नवीन सप्लायर
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-2">
         <Card className="lg:col-span-4 border shadow-none bg-white rounded-xl overflow-hidden no-print">
-          <div className="p-2 border-b bg-muted/5">
+          <div className="p-1.5 border-b bg-muted/5">
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground opacity-50" />
-              <input placeholder="शोधा..." className="w-full pl-7 h-9 text-[11px] bg-white border border-muted-foreground/20 rounded-lg font-bold uppercase outline-none focus:ring-1 focus:ring-primary" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+              <input placeholder="शोधा..." className="w-full pl-7 h-8 text-[11px] bg-white border border-muted-foreground/20 rounded-lg font-bold uppercase outline-none focus:ring-1 focus:ring-primary" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
             </div>
           </div>
-          <ScrollArea className="h-[200px] lg:h-[600px]">
+          <ScrollArea className="h-[150px] lg:h-[600px]">
             <div className="divide-y divide-muted-foreground/5">
               {filteredSuppliers.map(s => (
-                <div key={s.id} onClick={() => setSelectedSupplier(s)} className={cn("p-2.5 cursor-pointer hover:bg-primary/5 transition-all", selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-4 border-primary' : '')}>
-                  <h4 className="font-black text-[11px] uppercase truncate">{s.name}</h4>
+                <div key={s.id} onClick={() => setSelectedSupplier(s)} className={cn("p-2 cursor-pointer hover:bg-primary/5 transition-all", selectedSupplier?.id === s.id ? 'bg-primary/5 border-l-4 border-primary' : '')}>
+                  <h4 className="font-black text-[10px] uppercase truncate">{s.name}</h4>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black border-none bg-muted/50">ID: {s.supplierId}</Badge>
-                    <span className="text-[8px] text-muted-foreground font-bold truncate uppercase">{s.address}</span>
+                    <Badge variant="outline" className="h-3 px-1 text-[7px] font-black border-none bg-muted/50">ID: {s.supplierId}</Badge>
+                    <span className="text-[7px] text-muted-foreground font-bold truncate uppercase">{s.address}</span>
                   </div>
                 </div>
               ))}
@@ -256,308 +259,217 @@ function SuppliersContent() {
           </ScrollArea>
         </Card>
 
-        <Card className="lg:col-span-8 border shadow-none bg-white rounded-xl overflow-hidden min-h-[400px] flex flex-col items-center justify-center">
+        <Card className="lg:col-span-8 border shadow-none bg-white rounded-xl overflow-hidden min-h-[300px] flex flex-col items-center justify-center">
           {selectedSupplier ? (
             <ScrollArea className="w-full h-full">
-              <div className="p-4 sm:p-8 space-y-6 printable-report bg-white text-left max-w-[210mm] mx-auto border-2 border-black m-4">
-                <div className="flex justify-between items-center no-print border-b pb-2 mb-4">
-                  <Badge className="bg-primary/10 text-primary border-none uppercase text-[8px] font-black">{selectedSupplier.supplierType} PROFILE</Badge>
-                  <div className="flex gap-1.5">
-                    <Button variant="outline" size="sm" className="h-7 text-[8px] font-black uppercase" onClick={() => window.print()}><Printer className="h-3.5 w-3.5 mr-1" /> प्रिंट</Button>
-                    <Button variant="outline" size="sm" className="h-7 text-[8px] font-black uppercase" onClick={() => handleOpenEdit(selectedSupplier)}><Edit className="h-3.5 w-3.5 mr-1" /> बदला</Button>
-                    <Button variant="outline" size="sm" className="h-7 text-[8px] font-black uppercase text-rose-600" onClick={() => { if(confirm('हटवायचे?')) deleteDocumentNonBlocking(doc(db, 'users', user!.uid, 'suppliers', selectedSupplier.id)) }}><Trash2 className="h-3.5 w-3.5 mr-1" /> हटवा</Button>
+              <div className="p-3 sm:p-6 space-y-4 printable-report bg-white text-left max-w-[210mm] mx-auto border-[1.5px] border-black m-2">
+                <div className="flex justify-between items-center no-print border-b pb-1 mb-2">
+                  <Badge className="bg-primary/10 text-primary border-none uppercase text-[7px] font-black">{selectedSupplier.supplierType} PROFILE</Badge>
+                  <div className="flex gap-1">
+                    <Button variant="outline" size="sm" className="h-6 text-[7px] font-black uppercase px-1.5" onClick={() => window.print()}><Printer className="h-3 w-3 mr-1" /> प्रिंट</Button>
+                    <Button variant="outline" size="sm" className="h-6 text-[7px] font-black uppercase px-1.5" onClick={() => handleOpenEdit(selectedSupplier)}><Edit className="h-3 w-3 mr-1" /> बदला</Button>
+                    <Button variant="outline" size="sm" className="h-6 text-[7px] font-black uppercase px-1.5 text-rose-600 border-rose-200" onClick={() => { if(confirm('हटवायचे?')) deleteDocumentNonBlocking(doc(db, 'users', user!.uid, 'suppliers', selectedSupplier.id)) }}><Trash2 className="h-3 w-3 mr-1" /> हटवा</Button>
                   </div>
                 </div>
-                <div className="text-center border-b-2 border-black pb-4 mb-6">
-                  <h3 className="text-xl font-black uppercase tracking-tight">{selectedSupplier.name}</h3>
-                  <p className="text-[10px] font-black text-muted-foreground uppercase mt-1">ID: {selectedSupplier.supplierId} | {selectedSupplier.address}</p>
+                <div className="text-center border-b-[1.5px] border-black pb-2 mb-3">
+                  <h3 className="text-sm sm:text-lg font-black uppercase tracking-tight">{selectedSupplier.name}</h3>
+                  <p className="text-[8px] font-black text-muted-foreground uppercase mt-0.5">ID: {selectedSupplier.supplierId} | {selectedSupplier.address}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-6 text-[11px] font-bold">
-                   <div className="space-y-1"><p className="text-[8px] uppercase text-muted-foreground">मोबाईल</p><p>{selectedSupplier.mobile || "-"}</p></div>
-                   <div className="space-y-1"><p className="text-[8px] uppercase text-muted-foreground">ऑपरेटर</p><p>{selectedSupplier.operatorName || "-"}</p></div>
+                <div className="grid grid-cols-2 gap-4 text-[10px] font-bold">
+                   <div className="space-y-0.5"><p className="text-[7px] uppercase text-muted-foreground">मोबाईल</p><p>{selectedSupplier.mobile || "-"}</p></div>
+                   <div className="space-y-0.5"><p className="text-[7px] uppercase text-muted-foreground">ऑपरेटर</p><p>{selectedSupplier.operatorName || "-"}</p></div>
                 </div>
-                <p className="text-center italic text-xs py-10 opacity-30 uppercase font-black tracking-widest">सविस्तर अहवाल पाहण्यासाठी बदला बटन दाबा किंवा प्रिंट करा.</p>
+                <p className="text-center italic text-[9px] py-6 opacity-40 uppercase font-black tracking-widest">सविस्तर अहवाल पाहण्यासाठी बदला बटन दाबा किंवा प्रिंट करा.</p>
               </div>
             </ScrollArea>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full opacity-10 p-20 text-center uppercase font-black">
-              <User className="h-16 w-16 mb-4" />
-              <p className="text-xs">सप्लायर निवडा</p>
+            <div className="flex flex-col items-center justify-center h-full opacity-10 p-10 text-center uppercase font-black">
+              <User className="h-10 w-10 mb-2" />
+              <p className="text-[9px]">सप्लायर निवडा</p>
             </div>
           )}
         </Card>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-[500px] w-[96vw] p-0 overflow-hidden rounded-2xl border-none shadow-2xl bg-white flex flex-col h-[90vh] text-left">
-          <DialogHeader className="p-3 bg-primary text-white shrink-0">
-            <DialogTitle className="text-sm font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती अद्ययावत करा'}</DialogTitle>
-            <DialogDescription className="text-[8px] text-white/70 uppercase">सप्लायरचा सविस्तर तपशील भरा.</DialogDescription>
+        <DialogContent className="max-w-[480px] w-[98vw] p-0 overflow-hidden rounded-xl border-none shadow-2xl bg-white flex flex-col h-[90vh] text-left">
+          <DialogHeader className="p-2 bg-primary text-white shrink-0">
+            <DialogTitle className="text-xs font-black uppercase tracking-widest">{dialogMode === 'add' ? 'नवीन सप्लायर' : 'माहिती अद्ययावत करा'}</DialogTitle>
+            <DialogDescription className="text-[8px] text-white/70 uppercase">तपशील भरा (मोबाईल ऑप्टिमाइझ्ड)</DialogDescription>
           </DialogHeader>
 
           <ScrollArea className="flex-1 bg-white">
-            <div className="p-4 space-y-8 pb-10">
+            <div className="p-3 space-y-5 pb-20">
               {/* 1) PRIMARY INFO */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-[9px] font-black uppercase text-slate-500">सप्लायर प्रकार</Label>
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="space-y-0.5">
+                    <Label className="text-[8px] font-black uppercase text-slate-500">सप्लायर प्रकार</Label>
                     <Select value={formData.supplierType} onValueChange={(v: any) => setFormData({...formData, supplierType: v})}>
-                      <SelectTrigger className="h-9 text-[13px] border-2 border-black rounded-lg font-black"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-8 text-[11px] border-[1.5px] border-black rounded-md font-black"><SelectValue /></SelectTrigger>
                       <SelectContent><SelectItem value="Gavali" className="font-bold">गवळी</SelectItem><SelectItem value="Gotha" className="font-bold">गोठा</SelectItem><SelectItem value="Center" className="font-bold">उत्पादक केंद्र</SelectItem></SelectContent>
                     </Select>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-9 border-2 border-black font-bold text-sm" /></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-9 border-2 border-black font-bold text-sm" /></div>
+                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
+                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">आयडी (ID) *</Label><Input value={formData.supplierId} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">ऑपरेटर</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-9 border-2 border-black font-bold text-sm" /></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-9 border-2 border-black font-bold text-sm" /></div>
+                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">ऑपरेटर</Label><Input value={formData.operatorName} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
+                    <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
                   </div>
-                  <div className="space-y-1"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-9 border-2 border-black font-bold text-sm" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] font-black uppercase">स्थापना वर्ष</Label><Input value={formData.start_year} placeholder="YYYY" onChange={e => setFormData({...formData, start_year: e.target.value})} className="h-9 border-2 border-black font-bold text-sm" /></div>
+                  <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
+                  <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">स्थापना वर्ष</Label><Input value={formData.start_year} placeholder="YYYY" onChange={e => setFormData({...formData, start_year: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
                 </div>
               </div>
 
               {/* PRO CENTER SECTIONS */}
               {formData.supplierType === 'Center' && (
-                <div className="space-y-6">
-                  <div className="space-y-3">
-                    <SectionTitle icon={Clock} title="२) संकलन वेळ & उत्पादक सारांश" />
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सकाळ वेळ</Label><Input type="time" value={formData.morning_collection_time} onChange={e => setFormData({...formData, morning_collection_time: e.target.value})} className="h-9 border-2 border-black" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सायंकाळ वेळ</Label><Input type="time" value={formData.evening_collection_time} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-9 border-2 border-black" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-9 border-2 border-black font-black" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सक्रिय उत्पादक</Label><Input type="number" value={formData.active_producers} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-9 border-2 border-black font-black" /></div>
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <SectionTitle icon={Clock} title="२) संकलन वेळ & उत्पादक" />
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">सकाळ</Label><Input type="time" value={formData.morning_collection_time} onChange={e => setFormData({...formData, morning_collection_time: e.target.value})} className="h-8 border-[1.5px] border-black" /></div>
+                      <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">सायंकाळ</Label><Input type="time" value={formData.evening_collection_time} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-8 border-[1.5px] border-black" /></div>
+                      <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-8 border-[1.5px] border-black font-black text-center" /></div>
+                      <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">सक्रिय</Label><Input type="number" value={formData.active_producers} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-8 border-[1.5px] border-black font-black text-center" /></div>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <SectionTitle icon={Milk} title="३) जनावरांची माहिती" />
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">एकूण जनावरे</Label><Input type="number" value={formData.total_animals} onChange={e => setFormData({...formData, total_animals: e.target.value})} className="h-9 border-2 border-black font-black" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">गाई</Label><Input type="number" value={formData.cows} onChange={e => setFormData({...formData, cows: e.target.value})} className="h-9 border-2 border-black font-black" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">म्हशी</Label><Input type="number" value={formData.buffalo} onChange={e => setFormData({...formData, buffalo: e.target.value})} className="h-9 border-2 border-black font-black" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">वासरे</Label><Input type="number" value={formData.calves} onChange={e => setFormData({...formData, calves: e.target.value})} className="h-9 border-2 border-black font-black" /></div>
+                  <div className="space-y-2">
+                    <SectionTitle icon={Milk} title="३) जनावरांची गणना" />
+                    <div className="grid grid-cols-4 gap-1.5">
+                      <div className="space-y-0.5"><Label className="text-[7px] font-black">एकूण</Label><Input type="number" value={formData.total_animals} onChange={e => setFormData({...formData, total_animals: e.target.value})} className="h-7 border border-black text-center text-[10px]" /></div>
+                      <div className="space-y-0.5"><Label className="text-[7px] font-black">गाई</Label><Input type="number" value={formData.cows} onChange={e => setFormData({...formData, cows: e.target.value})} className="h-7 border border-black text-center text-[10px]" /></div>
+                      <div className="space-y-0.5"><Label className="text-[7px] font-black">म्हशी</Label><Input type="number" value={formData.buffalo} onChange={e => setFormData({...formData, buffalo: e.target.value})} className="h-7 border border-black text-center text-[10px]" /></div>
+                      <div className="space-y-0.5"><Label className="text-[7px] font-black">वासरे</Label><Input type="number" value={formData.calves} onChange={e => setFormData({...formData, calves: e.target.value})} className="h-7 border border-black text-center text-[10px]" /></div>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={Layers} title="४) २+ वर्ष जुने उत्पादक" /><Button size="sm" onClick={() => addRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-7 text-[9px] font-black uppercase bg-primary text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
-                    <ScrollArea className="w-full border-2 border-black rounded-lg">
-                      <Table className="min-w-[600px] text-[10px] uppercase">
-                        <TableHeader className="bg-slate-100 font-black">
-                          <TableRow><TableHead className="w-[150px]">नाव</TableHead><TableHead className="text-center">जुने दूध</TableHead><TableHead className="text-center">सध्याचे</TableHead><TableHead className="text-center">जुनी जनावरे</TableHead><TableHead className="text-center">नवी</TableHead><TableHead className="w-[40px]"></TableHead></TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {formData.longTermProducers.map(p => (
-                            <TableRow key={p.id}>
-                              <TableCell className="p-1"><Input value={p.producer_name} onChange={e => updateRow('longTermProducers', p.id, { producer_name: e.target.value })} className="h-7 border-none p-1 text-[11px]" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={p.previous_milk} onChange={e => updateRow('longTermProducers', p.id, { previous_milk: e.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={p.current_milk} onChange={e => updateRow('longTermProducers', p.id, { current_milk: e.target.value })} className="h-7 border-none text-center font-black" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={p.previous_animals} onChange={e => updateRow('longTermProducers', p.id, { previous_animals: e.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={p.current_animals} onChange={e => updateRow('longTermProducers', p.id, { current_animals: e.target.value })} className="h-7 border-none text-center font-black" /></TableCell>
-                              <TableCell className="p-1"><Button variant="ghost" size="icon" onClick={() => removeRow('longTermProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4"/></Button></TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                      <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-                  </div>
+                  {/* Dynamic Tables wrapped in ScrollArea for horizontal mobility */}
+                  {[
+                    { id: 'longTermProducers', title: '४) २+ वर्ष जुने उत्पादक', icon: Layers, fields: [{n:'नाव',k:'producer_name',w:'120px'}, {n:'जुने',k:'previous_milk',w:'60px'}, {n:'सध्याचे',k:'current_milk',w:'60px'}, {n:'जुनी',k:'previous_animals',w:'60px'}, {n:'नवी',k:'current_animals',w:'60px'}], initial: { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 } },
+                    { id: 'decreasingProducers', title: '५) दूध घटलेले उत्पादक', icon: TrendingDown, fields: [{n:'नाव',k:'producer_name',w:'120px'}, {n:'जुने',k:'previous_milk',w:'60px'}, {n:'नवे',k:'current_milk',w:'60px'}, {n:'कारण',k:'reason',w:'150px'}], initial: { producer_name: "", previous_milk: 0, current_milk: 0, reason: "" }, color: 'text-rose-600' },
+                    { id: 'localEmployees', title: '८) डेअरी कर्मचारी माहिती', icon: Briefcase, fields: [{n:'नाव',k:'name',w:'120px'}, {n:'शेती',k:'land',w:'80px'}, {n:'गाई',k:'cows_count',w:'50px'}, {n:'म्हशी',k:'buffalo_count',w:'50px'}, {n:'दूध',k:'total_supply',w:'60px'}], initial: { name: "", land: "", cows_count: 0, buffalo_count: 0, total_supply: 0 }, color: 'text-indigo-600' },
+                    { id: 'localGavliInfo', title: '९) स्थानिक गवळी माहिती', icon: Users, fields: [{n:'नाव',k:'name',w:'120px'}, {n:'कोड',k:'code',w:'60px'}, {n:'गाय',k:'gay_dudh',w:'50px'}, {n:'म्हेस',k:'mhais_dudh',w:'50px'}, {n:'उत्पादक',k:'producers',w:'60px'}], initial: { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0 }, color: 'text-emerald-600' },
+                    { id: 'subRoutes', title: '१२) अंतर्गत उप-रूट माहिती', icon: Truck, fields: [{n:'गाडी',k:'vehicleType',w:'100px'}, {n:'किमी',k:'km',w:'50px'}, {n:'परिसर',k:'area',w:'100px'}, {n:'दूध(L)',k:'milkQty',w:'60px'}], initial: { vehicleType: "", km: "", area: "", producers: 0, milkQty: 0 }, color: 'text-amber-600' }
+                  ].map(sec => (
+                    <div key={sec.id} className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <SectionTitle icon={sec.icon} title={sec.title} color={sec.color || 'text-primary'} />
+                        <Button size="sm" onClick={() => addRow(sec.id, sec.initial)} className="h-6 text-[8px] font-black uppercase px-2 rounded-md"><Plus className="h-3 w-3 mr-1"/> जोडा</Button>
+                      </div>
+                      <div className="border-[1.5px] border-black rounded-lg overflow-hidden">
+                        <ScrollArea className="w-full">
+                          <Table className="min-w-max text-[9px] uppercase">
+                            <TableHeader className="bg-slate-50 font-black h-7">
+                              <TableRow>
+                                {sec.fields.map(f => <TableHead key={f.k} style={{width: f.w}} className="px-1 text-center h-7">{f.n}</TableHead>)}
+                                <TableHead className="w-8 h-7"></TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {(formData as any)[sec.id].map((row: any) => (
+                                <TableRow key={row.id} className="h-8">
+                                  {sec.fields.map(f => (
+                                    <TableCell key={f.k} className="p-0.5 border-r border-black/10 last:border-0">
+                                      <Input 
+                                        value={row[f.k]} 
+                                        onChange={e => updateRow(sec.id, row.id, { [f.k]: e.target.value })} 
+                                        className="h-6 border-none text-[10px] text-center p-1 bg-transparent" 
+                                      />
+                                    </TableCell>
+                                  ))}
+                                  <TableCell className="p-0.5 text-center">
+                                    <Button variant="ghost" size="icon" onClick={() => removeRow(sec.id, row.id)} className="h-6 w-6 text-rose-500"><X className="h-3 w-3"/></Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                          <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
+                      </div>
+                    </div>
+                  ))}
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={TrendingDown} title="५) दूध घटलेले उत्पादक" color="text-rose-600" /><Button size="sm" onClick={() => addRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0, reason: "" })} className="h-7 text-[9px] font-black uppercase bg-rose-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
-                    <ScrollArea className="w-full border-2 border-black rounded-lg">
-                      <Table className="min-w-[700px] text-[10px] uppercase">
-                        <TableHeader className="bg-rose-50 font-black">
-                          <TableRow><TableHead className="w-[150px]">नाव</TableHead><TableHead>जुने दूध</TableHead><TableHead>नवे</TableHead><TableHead>जुनी जनावरे</TableHead><TableHead>नवी</TableHead><TableHead>कारण</TableHead><TableHead className="w-[40px]"></TableHead></TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {formData.decreasingProducers.map(p => (
-                            <TableRow key={p.id}>
-                              <TableCell className="p-1"><Input value={p.producer_name} onChange={e => updateRow('decreasingProducers', p.id, { producer_name: e.target.value })} className="h-7 border-none" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={p.previous_milk} onChange={e => updateRow('decreasingProducers', p.id, { previous_milk: e.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={p.current_milk} onChange={e => updateRow('decreasingProducers', p.id, { current_milk: e.target.value })} className="h-7 border-none text-center font-black" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={p.previous_animals} onChange={e => updateRow('decreasingProducers', p.id, { previous_animals: e.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={p.current_animals} onChange={e => updateRow('decreasingProducers', p.id, { current_animals: e.target.value })} className="h-7 border-none text-center font-black" /></TableCell>
-                              <TableCell className="p-1"><Input value={p.reason} onChange={e => updateRow('decreasingProducers', p.id, { reason: e.target.value })} className="h-7 border-none text-[9px]" /></TableCell>
-                              <TableCell className="p-1"><Button variant="ghost" size="icon" onClick={() => removeRow('decreasingProducers', p.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4"/></Button></TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                      <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={Briefcase} title="८) डेअरी कर्मचारी माहिती" color="text-indigo-600" /><Button size="sm" onClick={() => addRow('localEmployees', { name: "", land: "", cows_count: 0, buffalo_count: 0, total_supply: 0 })} className="h-7 text-[9px] font-black uppercase bg-indigo-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
-                    <ScrollArea className="w-full border-2 border-black rounded-lg">
-                      <Table className="min-w-[500px] text-[10px] uppercase">
-                        <TableHeader className="bg-indigo-50 font-black">
-                          <TableRow><TableHead>नाव</TableHead><TableHead>शेती</TableHead><TableHead>गाई</TableHead><TableHead>म्हशी</TableHead><TableHead>दूध (L)</TableHead><TableHead className="w-[40px]"></TableHead></TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {formData.localEmployees.map(e => (
-                            <TableRow key={e.id}>
-                              <TableCell className="p-1"><Input value={e.name} onChange={v => updateRow('localEmployees', e.id, { name: v.target.value })} className="h-7 border-none" /></TableCell>
-                              <TableCell className="p-1"><Input value={e.land} onChange={v => updateRow('localEmployees', e.id, { land: v.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={e.cows_count} onChange={v => updateRow('localEmployees', e.id, { cows_count: v.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={e.buffalo_count} onChange={v => updateRow('localEmployees', e.id, { buffalo_count: v.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={e.total_supply} onChange={v => updateRow('localEmployees', e.id, { total_supply: v.target.value })} className="h-7 border-none text-center font-black" /></TableCell>
-                              <TableCell className="p-1"><Button variant="ghost" size="icon" onClick={() => removeRow('localEmployees', e.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4"/></Button></TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                      <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={Users} title="९) स्थानिक गवळी माहिती" color="text-emerald-600" /><Button size="sm" onClick={() => addRow('localGavliInfo', { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0 })} className="h-7 text-[9px] font-black uppercase bg-emerald-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
-                    <ScrollArea className="w-full border-2 border-black rounded-lg">
-                      <Table className="min-w-[600px] text-[10px] uppercase">
-                        <TableHeader className="bg-emerald-50 font-black">
-                          <TableRow><TableHead>नाव</TableHead><TableHead>कोड</TableHead><TableHead>गाय</TableHead><TableHead>म्हेस</TableHead><TableHead>एकूण</TableHead><TableHead>उत्पादक</TableHead><TableHead className="w-[40px]"></TableHead></TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {formData.localGavliInfo.map(g => (
-                            <TableRow key={g.id}>
-                              <TableCell className="p-1"><Input value={g.name} onChange={v => updateRow('localGavliInfo', g.id, { name: v.target.value })} className="h-7 border-none" /></TableCell>
-                              <TableCell className="p-1"><Input value={g.code} onChange={v => updateRow('localGavliInfo', g.id, { code: v.target.value })} className="h-7 border-none text-center font-black" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={g.gay_dudh} onChange={v => updateRow('localGavliInfo', g.id, { gay_dudh: v.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={g.mhais_dudh} onChange={v => updateRow('localGavliInfo', g.id, { mhais_dudh: v.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1 text-center font-black">{ (Number(g.gay_dudh||0) + Number(g.mhais_dudh||0)).toFixed(1) }</TableCell>
-                              <TableCell className="p-1"><Input type="number" value={g.producers} onChange={v => updateRow('localGavliInfo', g.id, { producers: v.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Button variant="ghost" size="icon" onClick={() => removeRow('localGavliInfo', g.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4"/></Button></TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                      <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between"><SectionTitle icon={Truck} title="१२) अंतर्गत उप-रूट माहिती" color="text-amber-600" /><Button size="sm" onClick={() => addRow('subRoutes', { vehicleType: "", km: "", area: "", producerCount: 0, cowCount: 0, buffaloCount: 0, milkQty: 0 })} className="h-7 text-[9px] font-black uppercase bg-amber-600 text-white px-3 rounded-lg shadow-sm">जोडा</Button></div>
-                    <ScrollArea className="w-full border-2 border-black rounded-lg">
-                      <Table className="min-w-[600px] text-[10px] uppercase">
-                        <TableHeader className="bg-amber-50 font-black">
-                          <TableRow><TableHead>गाडी</TableHead><TableHead>किमी</TableHead><TableHead>परिसर</TableHead><TableHead>उत्पादक</TableHead><TableHead>गाई</TableHead><TableHead>म्हशी</TableHead><TableHead>दूध (L)</TableHead><TableHead className="w-[40px]"></TableHead></TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {formData.subRoutes.map(r => (
-                            <TableRow key={r.id}>
-                              <TableCell className="p-1"><Input value={r.vehicleType} onChange={e => updateRow('subRoutes', r.id, { vehicleType: e.target.value })} className="h-7 border-none" /></TableCell>
-                              <TableCell className="p-1"><Input value={r.km} onChange={e => updateRow('subRoutes', r.id, { km: e.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input value={r.area} onChange={e => updateRow('subRoutes', r.id, { area: e.target.value })} className="h-7 border-none" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={r.producerCount} onChange={e => updateRow('subRoutes', r.id, { producerCount: e.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={r.cowCount} onChange={e => updateRow('subRoutes', r.id, { cowCount: e.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={r.buffaloCount} onChange={e => updateRow('subRoutes', r.id, { buffaloCount: e.target.value })} className="h-7 border-none text-center" /></TableCell>
-                              <TableCell className="p-1"><Input type="number" value={r.milkQty} onChange={e => updateRow('subRoutes', r.id, { milkQty: e.target.value })} className="h-7 border-none text-center font-black" /></TableCell>
-                              <TableCell className="p-1"><Button variant="ghost" size="icon" onClick={() => removeRow('subRoutes', r.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4"/></Button></TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                      <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-                  </div>
-
-                  <div className="space-y-3">
-                    <SectionTitle icon={Lightbulb} title="१३) विशेष विश्लेषण & उपाययोजना" />
-                    <div className="space-y-3">
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="min-h-[60px] border-2 border-black text-sm" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="min-h-[60px] border-2 border-black text-sm" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">दूध वाढवण्यासाठी उपाय</Label><Textarea value={formData.required_actions} onChange={e => setFormData({...formData, required_actions: e.target.value})} className="min-h-[60px] border-2 border-black text-sm" /></div>
+                  <div className="space-y-2">
+                    <SectionTitle icon={Lightbulb} title="१३) विशेष विश्लेषण & उपाय" />
+                    <div className="space-y-2">
+                       <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">घटण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="min-h-[40px] border-[1.5px] border-black text-xs p-1.5" /></div>
+                       <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="min-h-[40px] border-[1.5px] border-black text-xs p-1.5" /></div>
+                       <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase">उपाययोजना</Label><Textarea value={formData.required_actions} onChange={e => setFormData({...formData, required_actions: e.target.value})} className="min-h-[40px] border-[1.5px] border-black text-xs p-1.5" /></div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* 14) LICENSE & TECH */}
-              <div className="space-y-3">
-                <SectionTitle icon={ShieldCheck} title="१४) परवाना व तांत्रिक" />
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1"><Label className="text-[9px] font-black uppercase">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-9 border-2 border-black font-bold" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-9 border-2 border-black font-bold" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] font-black uppercase">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-9 border-2 border-black font-bold" /></div>
-                  <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 border-2 border-black font-bold" /></div>
-                </div>
-              </div>
-
-              {/* 15) BUSINESS & MILK */}
-              <div className="space-y-3">
-                <SectionTitle icon={Wallet} title="१५) व्यावसायिक व दूध तपशील" />
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">पेमेंट सायकल</Label><Input value={formData.paymentCycle} onChange={e => setFormData({...formData, paymentCycle: e.target.value})} className="h-9 border-2 border-black" /></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">जागा</Label>
-                      <Select value={formData.spaceOwnership} onValueChange={(v: any) => setFormData({...formData, spaceOwnership: v})}>
-                        <SelectTrigger className="h-9 border-2 border-black"><SelectValue /></SelectTrigger>
-                        <SelectContent><SelectItem value="Self" className="font-bold">स्वतःची</SelectItem><SelectItem value="Rented" className="font-bold">भाड्याची</SelectItem></SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="p-3 bg-blue-50/50 rounded-xl border-2 border-blue-200">
-                    <Label className="text-[10px] font-black uppercase text-blue-600 mb-2 block">गाय दूध (Q/F/S)</Label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 border-2 border-black text-center text-xs" placeholder="Q" />
-                      <Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 border-2 border-black text-center text-xs" placeholder="F" />
-                      <Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 border-2 border-black text-center text-xs" placeholder="S" />
-                    </div>
-                  </div>
-                  <div className="p-3 bg-amber-50/50 rounded-xl border-2 border-amber-200">
-                    <Label className="text-[10px] font-black uppercase text-amber-600 mb-2 block">म्हेस दूध (Q/F/S)</Label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 border-2 border-black text-center text-xs" placeholder="Q" />
-                      <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 border-2 border-black text-center text-xs" placeholder="F" />
-                      <Input type="number" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 border-2 border-black text-center text-xs" placeholder="S" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* 16) INVENTORY */}
-              <div className="space-y-4">
-                <SectionTitle icon={Box} title="१६) इन्व्हेंटरी व स्टेटस" />
+              <div className="space-y-2">
+                <SectionTitle icon={ShieldCheck} title="१४) परवाना & तांत्रिक" />
                 <div className="grid grid-cols-2 gap-2">
-                  <Button variant="outline" type="button" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})} className={cn("h-10 border-2 border-black rounded-lg font-black text-[10px] uppercase", formData.computerAvailable ? "bg-primary text-white" : "bg-white")}>POP: {formData.computerAvailable ? 'हो' : 'नाही'}</Button>
-                  <Button variant="outline" type="button" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})} className={cn("h-10 border-2 border-black rounded-lg font-black text-[10px] uppercase", formData.upsInverterAvailable ? "bg-amber-500 text-white" : "bg-white")}>UPS: {formData.upsInverterAvailable ? 'हो' : 'नाही'}</Button>
-                  <Button variant="outline" type="button" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})} className={cn("h-10 border-2 border-black rounded-lg font-black text-[10px] uppercase", formData.solarAvailable ? "bg-emerald-500 text-white" : "bg-white")}>सोलर: {formData.solarAvailable ? 'हो' : 'नाही'}</Button>
-                  <div className="flex flex-col gap-0.5"><Label className="text-[8px] font-black uppercase opacity-60 ml-1">CANS</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-9 border-2 border-black text-center font-black" /></div>
+                  <div className="space-y-0.5"><Label className="text-[8px] font-black">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
+                  <div className="space-y-0.5"><Label className="text-[8px] font-black">मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-8 border-[1.5px] border-black text-xs" /></div>
+                  <div className="space-y-0.5"><Label className="text-[8px] font-black">काटा ब्रँड</Label><Input value={formData.scaleBrand} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-8 border-[1.5px] border-black text-xs" /></div>
+                  <div className="space-y-0.5"><Label className="text-[8px] font-black">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-8 border-[1.5px] border-black text-xs" /></div>
                 </div>
-                <div className="space-y-1"><Label className="text-[9px] font-black uppercase">Adulteration Kit</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-9 border-2 border-black" placeholder="..." /></div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between"><Label className="text-[9px] font-black uppercase tracking-widest">साहित्याची यादी</Label><Button variant="outline" size="sm" onClick={() => addRow('equipment', { name: "", quantity: 1, ownership: 'Company' })} className="h-7 text-[8px] font-black uppercase border-primary/20 text-primary">जोडा</Button></div>
-                  <div className="space-y-1.5">
+              </div>
+
+              <div className="space-y-2">
+                <SectionTitle icon={Wallet} title="१५) दूध तपशील (Q/F/S)" />
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="p-1.5 bg-blue-50 border border-blue-200 rounded-lg">
+                    <Label className="text-[8px] font-black uppercase text-blue-600 block mb-1">गाय दूध</Label>
+                    <div className="grid grid-cols-3 gap-1">
+                      <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-7 border border-black text-center text-[10px]" placeholder="Q" />
+                      <Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-7 border border-black text-center text-[10px]" placeholder="F" />
+                      <Input type="number" value={formData.cowSnf} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-7 border border-black text-center text-[10px]" placeholder="S" />
+                    </div>
+                  </div>
+                  <div className="p-1.5 bg-amber-50 border border-amber-200 rounded-lg">
+                    <Label className="text-[8px] font-black uppercase text-amber-600 block mb-1">म्हेस दूध</Label>
+                    <div className="grid grid-cols-3 gap-1">
+                      <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-7 border border-black text-center text-[10px]" placeholder="Q" />
+                      <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-7 border border-black text-center text-[10px]" placeholder="F" />
+                      <Input type="number" value={formData.bufSnf} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-7 border border-black text-center text-[10px]" placeholder="S" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <SectionTitle icon={Box} title="१६) इन्व्हेंटरी" />
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="outline" size="sm" type="button" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})} className={cn("h-8 border-[1.5px] border-black font-black text-[9px] uppercase", formData.computerAvailable ? "bg-primary text-white" : "")}>POP: {formData.computerAvailable ? 'YES' : 'NO'}</Button>
+                  <Button variant="outline" size="sm" type="button" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})} className={cn("h-8 border-[1.5px] border-black font-black text-[9px] uppercase", formData.upsInverterAvailable ? "bg-amber-500 text-white" : "")}>UPS: {formData.upsInverterAvailable ? 'YES' : 'NO'}</Button>
+                  <div className="flex flex-col"><Label className="text-[7px] font-black ml-1 uppercase">CANS</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-8 border border-black text-center font-black text-[10px]" /></div>
+                  <div className="flex flex-col"><Label className="text-[7px] font-black ml-1 uppercase">ICE</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-8 border border-black text-center font-black text-[10px]" /></div>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between"><Label className="text-[9px] font-black uppercase">साहित्याची यादी</Label><Button size="sm" variant="outline" onClick={() => addRow('equipment', { name: "", quantity: 1, ownership: 'Company' })} className="h-6 text-[8px] font-black px-2">जोडा</Button></div>
+                  <div className="space-y-1">
                     {formData.equipment.map(item => (
-                      <div key={item.id} className="grid grid-cols-12 gap-1 bg-muted/10 p-1.5 rounded-lg border-2 border-black items-center">
-                        <div className="col-span-6"><Input value={item.name} onChange={e => updateRow('equipment', item.id, {name: e.target.value})} className="h-7 border-none text-[10px] bg-white w-full" /></div>
-                        <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateRow('equipment', item.id, {quantity: Number(e.target.value)})} className="h-7 border-none text-center font-black bg-white w-full" /></div>
+                      <div key={item.id} className="grid grid-cols-12 gap-1 bg-muted/5 p-1 rounded border border-black/10 items-center">
+                        <div className="col-span-6"><Input value={item.name} onChange={e => updateRow('equipment', item.id, {name: e.target.value})} className="h-6 text-[10px] border-none bg-white w-full px-1" /></div>
+                        <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateRow('equipment', item.id, {quantity: Number(e.target.value)})} className="h-6 text-[10px] text-center border-none bg-white w-full p-0" /></div>
                         <div className="col-span-3">
                           <Select value={item.ownership} onValueChange={v => updateRow('equipment', item.id, {ownership: v as any})}>
-                            <SelectTrigger className="h-7 text-[8px] bg-white border-none rounded font-black"><SelectValue /></SelectTrigger>
-                            <SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent>
+                            <SelectTrigger className="h-6 text-[8px] bg-white border-none font-black p-1"><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="Self" className="text-[10px]">स्वतः</SelectItem><SelectItem value="Company" className="text-[10px]">डेअरी</SelectItem></SelectContent>
                           </Select>
                         </div>
-                        <div className="col-span-1 flex justify-end"><Button variant="ghost" size="icon" onClick={() => removeRow('equipment', item.id)} className="h-6 w-6 text-rose-500"><X className="h-3 w-3" /></Button></div>
+                        <div className="col-span-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeRow('equipment', item.id)} className="h-5 w-5 text-rose-500"><X className="h-3 w-3"/></Button></div>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-              <div className="space-y-1"><Label className="text-[9px] font-black uppercase">विशेष शेरा</Label><Textarea value={formData.additionalNotes} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-16 border-2 border-black text-sm" /></div>
             </div>
           </ScrollArea>
 
-          <DialogFooter className="p-3 border-t bg-muted/10 shrink-0 flex flex-row gap-2 no-print z-20">
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1 h-10 rounded-xl font-black uppercase text-[10px] border-2 border-black">रद्द</Button>
-            <Button onClick={handleSave} className="flex-[2] h-10 rounded-xl shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest bg-primary text-white"><CheckCircle2 className="h-4 w-4 mr-1.5" /> माहिती जतन करा</Button>
+          <DialogFooter className="p-2 border-t bg-muted/10 shrink-0 flex flex-row gap-2 no-print z-[100] sticky bottom-0">
+            <Button variant="outline" onClick={() => { setIsDialogOpen(false); resetFormData(); }} className="flex-1 h-9 rounded-lg font-black uppercase text-[10px] border-[1.5px] border-black">रद्द</Button>
+            <Button onClick={handleSave} className="flex-[2] h-9 rounded-lg shadow-lg shadow-primary/20 font-black uppercase text-[10px] tracking-widest transition-all active:scale-95 bg-primary text-white"><CheckCircle2 className="h-4 w-4 mr-1.5" /> माहिती जतन करा</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -566,5 +478,5 @@ function SuppliersContent() {
 }
 
 export default function RouteSuppliersPage() {
-  return <Suspense fallback={null}><SuppliersContent /></Suspense>
+  return <Suspense fallback={<div className="p-10 text-center font-black text-[10px] opacity-30">लोड होत आहे...</div>}><SuppliersContent /></Suspense>
 }
