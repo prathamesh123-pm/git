@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -7,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
   ShieldAlert, ClipboardCheck, Plus, MapPin, FileText,
-  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee, Hash, Box, TrendingDown
+  Briefcase, FileSignature, CheckCircle2, Microscope, Layers, Calendar, ChevronRight, AlertCircle, AlertTriangle, Info, BookOpen, Lightbulb, FileCheck, Clock, Milk, User, IndianRupee, Hash, Box, TrendingDown, Building2, Activity, Users2
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -110,7 +109,7 @@ const ProfessionalParagraph = ({ label, content, icon: Icon }: { label: string, 
 
 const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any, profileName: string, profileId: string }) => {
   const d = report.fullData || {};
-  const details = d.producer_center?.additional_details || {};
+  const details = report.fullData?.producer_center?.additional_details || {};
 
   return (
     <div className="bg-white font-sans text-slate-900 w-full p-4 sm:p-10 printable-report flex flex-col items-center min-h-screen">
@@ -127,6 +126,32 @@ const ProducerCenterLayout = ({ report, profileName, profileId }: { report: any,
           </tbody>
         </table>
       </div>
+
+      {details.sub_gavali_info?.length > 0 && (
+        <>
+          <SectionTitle icon={Users2} title="१.५) सब-गवळी सविस्तर माहिती" color="text-indigo-800" />
+          <table className="w-full border-2 border-black text-[8pt] mb-6">
+            <thead className="bg-indigo-50 font-black text-indigo-900">
+              <tr className="border-b border-black text-center">
+                <th className="p-1 border-r border-black">नाव/मोबाईल</th>
+                <th className="p-1 border-r border-black">एरिया/पद्धत</th>
+                <th className="p-1 border-r border-black">उत्पादक/जनावरे</th>
+                <th className="p-1">दूध/रूट माहिती</th>
+              </tr>
+            </thead>
+            <tbody>
+              {details.sub_gavali_info.map((sub: any, i: number) => (
+                <tr key={i} className="border-b border-black last:border-0 font-bold text-center">
+                  <td className="p-1 border-r border-black text-left">{sub.name}<br/><span className="text-[7pt] opacity-60">{sub.mobile}</span></td>
+                  <td className="p-1 border-r border-black text-left">{sub.area}<br/><Badge variant="outline" className="h-4 text-[6pt] px-1">{sub.collection_type}</Badge></td>
+                  <td className="p-1 border-r border-black">{sub.producers} उत्पादक<br/>{sub.animals} जनावरे</td>
+                  <td className="p-1 text-left"><span className="text-blue-600">{sub.cow_qty}L Cow</span><br/><span className="text-[7pt]">{sub.sub_route_info || "-"}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
 
       {details.collection_areas?.length > 0 && (
         <>
@@ -507,7 +532,7 @@ export default function ReportsPage() {
                </div>
                
                <ScrollArea className="w-full">
-                  {selectedReport.fullData?.producer_center || selectedReport.fullData?.supplierType === 'Gotha' ? (
+                  {selectedReport.type === 'Milk Procurement Survey' || selectedReport.fullData?.producer_center || selectedReport.fullData?.supplierType === 'Gotha' ? (
                     <ProducerCenterLayout report={selectedReport} profileName="संकलन सुपरवायझर" profileId="N/A" />
                   ) : selectedReport.fullData?.isWordDoc ? (
                     <div className="bg-white font-sans text-slate-900 w-full p-6 sm:p-12 printable-report flex flex-col items-center min-h-screen">

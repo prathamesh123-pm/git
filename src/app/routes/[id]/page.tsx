@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -13,7 +12,7 @@ import {
   Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, 
   ShieldCheck, Printer, CheckCircle2, Clock, Layers, Users, TrendingDown, 
   IndianRupee, History, Briefcase, Info, FileText, MapPin, Lightbulb, PlusCircle, ListPlus, Sparkles, Building2,
-  UsersRound, Sprout, ShoppingCart, Activity, ClipboardCheck, ChevronUp, ChevronDown
+  UsersRound, Sprout, ShoppingCart, Activity, ClipboardCheck, ChevronUp, ChevronDown, Users2
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -93,6 +92,8 @@ function SuppliersContent() {
     required_actions: "",
     // Multiple Internal Gothas
     internal_gothas: [] as any[],
+    // Sub-Gavali info
+    sub_gavali_info: [] as any[],
     // Gotha Specific Fields
     gotha_total_area: "",
     gotha_fodder_area: "",
@@ -131,6 +132,7 @@ function SuppliersContent() {
       collectionAreas: [],
       milk_decrease_reasons: "", efforts_taken: "", required_actions: "",
       internal_gothas: [],
+      sub_gavali_info: [],
       gotha_total_area: "", gotha_fodder_area: "", gotha_purchase_source: "", gotha_previous_dairy: "",
       gotha_breed_info: [], gotha_worker_info: [], gotha_fodder_management: "",
       gotha_milking_shift_morning: "", gotha_milking_shift_evening: "", gotha_hygiene_remark: "",
@@ -193,6 +195,7 @@ function SuppliersContent() {
       efforts_taken: details.efforts_taken || "",
       required_actions: details.required_actions || "",
       internal_gothas: details.internal_gothas || [],
+      sub_gavali_info: details.sub_gavali_info || [],
       // Dedicated Gotha fields
       gotha_total_area: details.gotha_total_area || "",
       gotha_fodder_area: details.gotha_fodder_area || "",
@@ -244,6 +247,7 @@ function SuppliersContent() {
       efforts_taken: formData.efforts_taken,
       required_actions: formData.required_actions,
       internal_gothas: formData.internal_gothas,
+      sub_gavali_info: formData.sub_gavali_info,
       // Dedicated Gotha Specific
       gotha_total_area: formData.gotha_total_area,
       gotha_fodder_area: formData.gotha_fodder_area,
@@ -272,6 +276,35 @@ function SuppliersContent() {
     if (dialogMode === 'add') addDocumentNonBlocking(collection(db, 'users', user.uid, 'suppliers'), data)
     else if (editingId) updateDocumentNonBlocking(doc(db, 'users', user.uid, 'suppliers', editingId), data)
     setIsDialogOpen(false); toast({ title: "यशस्वी", description: "माहिती जतन झाली." })
+  }
+
+  const handleSubGavaliAdd = () => {
+    const newSub = {
+      id: crypto.randomUUID(),
+      isOpen: true,
+      name: "",
+      mobile: "",
+      area: "",
+      producers: "0",
+      animals: "0",
+      collection_type: "Spot",
+      sub_route_info: "",
+      cow_qty: "0",
+      buf_qty: "0",
+      other_info: ""
+    }
+    setFormData(prev => ({ ...prev, sub_gavali_info: [...prev.sub_gavali_info, newSub] }))
+  }
+
+  const handleSubGavaliUpdate = (id: string, updates: any) => {
+    setFormData(prev => ({
+      ...prev,
+      sub_gavali_info: prev.sub_gavali_info.map(s => s.id === id ? { ...s, ...updates } : s)
+    }))
+  }
+
+  const handleSubGavaliRemove = (id: string) => {
+    setFormData(prev => ({ ...prev, sub_gavali_info: prev.sub_gavali_info.filter(s => s.id !== id) }))
   }
 
   const handleInternalGothaAdd = () => {
@@ -464,7 +497,67 @@ function SuppliersContent() {
                 </div>
               </div>
 
-              {/* Multiple Internal Gothas for Center/Gavali */}
+              {formData.supplierType === 'Gavali' && (
+                <div className="max-w-[600px] space-y-4">
+                  <div className="flex items-center justify-between border-b-2 border-indigo-200 pb-1">
+                    <SectionTitle icon={Users2} title="सब-गवळी माहिती (SUB-GAVALI INFO)" color="text-indigo-700" />
+                    <Button size="sm" onClick={handleSubGavaliAdd} className="h-7 text-[9px] font-black uppercase px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md"><Plus className="h-3 w-3 mr-1" /> सब-गवळी जोडा</Button>
+                  </div>
+                  
+                  {formData.sub_gavali_info.length === 0 && (
+                    <p className="text-[9px] font-bold text-slate-400 italic text-center py-4 bg-slate-50 rounded-xl border border-dashed">सब-गवळी असल्यास येथे नोंद करा.</p>
+                  )}
+
+                  <div className="space-y-3">
+                    {formData.sub_gavali_info.map((sub, sIndex) => (
+                      <Card key={sub.id} className="border-2 border-indigo-100 overflow-hidden rounded-2xl shadow-sm">
+                        <div 
+                          className="p-2 bg-indigo-50 flex items-center justify-between cursor-pointer group"
+                          onClick={() => handleSubGavaliUpdate(sub.id, { isOpen: !sub.isOpen })}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-indigo-600 text-white font-black text-[8px] h-5">SG-{sIndex + 1}</Badge>
+                            <span className="text-[10px] font-black uppercase text-indigo-900">सब-गवळी: {sub.name || 'तपशील भरा'}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button size="icon" variant="ghost" className="h-6 w-6 text-rose-500 hover:bg-rose-50" onClick={(e) => { e.stopPropagation(); handleSubGavaliRemove(sub.id); }}><Trash2 className="h-3.5 w-3.5" /></Button>
+                            {sub.isOpen ? <ChevronUp className="h-4 w-4 text-indigo-400" /> : <ChevronDown className="h-4 w-4 text-indigo-400" />}
+                          </div>
+                        </div>
+
+                        {sub.isOpen && (
+                          <div className="p-3 bg-white space-y-4 animate-in slide-in-from-top-2 duration-300">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">सब-गवळी नाव</Label><Input value={sub.name} onChange={e => handleSubGavaliUpdate(sub.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">मोबाईल</Label><Input value={sub.mobile} onChange={e => handleSubGavaliUpdate(sub.id, { mobile: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                              <div className="col-span-2 space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">संकलन एरिया (Area)</Label><Input value={sub.area} onChange={e => handleSubGavaliUpdate(sub.id, { area: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">संकलन पद्धत</Label>
+                                <Select value={sub.collection_type} onValueChange={v => handleSubGavaliUpdate(sub.id, { collection_type: v })}>
+                                  <SelectTrigger className="h-7 text-[9px] border-2 border-black font-black"><SelectValue /></SelectTrigger>
+                                  <SelectContent><SelectItem value="Spot" className="font-bold">जागेवर (Spot)</SelectItem><SelectItem value="Route" className="font-bold">रूट (Route)</SelectItem><SelectItem value="Both" className="font-bold">दोन्ही (Both)</SelectItem></SelectContent>
+                                </Select>
+                              </div>
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">एकूण उत्पादक</Label><Input type="number" value={sub.producers} onChange={e => handleSubGavaliUpdate(sub.id, { producers: e.target.value })} className="h-7 border-2 border-black text-[10px] text-center" /></div>
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">एकूण जनावरे</Label><Input type="number" value={sub.animals} onChange={e => handleSubGavaliUpdate(sub.id, { animals: e.target.value })} className="h-7 border-2 border-black text-[10px] text-center" /></div>
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">गाय दूध (L)</Label><Input type="number" value={sub.cow_qty} onChange={e => handleSubGavaliUpdate(sub.id, { cow_qty: e.target.value })} className="h-7 border-2 border-black text-[10px] text-center" /></div>
+                            </div>
+
+                            {sub.collection_type !== 'Spot' && (
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">अंतर्गत उप-रूट माहिती</Label><Input value={sub.sub_route_info} onChange={e => handleSubGavaliUpdate(sub.id, { sub_route_info: e.target.value })} className="h-7 border-2 border-black text-[10px]" placeholder="रूटचे नाव, अंतर, वेळ इ." /></div>
+                            )}
+
+                            <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">इतर महत्त्वाची माहिती / शेरा</Label><Textarea value={sub.other_info} onChange={e => handleSubGavaliUpdate(sub.id, { other_info: e.target.value })} className="h-10 text-[9px] border-2 border-black p-2 rounded-lg" placeholder="..." /></div>
+                          </div>
+                        )}
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {(formData.supplierType === 'Center' || formData.supplierType === 'Gavali') && (
                 <div className="max-w-[600px] space-y-4">
                   <div className="flex items-center justify-between border-b-2 border-amber-200 pb-1">
@@ -562,7 +655,7 @@ function SuppliersContent() {
                 </div>
               )}
 
-              {/* Single Gotha case */}
+              {/* Gotha specific sections removed from Gavali/Center context for simplicity, but already present for supplierType === 'Gotha' */}
               {formData.supplierType === 'Gotha' && (
                 <div className="space-y-6">
                   <div className="max-w-[500px] space-y-3">
@@ -607,39 +700,9 @@ function SuppliersContent() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between max-w-[500px]">
-                      <SectionTitle icon={UsersRound} title="कामगार माहिती" color="text-indigo-600" />
-                      <Button size="sm" onClick={() => addRow('gotha_worker_info', { name: "", mobile: "" })} className="h-7 text-[9px] font-black uppercase px-3 rounded-lg border-2 border-black bg-slate-50"><PlusCircle className="h-3 w-3 mr-1"/> जोडा</Button>
-                    </div>
-                    <div className="border-[1.5px] border-black rounded-xl overflow-hidden shadow-sm">
-                      <ScrollArea className="w-full">
-                        <Table className="min-w-[400px] text-[10px] uppercase">
-                          <TableHeader className="bg-slate-100 font-black h-8">
-                            <TableRow>
-                              <TableHead className="px-2 text-center h-8">कामगाराचे नाव</TableHead>
-                              <TableHead className="px-2 text-center h-8 w-40">मोबाईल</TableHead>
-                              <TableHead className="w-10 h-8"></TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {formData.gotha_worker_info.map((row: any) => (
-                              <TableRow key={row.id} className="h-9 hover:bg-slate-50">
-                                <TableCell className="p-0 border-r border-black/10"><Input value={row.name} onChange={e => updateRow('gotha_worker_info', row.id, { name: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-bold focus-visible:ring-0" /></TableCell>
-                                <TableCell className="p-0 border-r border-black/10"><Input value={row.mobile} onChange={e => updateRow('gotha_worker_info', row.id, { mobile: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-bold focus-visible:ring-0" /></TableCell>
-                                <TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeRow('gotha_worker_info', row.id)} className="h-8 w-8 text-rose-500"><Trash2 className="h-3.5 w-3.5"/></Button></TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                        <ScrollBar orientation="horizontal" />
-                      </ScrollArea>
-                    </div>
-                  </div>
-
                   <div className="max-w-[500px] space-y-4">
                     <SectionTitle icon={ClipboardCheck} title="गोठा स्वच्छता चेकलिस्ट" color="text-emerald-700" />
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-emerald-50/50 p-4 rounded-xl border-2 border-emerald-100">
+                    <div className="grid grid-cols-2 gap-2 bg-emerald-50/50 p-4 rounded-xl border-2 border-emerald-100">
                       {[
                         { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
                         { key: 'animal_cleaned', label: 'जनावरे स्वच्छता' },
@@ -652,12 +715,12 @@ function SuppliersContent() {
                       ].map((item) => (
                         <div key={item.key} className="flex items-center space-x-2 bg-white p-1.5 rounded-lg border border-emerald-100 shadow-sm">
                           <Checkbox 
-                            id={`hygiene-single-${item.key}`} 
+                            id={`hygiene-single-route-${item.key}`} 
                             checked={(formData.gotha_hygiene_checklist as any)[item.key]} 
                             onCheckedChange={(checked) => setFormData({...formData, gotha_hygiene_checklist: { ...formData.gotha_hygiene_checklist, [item.key]: !!checked }})} 
                             className="h-3.5 w-3.5 border-emerald-400"
                           />
-                          <Label htmlFor={`hygiene-single-${item.key}`} className="text-[9px] font-bold text-slate-700 cursor-pointer">{item.label}</Label>
+                          <Label htmlFor={`hygiene-single-route-${item.key}`} className="text-[9px] font-bold text-slate-700 cursor-pointer">{item.label}</Label>
                         </div>
                       ))}
                     </div>
@@ -687,7 +750,7 @@ function SuppliersContent() {
                     </div>
                   </div>
 
-                  {/* Professional Dynamic Tables */}
+                  {/* Dynamic Tables */}
                   {[
                     { id: 'collectionAreas', title: '४) संकलन एरिया & गावे', icon: MapPin, fields: [{n:'गाव नाव',k:'village',w:'140px'}, {n:'उत्पादक',k:'producers',w:'70px'}, {n:'दूध(L)',k:'milkQty',w:'70px'}], initial: { village: "", producers: 0, milkQty: 0 }, visible: formData.supplierType === 'Gavali' },
                     { id: 'longTermProducers', title: '५) २+ वर्ष जुने उत्पादक', icon: Layers, fields: [{n:'नाव',k:'producer_name',w:'140px'}, {n:'जुने दूध',k:'previous_milk',w:'70px'}, {n:'सध्याचे',k:'current_milk',w:'70px'}, {n:'जुनी जनावरे',k:'previous_animals',w:'80px'}, {n:'नवी',k:'current_animals',w:'80px'}], initial: { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 }, visible: formData.supplierType === 'Center' },
@@ -792,7 +855,7 @@ function SuppliersContent() {
                   <div className="flex flex-col"><Label className="text-[8px] font-black ml-1 uppercase opacity-60">CANS</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-8 border-2 border-black text-center font-black text-[12px]" /></div>
                   <div className="flex flex-col"><Label className="text-[8px] font-black ml-1 uppercase opacity-60">ICE (बर्फ)</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-8 border-2 border-black text-center font-black text-[12px]" /></div>
                 </div>
-                <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-slate-500">भेसळ तपासणी कीट</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-500">भेसळ तपासणी कीट</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
                 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between"><Label className="text-[10px] font-black uppercase tracking-wider">साहित्याची यादी (ASSETS)</Label><Button size="sm" variant="outline" onClick={() => addRow('equipment', { name: "", quantity: 1, ownership: 'Company' })} className="h-7 text-[9px] font-black px-3 rounded-lg border-2 border-black bg-slate-50">जोडा</Button></div>

@@ -84,6 +84,8 @@ export interface ProducerCenterAdditionalDetails {
   internal_gotha_prev_dairy?: string;
   internal_gotha_hygiene_remark?: string;
   internal_gotha_hygiene_checklist?: Record<string, boolean>;
+  // Sub-Gavali for Gavali
+  sub_gavali_info?: any[];
   // Gotha Specific (Dedicated)
   gotha_total_area?: string;
   gotha_fodder_area?: string;

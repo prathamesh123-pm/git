@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
@@ -13,7 +12,7 @@ import {
   History, Edit, CheckCircle2, Box, UserCheck, Wallet, User, Printer, Truck, 
   ShieldCheck, Clock, Layers, TrendingDown, IndianRupee, Hash, ListPlus, 
   Lightbulb, Info, FileText, PlusCircle, Briefcase, Users, Sparkles, Building2,
-  UsersRound, Sprout, ShoppingCart, Activity, ClipboardCheck, ChevronDown, ChevronUp
+  UsersRound, Sprout, ShoppingCart, Activity, ClipboardCheck, ChevronDown, ChevronUp, Users2
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -94,6 +93,7 @@ function SuppliersContent() {
     efforts_taken: "",
     required_actions: "",
     internal_gothas: [] as any[],
+    sub_gavali_info: [] as any[],
     gotha_total_area: "",
     gotha_fodder_area: "",
     gotha_purchase_source: "",
@@ -139,6 +139,7 @@ function SuppliersContent() {
       collectionAreas: [],
       milk_decrease_reasons: "", efforts_taken: "", required_actions: "",
       internal_gothas: [],
+      sub_gavali_info: [],
       gotha_total_area: "", gotha_fodder_area: "", gotha_purchase_source: "", gotha_previous_dairy: "",
       gotha_breed_info: [], gotha_worker_info: [], gotha_fodder_management: "",
       gotha_milking_shift_morning: "", gotha_milking_shift_evening: "", gotha_hygiene_remark: "",
@@ -181,6 +182,7 @@ function SuppliersContent() {
       efforts_taken: formData.efforts_taken,
       required_actions: formData.required_actions,
       internal_gothas: formData.internal_gothas,
+      sub_gavali_info: formData.sub_gavali_info,
       gotha_total_area: formData.gotha_total_area,
       gotha_fodder_area: formData.gotha_fodder_area,
       gotha_purchase_source: formData.gotha_purchase_source,
@@ -216,6 +218,35 @@ function SuppliersContent() {
       setIsEditing(false)
     }
     resetFormData()
+  }
+
+  const handleSubGavaliAdd = () => {
+    const newSub = {
+      id: crypto.randomUUID(),
+      isOpen: true,
+      name: "",
+      mobile: "",
+      area: "",
+      producers: "0",
+      animals: "0",
+      collection_type: "Spot",
+      sub_route_info: "",
+      cow_qty: "0",
+      buf_qty: "0",
+      other_info: ""
+    }
+    setFormData(prev => ({ ...prev, sub_gavali_info: [...prev.sub_gavali_info, newSub] }))
+  }
+
+  const handleSubGavaliUpdate = (id: string, updates: any) => {
+    setFormData(prev => ({
+      ...prev,
+      sub_gavali_info: prev.sub_gavali_info.map(s => s.id === id ? { ...s, ...updates } : s)
+    }))
+  }
+
+  const handleSubGavaliRemove = (id: string) => {
+    setFormData(prev => ({ ...prev, sub_gavali_info: prev.sub_gavali_info.filter(s => s.id !== id) }))
   }
 
   const handleInternalGothaAdd = () => {
@@ -342,6 +373,7 @@ function SuppliersContent() {
       efforts_taken: details.efforts_taken || "",
       required_actions: details.required_actions || "",
       internal_gothas: details.internal_gothas || [],
+      sub_gavali_info: details.sub_gavali_info || [],
       gotha_total_area: details.gotha_total_area || "",
       gotha_fodder_area: details.gotha_fodder_area || "",
       gotha_purchase_source: details.gotha_purchase_source || "",
@@ -544,6 +576,67 @@ function SuppliersContent() {
                 </div>
               </div>
 
+              {formData.supplierType === 'Gavali' && (
+                <div className="max-w-[600px] space-y-4">
+                  <div className="flex items-center justify-between border-b-2 border-indigo-200 pb-1">
+                    <SectionTitle icon={Users2} title="सब-गवळी माहिती (SUB-GAVALI INFO)" color="text-indigo-700" />
+                    <Button size="sm" onClick={handleSubGavaliAdd} className="h-7 text-[9px] font-black uppercase px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md"><Plus className="h-3 w-3 mr-1" /> सब-गवळी जोडा</Button>
+                  </div>
+                  
+                  {formData.sub_gavali_info.length === 0 && (
+                    <p className="text-[9px] font-bold text-slate-400 italic text-center py-4 bg-slate-50 rounded-xl border border-dashed">सब-गवळी असल्यास येथे नोंद करा.</p>
+                  )}
+
+                  <div className="space-y-3">
+                    {formData.sub_gavali_info.map((sub, sIndex) => (
+                      <Card key={sub.id} className="border-2 border-indigo-100 overflow-hidden rounded-2xl shadow-sm">
+                        <div 
+                          className="p-2 bg-indigo-50 flex items-center justify-between cursor-pointer group"
+                          onClick={() => handleSubGavaliUpdate(sub.id, { isOpen: !sub.isOpen })}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-indigo-600 text-white font-black text-[8px] h-5">SG-{sIndex + 1}</Badge>
+                            <span className="text-[10px] font-black uppercase text-indigo-900">सब-गवळी: {sub.name || 'तपशील भरा'}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button size="icon" variant="ghost" className="h-6 w-6 text-rose-500 hover:bg-rose-50" onClick={(e) => { e.stopPropagation(); handleSubGavaliRemove(sub.id); }}><Trash2 className="h-3.5 w-3.5" /></Button>
+                            {sub.isOpen ? <ChevronUp className="h-4 w-4 text-indigo-400" /> : <ChevronDown className="h-4 w-4 text-indigo-400" />}
+                          </div>
+                        </div>
+
+                        {sub.isOpen && (
+                          <div className="p-3 bg-white space-y-4 animate-in slide-in-from-top-2 duration-300">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">सब-गवळी नाव</Label><Input value={sub.name} onChange={e => handleSubGavaliUpdate(sub.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">मोबाईल</Label><Input value={sub.mobile} onChange={e => handleSubGavaliUpdate(sub.id, { mobile: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                              <div className="col-span-2 space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">संकलन एरिया (Area)</Label><Input value={sub.area} onChange={e => handleSubGavaliUpdate(sub.id, { area: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">संकलन पद्धत</Label>
+                                <Select value={sub.collection_type} onValueChange={v => handleSubGavaliUpdate(sub.id, { collection_type: v })}>
+                                  <SelectTrigger className="h-7 text-[9px] border-2 border-black font-black"><SelectValue /></SelectTrigger>
+                                  <SelectContent><SelectItem value="Spot" className="font-bold">जागेवर (Spot)</SelectItem><SelectItem value="Route" className="font-bold">रूट (Route)</SelectItem><SelectItem value="Both" className="font-bold">दोन्ही (Both)</SelectItem></SelectContent>
+                                </Select>
+                              </div>
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">एकूण उत्पादक</Label><Input type="number" value={sub.producers} onChange={e => handleSubGavaliUpdate(sub.id, { producers: e.target.value })} className="h-7 border-2 border-black text-[10px] text-center" /></div>
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">एकूण जनावरे</Label><Input type="number" value={sub.animals} onChange={e => handleSubGavaliUpdate(sub.id, { animals: e.target.value })} className="h-7 border-2 border-black text-[10px] text-center" /></div>
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">गाय दूध (L)</Label><Input type="number" value={sub.cow_qty} onChange={e => handleSubGavaliUpdate(sub.id, { cow_qty: e.target.value })} className="h-7 border-2 border-black text-[10px] text-center" /></div>
+                            </div>
+
+                            {sub.collection_type !== 'Spot' && (
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">अंतर्गत उप-रूट माहिती</Label><Input value={sub.sub_route_info} onChange={e => handleSubGavaliUpdate(sub.id, { sub_route_info: e.target.value })} className="h-7 border-2 border-black text-[10px]" placeholder="रूटचे नाव, अंतर, वेळ इ." /></div>
+                            )}
+
+                            <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">इतर महत्त्वाची माहिती / शेरा</Label><Textarea value={sub.other_info} onChange={e => handleSubGavaliUpdate(sub.id, { other_info: e.target.value })} className="h-10 text-[9px] border-2 border-black p-2 rounded-lg" placeholder="..." /></div>
+                          </div>
+                        )}
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {(formData.supplierType === 'Center' || formData.supplierType === 'Gavali') && (
                 <div className="max-w-[600px] space-y-4">
                   <div className="flex items-center justify-between border-b-2 border-amber-200 pb-1">
@@ -607,7 +700,7 @@ function SuppliersContent() {
 
                             <div className="space-y-2">
                               <span className="text-[9px] font-black uppercase text-emerald-700 flex items-center gap-1.5"><ClipboardCheck className="h-3.5 w-3.5" /> गोठा स्वच्छता (HYGIENE)</span>
-                              <div className="grid grid-cols-2 gap-1 bg-emerald-50/30 p-2 rounded-xl border border-emerald-100">
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 bg-emerald-50/30 p-2 rounded-xl border border-emerald-100">
                                 {[
                                   { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
                                   { key: 'animal_cleaned', label: 'जनावरे स्वच्छता' },
