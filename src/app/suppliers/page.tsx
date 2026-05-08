@@ -103,12 +103,12 @@ function SuppliersListPage() {
 
   const [formData, setFormData] = useState<any>({
     supplierId: "", name: "", address: "", mobile: "", routeId: "none", 
-    supplierType: "Gavali", operatorName: "", foundation_year: "",
-    sub_gavali_info: [],
+    supplierType: "Center", operatorName: "", foundation_year: "",
     internal_gothas: [],
     morning_collection_time: "", evening_collection_time: "", total_producers: "0", active_producers: "0",
     total_animals: "0", cows: "0", buffalo: "0", calves: "0",
-    collection_areas: [],
+    longTermProducers: [],
+    decreasingProducers: [],
     dairy_employees: [],
     local_gavali: [],
     lss_details: [],
@@ -128,11 +128,11 @@ function SuppliersListPage() {
   const resetFormData = useCallback(() => {
     setFormData({ 
       supplierId: "", name: "", address: "", mobile: "", routeId: "none", 
-      supplierType: "Gavali", operatorName: "", foundation_year: "",
-      sub_gavali_info: [], internal_gothas: [],
+      supplierType: "Center", operatorName: "", foundation_year: "",
+      internal_gothas: [],
       morning_collection_time: "", evening_collection_time: "", total_producers: "0", active_producers: "0",
       total_animals: "0", cows: "0", buffalo: "0", calves: "0",
-      collection_areas: [], dairy_employees: [], local_gavali: [], lss_details: [],
+      longTermProducers: [], decreasingProducers: [], dairy_employees: [], local_gavali: [], lss_details: [],
       competitor_facilities: [], sub_routes: [],
       milk_decrease_reasons: "", efforts_taken: "", required_actions: "",
       fssaiNumber: "", fssaiExpiry: "", scaleBrand: "", fatMachineBrand: "",
@@ -174,9 +174,9 @@ function SuppliersListPage() {
           cows: Number(formData.cows) || 0,
           buffalo: Number(formData.buffalo) || 0,
           calves: Number(formData.calves) || 0,
-          sub_gavali_info: formData.sub_gavali_info,
           internal_gothas: formData.internal_gothas,
-          collection_areas: formData.collection_areas,
+          long_term_producers: formData.longTermProducers,
+          decreasing_producers: formData.decreasingProducers,
           dairy_employees: formData.dairy_employees,
           local_gavali: formData.local_gavali,
           lss_details: formData.lss_details,
@@ -222,9 +222,9 @@ function SuppliersListPage() {
       cows: String(d.cows || 0),
       buffalo: String(d.buffalo || 0),
       calves: String(d.calves || 0),
-      sub_gavali_info: d.sub_gavali_info || [],
       internal_gothas: d.internal_gothas || [],
-      collection_areas: d.collection_areas || [],
+      longTermProducers: d.long_term_producers || [],
+      decreasingProducers: d.decreasing_producers || [],
       dairy_employees: d.dairy_employees || [],
       local_gavali: d.local_gavali || [],
       lss_details: d.lss_details || [],
@@ -254,12 +254,12 @@ function SuppliersListPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b pb-4 no-print">
         <div>
           <h2 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
-            <UserCheck className="h-6 w-6 text-primary" /> सप्लायर मास्टर (GAVALI)
+            <Building2 className="h-6 w-6 text-primary" /> उत्पादक केंद्र मास्टर
           </h2>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Upgraded Detailed Form</p>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Upgraded Producer Center Form</p>
         </div>
         <Button onClick={() => { resetFormData(); setIsAdding(true); }} className="gap-2 shadow-xl shadow-primary/20 h-10 px-6 rounded-xl font-black uppercase text-[10px] w-full md:w-auto">
-          <Plus className="h-4 w-4" /> नवीन सप्लायर
+          <Plus className="h-4 w-4" /> नवीन केंद्र जोडा
         </Button>
       </div>
 
@@ -287,7 +287,7 @@ function SuppliersListPage() {
             <Table className="min-w-full">
               <TableHeader>
                 <TableRow className="bg-muted/30 h-10">
-                  <TableHead className="font-black text-[9px] uppercase px-4 whitespace-nowrap">सप्लायर तपशील</TableHead>
+                  <TableHead className="font-black text-[9px] uppercase px-4 whitespace-nowrap">केंद्र तपशील</TableHead>
                   <TableHead className="font-black text-[9px] uppercase text-center whitespace-nowrap">रूट</TableHead>
                   <TableHead className="font-black text-[9px] uppercase text-right px-4">क्रिया</TableHead>
                 </TableRow>
@@ -323,7 +323,7 @@ function SuppliersListPage() {
           <div className="bg-white border-2 border-black rounded-sm w-full max-w-[210mm] mx-auto p-4 sm:p-10 flex flex-col items-center animate-in slide-in-from-right-2 duration-300 relative">
              <Button variant="ghost" size="icon" onClick={() => setSelectedSupplier(null)} className="absolute top-4 right-4 h-10 w-10 text-slate-400 hover:bg-slate-100 rounded-xl no-print"><X className="h-6 w-6" /></Button>
              <div className="w-full flex items-center justify-between no-print mb-6 border-b pb-2">
-               <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] font-black">GAVALI DETAILED PROFILE</Badge>
+               <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] font-black">CENTER DETAILED PROFILE</Badge>
                <div className="flex gap-2">
                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px] border-2 border-black" onClick={() => window.print()}><Printer className="h-4 w-4 mr-1.5" /> प्रिंट</Button>
                  <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase text-[10px] border-2 border-black" onClick={() => prepareEdit(selectedSupplier)}><Edit className="h-4 w-4 mr-1.5" /> बदल करा</Button>
@@ -331,21 +331,20 @@ function SuppliersListPage() {
              </div>
              <div className="w-full border-b-[4px] border-black pb-3 mb-8 text-center">
                <h3 className="text-[22pt] font-black uppercase text-primary tracking-[0.1em]">{selectedSupplier.name}</h3>
-               <p className="text-[11pt] font-black text-muted-foreground uppercase tracking-widest mt-1">आयडी: {selectedSupplier.supplierId} | सविस्तर गवळी अहवाल</p>
+               <p className="text-[11pt] font-black text-muted-foreground uppercase tracking-widest mt-1">आयडी: {selectedSupplier.supplierId} | सविस्तर उत्पादक केंद्र अहवाल</p>
              </div>
-             {/* Report view for Gavali */}
              <div className="w-full text-left space-y-8">
                <div className="grid grid-cols-2 gap-10">
                  <div className="space-y-4">
                    <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-black pb-1">१) प्राथमिक माहिती</h4>
                    <div className="space-y-2 text-[12px] font-bold">
-                     <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>ऑपरेटर नाव</span><span>{selectedSupplier.operatorName || "-"}</span></div>
-                     <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>मोबाईल नंबर</span><span>{selectedSupplier.mobile || "-"}</span></div>
-                     <div className="flex flex-col gap-1"><span>पूर्ण पत्ता</span><span className="font-medium text-slate-600 leading-relaxed">{selectedSupplier.address || "-"}</span></div>
+                     <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>ऑपरेटर</span><span>{selectedSupplier.operatorName || "-"}</span></div>
+                     <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>मोबाईल</span><span>{selectedSupplier.mobile || "-"}</span></div>
+                     <div className="flex flex-col gap-1"><span>पत्ता</span><span className="font-medium text-slate-600 leading-relaxed">{selectedSupplier.address || "-"}</span></div>
                    </div>
                  </div>
                  <div className="space-y-4">
-                   <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-black pb-1">२) परवाना व तांत्रिक</h4>
+                   <h4 className="text-[11px] font-black uppercase text-primary border-b-2 border-black pb-1">२) परवाना & तांत्रिक</h4>
                    <div className="space-y-2 text-[12px] font-bold">
                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>FSSAI क्र.</span><span>{selectedSupplier.fssaiNumber || "-"}</span></div>
                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span>काटा ब्रँड</span><span>{selectedSupplier.scaleBrand || "-"}</span></div>
@@ -353,7 +352,6 @@ function SuppliersListPage() {
                    </div>
                  </div>
                </div>
-               {/* Summary Stats */}
                <div className="grid grid-cols-4 gap-4">
                  <div className="p-3 border-2 border-black rounded-xl bg-slate-50 text-center"><p className="text-[8px] font-black uppercase opacity-50">एकूण उत्पादक</p><p className="text-xl font-black">{selectedSupplier.producer_center?.additional_details?.total_producers || 0}</p></div>
                  <div className="p-3 border-2 border-black rounded-xl bg-slate-50 text-center"><p className="text-[8px] font-black uppercase opacity-50">एकूण जनावरे</p><p className="text-xl font-black">{selectedSupplier.producer_center?.additional_details?.total_animals || 0}</p></div>
@@ -363,18 +361,17 @@ function SuppliersListPage() {
              </div>
              <div className="w-full mt-auto pt-24 grid grid-cols-2 gap-20 text-center uppercase font-black text-[11pt] tracking-[0.2em]">
                <div className="border-t-2 border-black pt-3">अधिकृत स्वाक्षरी</div>
-               <div className="border-t-2 border-black pt-3">गवळी स्वाक्षरी</div>
+               <div className="border-t-2 border-black pt-3">केंद्र मालक स्वाक्षरी</div>
              </div>
           </div>
         )}
       </div>
 
-      {/* Upgraded Multi-Section Dialog */}
       <Dialog open={isAdding || isEditing} onOpenChange={(open) => { if(!open) { setIsAdding(false); setIsEditing(false); resetFormData(); } }}>
         <DialogContent className="max-w-[98vw] w-[98vw] p-0 overflow-hidden rounded-2xl border-none shadow-2xl bg-white flex flex-col h-[92vh] text-left">
           <DialogHeader className="p-4 bg-primary text-white shrink-0 flex flex-row items-center justify-between">
             <div className="space-y-0.5">
-              <DialogTitle className="text-sm font-black uppercase tracking-widest">{isAdding ? 'नवीन सप्लायर (गवळी)' : 'माहिती अद्ययावत करा'}</DialogTitle>
+              <DialogTitle className="text-sm font-black uppercase tracking-widest">{isAdding ? 'नवीन सप्लायर उत्पादक केंद्र फॉर्म' : 'माहिती अद्ययावत करा'}</DialogTitle>
               <DialogDescription className="text-[9px] text-white/70 uppercase">संपूर्ण १६+ कलमी सविस्तर फॉर्म</DialogDescription>
             </div>
           </DialogHeader>
@@ -383,109 +380,46 @@ function SuppliersListPage() {
             <div className="p-4 space-y-8 pb-32">
               <div className="max-w-[900px] mx-auto space-y-8">
                 
-                {/* Section 1: Primary Info */}
                 <div className="space-y-4">
                   <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase">सप्लायर प्रकार</Label><Input value="गवळी" readOnly className="h-10 border-2 border-black font-black bg-slate-50" /></div>
-                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase">नाव *</Label><Input value={formData.name || ""} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 border-2 border-black font-bold" /></div>
+                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase">सप्लायर प्रकार</Label><Input value="उत्पादक केंद्र" readOnly className="h-10 border-2 border-black font-black bg-slate-50" /></div>
+                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase">केंद्र नाव *</Label><Input value={formData.name || ""} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 border-2 border-black font-bold" /></div>
                     <div className="space-y-1"><Label className="text-[10px] font-black uppercase">आयडी (ID) *</Label><Input value={formData.supplierId || ""} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 border-2 border-black font-bold" /></div>
                     <div className="space-y-1"><Label className="text-[10px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile || ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 border-2 border-black font-bold" /></div>
-                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase">ऑपरेटर</Label><Input value={formData.operatorName || ""} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 border-2 border-black" /></div>
+                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase">ऑपरेटर नाव</Label><Input value={formData.operatorName || ""} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 border-2 border-black" /></div>
                     <div className="space-y-1"><Label className="text-[10px] font-black uppercase">स्थापना वर्ष</Label><Input placeholder="YYYY" value={formData.foundation_year || ""} onChange={e => setFormData({...formData, foundation_year: e.target.value})} className="h-10 border-2 border-black" /></div>
-                    <div className="col-span-2 space-y-1"><Label className="text-[10px] font-black uppercase">पत्ता</Label><Input value={formData.address || ""} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 border-2 border-black" /></div>
+                    <div className="col-span-2 space-y-1"><Label className="text-[10px] font-black uppercase">पूर्ण पत्ता</Label><Input value={formData.address || ""} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 border-2 border-black" /></div>
                   </div>
                 </div>
 
-                {/* Sub-Gavali Info Section */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b-2 border-indigo-200 pb-1">
-                    <h3 className="text-[11px] font-black uppercase text-indigo-700 flex items-center gap-1.5"><Users2 className="h-4 w-4"/> सब-गवळी माहिती (SUB-GAVALI INFO)</h3>
-                    <Button size="sm" onClick={() => addRow('sub_gavali_info', { name: "", mobile: "", area: "", method: "Spot", producers: "0", animals: "0", cow_qty: "0", note: "" })} className="h-8 text-[10px] font-black bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-200">+ सब-गवळी जोडा</Button>
+                  <div className="flex items-center justify-between border-b-2 border-primary/20 pb-1">
+                    <h3 className="text-[11px] font-black uppercase text-primary flex items-center gap-1.5"><Building2 className="h-4 w-4"/> अंतर्गत मोठे गोठे (INTERNAL GOTHAS)</h3>
+                    <Button size="sm" onClick={() => addRow('internal_gothas', { name: "", owner: "", location: "", animals: "0", milk: "0", note: "" })} className="h-8 text-[10px] font-black bg-primary text-white rounded-xl shadow-lg shadow-primary/20">+ गोठा जोडा</Button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {formData.sub_gavali_info.map((sg: any, idx: number) => (
-                      <Card key={sg.id} className="border-2 border-indigo-100 overflow-hidden rounded-2xl shadow-md bg-white">
-                        <div className="p-2 bg-indigo-50 flex justify-between items-center border-b-2 border-indigo-100">
-                          <Badge className="bg-indigo-600 font-black h-5">SG-{idx + 1}</Badge>
-                          <Button variant="ghost" size="icon" onClick={() => removeRow('sub_gavali_info', sg.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4" /></Button>
-                        </div>
-                        <div className="p-3 grid grid-cols-2 gap-2">
-                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सब-गवळी नाव</Label><Input value={sg.name} onChange={e => updateRow('sub_gavali_info', sg.id, { name: e.target.value })} className="h-8 text-[11px] border-black font-bold" /></div>
-                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={sg.mobile} onChange={e => updateRow('sub_gavali_info', sg.id, { mobile: e.target.value })} className="h-8 text-[11px] border-black font-bold" /></div>
-                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">संकलन एरिया</Label><Input value={sg.area} onChange={e => updateRow('sub_gavali_info', sg.id, { area: e.target.value })} className="h-8 text-[11px] border-black" /></div>
-                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">संकलन पद्धत</Label>
-                             <Select value={sg.method} onValueChange={v => updateRow('sub_gavali_info', sg.id, { method: v })}>
-                               <SelectTrigger className="h-8 text-[10px] border-black font-black"><SelectValue /></SelectTrigger>
-                               <SelectContent><SelectItem value="Spot">जागेवर (Spot)</SelectItem><SelectItem value="Route">रूट (Route)</SelectItem></SelectContent>
-                             </Select>
-                           </div>
-                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">उत्पादक</Label><Input type="number" value={sg.producers} onChange={e => updateRow('sub_gavali_info', sg.id, { producers: e.target.value })} className="h-8 text-center text-[11px] border-black font-black" /></div>
-                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-blue-600">गाय दूध (L)</Label><Input type="number" value={sg.cow_qty} onChange={e => updateRow('sub_gavali_info', sg.id, { cow_qty: e.target.value })} className="h-8 text-center text-[11px] border-blue-600 font-black" /></div>
-                           <div className="col-span-2 space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">इतर महत्त्वाची माहिती / शेरा</Label><Input value={sg.note} onChange={e => updateRow('sub_gavali_info', sg.id, { note: e.target.value })} className="h-8 text-[11px] border-black" /></div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Internal Gothas Section */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b-2 border-amber-200 pb-1">
-                    <h3 className="text-[11px] font-black uppercase text-amber-800 flex items-center gap-1.5"><Building2 className="h-4 w-4"/> अंतर्गत मोठे गोठे (INTERNAL GOTHAS)</h3>
-                    <Button size="sm" onClick={() => addRow('internal_gothas', { owner: "", code: "", location: "", breeds: [], hygiene: {} })} className="h-8 text-[10px] font-black bg-amber-600 text-white rounded-xl shadow-lg shadow-amber-200">+ गोठा जोडा</Button>
-                  </div>
-                  <div className="space-y-4">
-                    {formData.internal_gothas.map((gotha: any, idx: number) => (
-                      <Card key={gotha.id} className="border-2 border-amber-100 overflow-hidden rounded-2xl shadow-md bg-white">
-                        <div className="p-2 bg-amber-50 flex justify-between items-center border-b-2 border-amber-100">
-                          <Badge className="bg-amber-600 font-black h-5 uppercase">G-{idx + 1} मोठा गोठा</Badge>
+                    {formData.internal_gothas.length > 0 ? formData.internal_gothas.map((gotha: any, idx: number) => (
+                      <Card key={gotha.id} className="border-2 border-primary/10 overflow-hidden rounded-2xl shadow-md bg-white">
+                        <div className="p-2 bg-primary/5 flex justify-between items-center border-b-2 border-primary/10">
+                          <Badge className="bg-primary font-black h-5 uppercase">G-{idx + 1} अंतर्गत गोठा</Badge>
                           <Button variant="ghost" size="icon" onClick={() => removeRow('internal_gothas', gotha.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4" /></Button>
                         </div>
-                        <div className="p-4 space-y-6">
-                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                             <div className="space-y-1"><Label className="text-[10px] font-black uppercase">मालकाचे नाव</Label><Input value={gotha.owner} onChange={e => updateRow('internal_gothas', gotha.id, { owner: e.target.value })} className="h-9 border-black font-bold text-xs" /></div>
-                             <div className="space-y-1"><Label className="text-[10px] font-black uppercase">कोड नंबर</Label><Input value={gotha.code} onChange={e => updateRow('internal_gothas', gotha.id, { code: e.target.value })} className="h-9 border-black font-bold text-xs" /></div>
-                             <div className="space-y-1"><Label className="text-[10px] font-black uppercase">लोकेशन</Label><Input value={gotha.location} onChange={e => updateRow('internal_gothas', gotha.id, { location: e.target.value })} className="h-9 border-black text-xs" /></div>
-                             <div className="space-y-1"><Label className="text-[10px] font-black uppercase">गोठा एरिया</Label><Input value={gotha.area} onChange={e => updateRow('internal_gothas', gotha.id, { area: e.target.value })} className="h-9 border-black text-xs" /></div>
-                             <div className="space-y-1"><Label className="text-[10px] font-black uppercase">चारा एरिया</Label><Input value={gotha.fodder} onChange={e => updateRow('internal_gothas', gotha.id, { fodder: e.target.value })} className="h-9 border-black text-xs" /></div>
-                             <div className="flex gap-2">
-                               <div className="space-y-1 flex-1"><Label className="text-[9px] font-black uppercase">सकाळ वेळ</Label><Input type="time" value={gotha.m_time} onChange={e => updateRow('internal_gothas', gotha.id, { m_time: e.target.value })} className="h-9 border-black" /></div>
-                               <div className="space-y-1 flex-1"><Label className="text-[9px] font-black uppercase">सायंकाळ वेळ</Label><Input type="time" value={gotha.e_time} onChange={e => updateRow('internal_gothas', gotha.id, { e_time: e.target.value })} className="h-9 border-black" /></div>
-                             </div>
-                           </div>
-                           
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between mb-1"><span className="text-[10px] font-black uppercase text-amber-900">जनावरे & ब्रीड</span><Button size="sm" variant="outline" onClick={() => { const currentBreeds = gotha.breeds || []; updateRow('internal_gothas', gotha.id, { breeds: [...currentBreeds, { id: crypto.randomUUID(), breed: "", qty: "0", avg: "0" }] }) }} className="h-6 text-[8px] font-black border-amber-300">+ ब्रीड जोडा</Button></div>
-                                <div className="border border-amber-200 rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-amber-50 h-7"><TableRow><TableHead className="h-7 px-1 text-center">ब्रीड</TableHead><TableHead className="h-7 px-1 text-center">नग</TableHead><TableHead className="h-7 px-1 text-center">Avg(L)</TableHead><TableHead className="w-7"></TableHead></TableRow></TableHeader><TableBody>
-                                  {(gotha.breeds || []).map((b: any) => (
-                                    <TableRow key={b.id} className="h-8"><TableCell className="p-0 border-r border-amber-100"><Input value={b.breed} onChange={e => { const newB = gotha.breeds.map((x: any) => x.id === b.id ? {...x, breed: e.target.value} : x); updateRow('internal_gothas', gotha.id, { breeds: newB }) }} className="h-7 border-none text-center bg-transparent" /></TableCell><TableCell className="p-0 border-r border-amber-100"><Input type="number" value={b.qty} onChange={e => { const newB = gotha.breeds.map((x: any) => x.id === b.id ? {...x, qty: e.target.value} : x); updateRow('internal_gothas', gotha.id, { breeds: newB }) }} className="h-7 border-none text-center bg-transparent font-black" /></TableCell><TableCell className="p-0 border-r border-amber-100"><Input type="number" value={b.avg} onChange={e => { const newB = gotha.breeds.map((x: any) => x.id === b.id ? {...x, avg: e.target.value} : x); updateRow('internal_gothas', gotha.id, { breeds: newB }) }} className="h-7 border-none text-center bg-transparent font-bold" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => { const newB = gotha.breeds.filter((x: any) => x.id !== b.id); updateRow('internal_gothas', gotha.id, { breeds: newB }) }} className="h-7 w-7 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
-                                  ))}</TableBody></Table></div>
-                              </div>
-                              <div className="space-y-2">
-                                <span className="text-[10px] font-black uppercase text-emerald-700">गोठा स्वच्छता (HYGIENE CHECKLIST)</span>
-                                <div className="grid grid-cols-2 gap-1.5 bg-emerald-50/50 p-2 rounded-xl border border-emerald-100">
-                                  {[
-                                    { k: 'floor', l: 'फरशी स्वच्छता' }, { k: 'animal', l: 'जनावरे स्वच्छता' }, { k: 'utensils', l: 'भांडी निर्जंतुक' },
-                                    { k: 'worker', l: 'कामगार स्वच्छता' }, { k: 'drainage', l: 'सांडपाणी निचरा' }, { k: 'water', l: 'स्वच्छ पाणी/चारा' },
-                                  ].map(h => (
-                                    <div key={h.k} className="flex items-center space-x-2 bg-white p-1.5 rounded-lg border border-emerald-100">
-                                      <Checkbox checked={gotha.hygiene?.[h.k] || false} onCheckedChange={v => { const currentH = gotha.hygiene || {}; updateRow('internal_gothas', gotha.id, { hygiene: {...currentH, [h.k]: !!v} }) }} className="h-3.5 w-3.5 border-emerald-400" />
-                                      <Label className="text-[8px] font-bold uppercase leading-none">{h.l}</Label>
-                                    </div>
-                                  ))}
-                                </div>
-                                <Textarea placeholder="स्वच्छता शेरा..." value={gotha.hygiene_remark || ""} onChange={e => updateRow('internal_gothas', gotha.id, { hygiene_remark: e.target.value })} className="h-10 text-[9px] border-emerald-100 p-2" />
-                              </div>
-                           </div>
+                        <div className="p-3 grid grid-cols-2 gap-2">
+                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">गोठा नाव</Label><Input value={gotha.name} onChange={e => updateRow('internal_gothas', gotha.id, { name: e.target.value })} className="h-8 text-[11px] border-black" /></div>
+                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मालक नाव</Label><Input value={gotha.owner} onChange={e => updateRow('internal_gothas', gotha.id, { owner: e.target.value })} className="h-8 text-[11px] border-black" /></div>
+                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">लोकेशन</Label><Input value={gotha.location} onChange={e => updateRow('internal_gothas', gotha.id, { location: e.target.value })} className="h-8 text-[11px] border-black" /></div>
+                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">जनावरे संख्या</Label><Input type="number" value={gotha.animals} onChange={e => updateRow('internal_gothas', gotha.id, { animals: e.target.value })} className="h-8 text-center text-[11px] border-black font-black" /></div>
+                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-blue-600">दूध उत्पादन (L)</Label><Input type="number" value={gotha.milk} onChange={e => updateRow('internal_gothas', gotha.id, { milk: e.target.value })} className="h-8 text-center text-[11px] border-blue-600 font-black" /></div>
+                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">शेरा</Label><Input value={gotha.note} onChange={e => updateRow('internal_gothas', gotha.id, { note: e.target.value })} className="h-8 text-[11px] border-black" /></div>
                         </div>
                       </Card>
-                    ))}
+                    )) : (
+                      <div className="col-span-2 p-6 text-center border-2 border-dashed border-slate-200 rounded-2xl opacity-40"><p className="text-[10px] font-black uppercase tracking-widest">अजून कोणताही अंतर्गत गोठा जोडलेला नाही</p></div>
+                    )}
                   </div>
                 </div>
 
-                {/* Section 2: Collection Summary */}
                 <div className="space-y-4">
                   <SectionTitle icon={Clock} title="२) संकलन वेळ & उत्पादक सारांश" />
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -496,7 +430,6 @@ function SuppliersListPage() {
                   </div>
                 </div>
 
-                {/* Section 3: Animal Info */}
                 <div className="space-y-4">
                   <SectionTitle icon={Milk} title="३) जनावरांची माहिती" />
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -507,15 +440,14 @@ function SuppliersListPage() {
                   </div>
                 </div>
 
-                {/* All Dynamic Tables */}
-                <DynamicTable title="४) संकलन एरिया & गावे" data={formData.collection_areas} columns={[{ key: 'village', label: 'गाव नाव' }, { key: 'qty', label: 'उत्पादक', type: 'number' }, { key: 'milk', label: 'दूध(L)', type: 'number' }]} onAdd={() => addRow('collection_areas', { village: "", qty: "0", milk: "0" })} onRemove={(id: string) => removeRow('collection_areas', id)} onUpdate={(id: string, u: any) => updateRow('collection_areas', id, u)} />
+                <DynamicTable title="५) २+ वर्ष जुने उत्पादक" data={formData.longTermProducers} columns={[{ key: 'name', label: 'नाव' }, { key: 'old_milk', label: 'जुने दूध', type: 'number' }, { key: 'curr_milk', label: 'सध्याचे', type: 'number' }, { key: 'old_animals', label: 'जुनी जनावरे', type: 'number' }, { key: 'new_animals', label: 'नवी', type: 'number' }]} onAdd={() => addRow('longTermProducers', { name: "", old_milk: "0", curr_milk: "0", old_animals: "0", new_animals: "0" })} onRemove={(id: string) => removeRow('longTermProducers', id)} onUpdate={(id: string, u: any) => updateRow('longTermProducers', id, u)} />
+                <DynamicTable title="६) दूध घटलेले उत्पादक" data={formData.decreasingProducers} columns={[{ key: 'name', label: 'नाव' }, { key: 'old_milk', label: 'जुने दूध', type: 'number' }, { key: 'new_milk', label: 'नवे दूध', type: 'number' }, { key: 'reason', label: 'कारण' }]} onAdd={() => addRow('decreasingProducers', { name: "", old_milk: "0", new_milk: "0", reason: "" })} onRemove={(id: string) => removeRow('decreasingProducers', id)} onUpdate={(id: string, u: any) => updateRow('decreasingProducers', id, u)} color="text-rose-600" />
                 <DynamicTable title="७) डेअरी कर्मचारी माहिती" data={formData.dairy_employees} columns={[{ key: 'name', label: 'नाव' }, { key: 'farm', label: 'शेती' }, { key: 'cow', label: 'गाई', type: 'number' }, { key: 'buf', label: 'म्हशी', type: 'number' }, { key: 'milk', label: 'दूध(L)', type: 'number' }, { key: 'supply', label: 'पुरवठा कोठे' }]} onAdd={() => addRow('dairy_employees', { name: "", farm: "", cow: "0", buf: "0", milk: "0", supply: "" })} onRemove={(id: string) => removeRow('dairy_employees', id)} onUpdate={(id: string, u: any) => updateRow('dairy_employees', id, u)} />
                 <DynamicTable title="८) स्थानिक गवळी माहिती" data={formData.local_gavali} columns={[{ key: 'name', label: 'नाव' }, { key: 'code', label: 'कोड' }, { key: 'cow', label: 'गाय', type: 'number' }, { key: 'buf', label: 'म्हेस', type: 'number' }, { key: 'qty', label: 'उत्पादक', type: 'number' }]} onAdd={() => addRow('local_gavali', { name: "", code: "", cow: "0", buf: "0", qty: "0" })} onRemove={(id: string) => removeRow('local_gavali', id)} onUpdate={(id: string, u: any) => updateRow('local_gavali', id, u)} />
                 <DynamicTable title="९) LSS & डेअरी सुविधा माहिती" data={formData.lss_details} columns={[{ key: 'name', label: 'सुविधा नाव' }, { key: 'status', label: 'स्थिती' }, { key: 'remark', label: 'शेरा' }]} onAdd={() => addRow('lss_details', { name: "", status: "", remark: "" })} onRemove={(id: string) => removeRow('lss_details', id)} onUpdate={(id: string, u: any) => updateRow('lss_details', id, u)} />
                 <DynamicTable title="१०) स्पर्धक डेअरी माहिती" data={formData.competitor_facilities} columns={[{ key: 'name', label: 'डेअरी नाव' }, { key: 'c_rate', label: 'गाय दूध' }, { key: 'b_rate', label: 'म्हेस दूध' }, { key: 'rate', label: 'दर (₹)', type: 'number' }, { key: 'fac', label: 'सुविधा' }]} onAdd={() => addRow('competitor_facilities', { name: "", c_rate: "", b_rate: "", rate: "0", fac: "" })} onRemove={(id: string) => removeRow('competitor_facilities', id)} onUpdate={(id: string, u: any) => updateRow('competitor_facilities', id, u)} color="text-amber-600" />
                 <DynamicTable title="११) अंतर्गत उप-रूट माहिती" data={formData.sub_routes} columns={[{ key: 'veh', label: 'गाडी' }, { key: 'km', label: 'किमी', type: 'number' }, { key: 'area', label: 'परिसर' }, { key: 'qty', label: 'उत्पादक', type: 'number' }, { key: 'milk', label: 'दूध(L)', type: 'number' }]} onAdd={() => addRow('sub_routes', { veh: "", km: "0", area: "", qty: "0", milk: "0" })} onRemove={(id: string) => removeRow('sub_routes', id)} onUpdate={(id: string, u: any) => updateRow('sub_routes', id, u)} />
 
-                {/* Section 12: Analysis */}
                 <div className="space-y-4">
                   <SectionTitle icon={TrendingDown} title="१२) विशेष विश्लेषण & उपाययोजना" color="text-rose-700" />
                   <div className="grid grid-cols-1 gap-4">
@@ -525,7 +457,6 @@ function SuppliersListPage() {
                   </div>
                 </div>
 
-                {/* Section 13: Technical */}
                 <div className="space-y-4">
                   <SectionTitle icon={ShieldCheck} title="१३) परवाना & तांत्रिक" />
                   <div className="grid grid-cols-2 gap-3">
@@ -536,7 +467,6 @@ function SuppliersListPage() {
                   </div>
                 </div>
 
-                {/* Section 14: Milk Details */}
                 <div className="space-y-4">
                   <SectionTitle icon={Wallet} title="१४) व्यावसायिक & दूध तपशील" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -559,16 +489,15 @@ function SuppliersListPage() {
                   </div>
                 </div>
 
-                {/* Section 15: Inventory */}
                 <div className="space-y-4">
                   <SectionTitle icon={Box} title="१५) इन्व्हेंटरी & स्टेटस" />
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
                      <div className="flex flex-col items-center gap-2 p-3 bg-slate-100 rounded-2xl border-2 border-black cursor-pointer" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}><Laptop className={cn("h-6 w-6", formData.computerAvailable ? 'text-primary' : 'text-slate-400')} /><Label className="text-[10px] font-black uppercase">POP: {formData.computerAvailable ? 'हो' : 'नाही'}</Label></div>
                      <div className="flex flex-col items-center gap-2 p-3 bg-slate-100 rounded-2xl border-2 border-black cursor-pointer" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}><Zap className={cn("h-6 w-6", formData.upsInverterAvailable ? 'text-amber-500' : 'text-slate-400')} /><Label className="text-[10px] font-black uppercase">UPS: {formData.upsInverterAvailable ? 'हो' : 'नाही'}</Label></div>
-                     <div className="flex flex-col items-center gap-1 p-2 bg-slate-100 rounded-2xl border-2 border-black"><Label className="text-[8px] font-black">CANS</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-8 border-none text-center bg-transparent font-black" /></div>
-                     <div className="flex flex-col items-center gap-1 p-2 bg-slate-100 rounded-2xl border-2 border-black"><Label className="text-[8px] font-black">ICE (बर्फ)</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-8 border-none text-center bg-transparent font-black" /></div>
+                     <div className="flex flex-col items-center gap-1 p-2 bg-slate-100 rounded-2xl border-2 border-black"><Label className="text-[8px] font-black uppercase opacity-50">CANS</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-8 border-none text-center bg-transparent font-black" /></div>
+                     <div className="flex flex-col items-center gap-1 p-2 bg-slate-100 rounded-2xl border-2 border-black"><Label className="text-[8px] font-black uppercase opacity-50">ICE (बर्फ)</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-8 border-none text-center bg-transparent font-black" /></div>
+                     <div className="col-span-2 space-y-1"><Label className="text-[10px] font-black uppercase">भेसळ तपासणी कीट माहिती</Label><Input value={formData.adulterationKitInfo || ""} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-10 border-2 border-black" /></div>
                   </div>
-                  <div className="space-y-1"><Label className="text-[10px] font-black uppercase">भेसळ तपासणी कीट माहिती</Label><Input value={formData.adulterationKitInfo || ""} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-10 border-2 border-black" /></div>
                   <DynamicTable title="साहित्याची यादी (ASSETS)" data={formData.equipment} columns={[{ key: 'name', label: 'साहित्य नाव' }, { key: 'quantity', label: 'प्रमाण', type: 'number' }, { key: 'status', label: 'स्थिती' }]} onAdd={() => addRow('equipment', { name: "", quantity: "1", status: "OK" })} onRemove={(id: string) => removeRow('equipment', id)} onUpdate={(id: string, u: any) => updateRow('equipment', id, u)} />
                 </div>
 
