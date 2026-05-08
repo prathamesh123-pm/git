@@ -103,6 +103,9 @@ function RouteDetailsContent() {
   const { user } = useUser()
   const db = useFirestore()
 
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
   const routesQuery = useMemoFirebase(() => {
     if (!db || !user) return null
     return collection(db, 'users', user.uid, 'routes')
