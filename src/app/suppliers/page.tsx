@@ -93,9 +93,7 @@ function SuppliersContent() {
     milk_decrease_reasons: "",
     efforts_taken: "",
     required_actions: "",
-    // Multiple Internal Gothas
     internal_gothas: [] as any[],
-    // Single Gotha type specific
     gotha_total_area: "",
     gotha_fodder_area: "",
     gotha_purchase_source: "",
@@ -183,7 +181,6 @@ function SuppliersContent() {
       efforts_taken: formData.efforts_taken,
       required_actions: formData.required_actions,
       internal_gothas: formData.internal_gothas,
-      // Gotha Type Specific
       gotha_total_area: formData.gotha_total_area,
       gotha_fodder_area: formData.gotha_fodder_area,
       gotha_purchase_source: formData.gotha_purchase_source,
@@ -458,10 +455,10 @@ function SuppliersContent() {
                   </div>
                   <SectionTitle icon={Milk} title="३) जनावरांची माहिती" />
                   <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-bold">
-                    <div className="border p-1 bg-slate-50"><p className="text-[7px]">TOTAL</p>{selectedSupplier.producer_center.additional_details?.total_animals}</div>
-                    <div className="border p-1 bg-slate-50"><p className="text-[7px]">COWS</p>{selectedSupplier.producer_center.additional_details?.cows}</div>
-                    <div className="border p-1 bg-slate-50"><p className="text-[7px]">BUF</p>{selectedSupplier.producer_center.additional_details?.buffalo}</div>
-                    <div className="border p-1 bg-slate-50"><p className="text-[7px]">CALF</p>{selectedSupplier.producer_center.additional_details?.calves}</div>
+                    <div className="border p-1 bg-slate-50"><p className="text-[7px]">TOTAL</p>{selectedSupplier.producer_center.additional_details?.total_animals || 0}</div>
+                    <div className="border p-1 bg-slate-50"><p className="text-[7px]">COWS</p>{selectedSupplier.producer_center.additional_details?.cows || 0}</div>
+                    <div className="border p-1 bg-slate-50"><p className="text-[7px]">BUF</p>{selectedSupplier.producer_center.additional_details?.buffalo || 0}</div>
+                    <div className="border p-1 bg-slate-50"><p className="text-[7px]">CALF</p>{selectedSupplier.producer_center.additional_details?.calves || 0}</div>
                   </div>
                 </div>
               )}
@@ -547,7 +544,6 @@ function SuppliersContent() {
                 </div>
               </div>
 
-              {/* Multiple Internal Gothas for Center/Gavali */}
               {(formData.supplierType === 'Center' || formData.supplierType === 'Gavali') && (
                 <div className="max-w-[600px] space-y-4">
                   <div className="flex items-center justify-between border-b-2 border-amber-200 pb-1">
@@ -611,7 +607,7 @@ function SuppliersContent() {
 
                             <div className="space-y-2">
                               <span className="text-[9px] font-black uppercase text-emerald-700 flex items-center gap-1.5"><ClipboardCheck className="h-3.5 w-3.5" /> गोठा स्वच्छता (HYGIENE)</span>
-                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 bg-emerald-50/30 p-2 rounded-xl border border-emerald-100">
+                              <div className="grid grid-cols-2 gap-1 bg-emerald-50/30 p-2 rounded-xl border border-emerald-100">
                                 {[
                                   { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
                                   { key: 'animal_cleaned', label: 'जनावरे स्वच्छता' },
@@ -645,7 +641,6 @@ function SuppliersContent() {
                 </div>
               )}
 
-              {/* Single Gotha Case */}
               {formData.supplierType === 'Gotha' && (
                 <div className="space-y-6">
                   <div className="max-w-[500px] space-y-3">
@@ -690,39 +685,9 @@ function SuppliersContent() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between max-w-[500px]">
-                      <SectionTitle icon={UsersRound} title="कामगार माहिती" color="text-indigo-600" />
-                      <Button size="sm" onClick={() => addRow('gotha_worker_info', { name: "", mobile: "" })} className="h-7 text-[9px] font-black uppercase px-3 rounded-lg border-2 border-black bg-slate-50"><PlusCircle className="h-3 w-3 mr-1"/> जोडा</Button>
-                    </div>
-                    <div className="border-[1.5px] border-black rounded-xl overflow-hidden shadow-sm">
-                      <ScrollArea className="w-full">
-                        <Table className="min-w-[400px] text-[10px] uppercase">
-                          <TableHeader className="bg-slate-100 font-black h-8">
-                            <TableRow>
-                              <TableHead className="px-2 text-center h-8">कामगाराचे नाव</TableHead>
-                              <TableHead className="px-2 text-center h-8 w-40">मोबाईल</TableHead>
-                              <TableHead className="w-10 h-8"></TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {formData.gotha_worker_info.map((row: any) => (
-                              <TableRow key={row.id} className="h-9 hover:bg-slate-50">
-                                <TableCell className="p-0 border-r border-black/10"><Input value={row.name} onChange={e => updateRow('gotha_worker_info', row.id, { name: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-bold focus-visible:ring-0" /></TableCell>
-                                <TableCell className="p-0 border-r border-black/10"><Input value={row.mobile} onChange={e => updateRow('gotha_worker_info', row.id, { mobile: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-bold focus-visible:ring-0" /></TableCell>
-                                <TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeRow('gotha_worker_info', row.id)} className="h-8 w-8 text-rose-500"><Trash2 className="h-3.5 w-3.5"/></Button></TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                        <ScrollBar orientation="horizontal" />
-                      </ScrollArea>
-                    </div>
-                  </div>
-
                   <div className="max-w-[500px] space-y-4">
                     <SectionTitle icon={ClipboardCheck} title="गोठा स्वच्छता चेकलिस्ट" color="text-emerald-700" />
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-emerald-50/50 p-4 rounded-xl border-2 border-emerald-100">
+                    <div className="grid grid-cols-2 gap-2 bg-emerald-50/50 p-4 rounded-xl border-2 border-emerald-100">
                       {[
                         { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
                         { key: 'animal_cleaned', label: 'जनावरे स्वच्छता' },
@@ -875,7 +840,7 @@ function SuppliersContent() {
                   <div className="flex flex-col"><Label className="text-[8px] font-black ml-1 uppercase opacity-60">CANS</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-8 border-2 border-black text-center font-black text-[12px]" /></div>
                   <div className="flex flex-col"><Label className="text-[8px] font-black ml-1 uppercase opacity-60">ICE (बर्फ)</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-8 border-2 border-black text-center font-black text-[12px]" /></div>
                 </div>
-                <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-slate-500">भेसळ तपासणी कीट</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-500">भेसळ तपासणी कीट</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
                 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between"><Label className="text-[10px] font-black uppercase tracking-wider">साहित्याची यादी (ASSETS)</Label><Button size="sm" variant="outline" onClick={() => addRow('equipment', { name: "", quantity: 1, ownership: 'Company' })} className="h-7 text-[9px] font-black px-3 rounded-lg border-2 border-black bg-slate-50">जोडा</Button></div>
