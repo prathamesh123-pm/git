@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
   Archive, Search, X, Printer, Trash2, FileEdit, Truck, 
-  MapPin, Calendar, AlertCircle, CheckCircle2, Info, Lightbulb, FileCheck, Milk, User, TrendingDown, Building2, Activity, Users2
+  MapPin, Calendar, AlertCircle, CheckCircle2, Info, Lightbulb, FileCheck, Milk, User, TrendingDown, Building2, Activity, Users2, Filter
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
@@ -15,6 +14,7 @@ import { collection, doc } from "firebase/firestore"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const labelMap: Record<string, string> = {
   reportHeading: "अहवाल शीर्षक",
@@ -82,13 +82,6 @@ const ReportHeader = ({ title, date, subName, subId, shift }: any) => (
   </div>
 )
 
-const SectionTitle = ({ icon: Icon, title, color = "text-slate-900" }: any) => (
-  <div className="w-full flex items-center gap-2 border-b-2 border-black pb-1 mb-4 mt-6 break-after-avoid section-title">
-    {Icon && <Icon className={cn("h-4 w-4", color)} />}
-    <h3 className={cn("text-[9pt] sm:text-[11pt] font-black uppercase tracking-widest", color)}>{title}</h3>
-  </div>
-)
-
 const ProfessionalParagraph = ({ label, content, icon: Icon }: { label: string, content: string, icon?: any }) => {
   if (!content) return null;
   return (
@@ -117,6 +110,7 @@ export default function ReportsPage() {
 
   const { data: reports, isLoading } = useCollection(reportsQuery)
   const [searchQuery, setSearchQuery] = useState("")
+  const [typeFilter, setTypeFilter] = useState("all")
   const [mounted, setMounted] = useState(false)
   const [selectedReport, setSelectedReport] = useState<any>(null)
 
@@ -154,14 +148,25 @@ export default function ReportsPage() {
     else toast({ title: "माहिती", description: "बदल सुविधा उपलब्ध नाही." })
   }
 
+  const reportTypes = useMemo(() => {
+    if (!reports) return []
+    const types = Array.from(new Set(reports.map(r => r.type))).filter(Boolean)
+    return types.sort()
+  }, [reports])
+
   const filteredReports = useMemo(() => {
     const list = reports || []
-    return list.filter(r => 
-      r.type?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      r.summary?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.date?.includes(searchQuery)
-    ).sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  }, [reports, searchQuery])
+    return list.filter(r => {
+      const matchesSearch = 
+        r.type?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        r.summary?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.date?.includes(searchQuery);
+      
+      const matchesType = typeFilter === "all" || r.type === typeFilter;
+      
+      return matchesSearch && matchesType;
+    }).sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  }, [reports, searchQuery, typeFilter])
 
   if (!mounted || isLoading) return <div className="p-20 text-center font-black uppercase text-[10px] opacity-50 animate-pulse">लोड होत आहे...</div>
 
@@ -175,9 +180,28 @@ export default function ReportsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div className="lg:col-span-4 space-y-4 no-print">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-            <input placeholder="शोधा..." className="w-full pl-10 h-11 bg-white border border-muted-foreground/10 rounded-2xl font-black uppercase text-[11px] outline-none shadow-sm" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+          <div className="flex flex-col gap-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+              <input 
+                placeholder="नाव किंवा तारीख शोधा..." 
+                className="w-full pl-10 h-11 bg-white border border-muted-foreground/10 rounded-2xl font-black uppercase text-[11px] outline-none shadow-sm" 
+                value={searchQuery} 
+                onChange={e => setSearchQuery(e.target.value)} 
+              />
+            </div>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-full h-11 rounded-2xl bg-white border-muted-foreground/10 font-black uppercase text-[10px] shadow-sm">
+                <Filter className="h-3.5 w-3.5 mr-2 opacity-50" />
+                <SelectValue placeholder="अहवाल प्रकार" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all" className="font-black text-[10px] uppercase">सर्व अहवाल (ALL)</SelectItem>
+                {reportTypes.map(t => (
+                  <SelectItem key={t} value={t} className="font-black text-[10px] uppercase">{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <ScrollArea className="h-[600px] pr-2">
