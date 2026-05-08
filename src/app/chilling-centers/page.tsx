@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -184,7 +185,6 @@ export default function ChillingCentersPage() {
   const updateSubItem = (listKey: 'routes' | 'gavaliSuppliers' | 'gothaSuppliers', id: string, updates: any) => {
     setFormData(prev => {
       const list = (prev[listKey] as any[] || []);
-      // If toggling 'isOpen' to true, close others
       if (updates.isOpen === true) {
         return {
           ...prev,
@@ -309,7 +309,6 @@ export default function ChillingCentersPage() {
 
   const updateInternalGotha = (suppId: string, gothaId: string, updates: any) => {
     const currentGothas = formData.gavaliSuppliers?.find(s => s.id === suppId)?.producer_center?.additional_details?.internal_gothas || [];
-    // If opening one, close others
     if (updates.isOpen === true) {
       updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: currentGothas.map((g: any) => g.id === gothaId ? { ...g, ...updates } : { ...g, isOpen: false }) })
     } else {
@@ -489,15 +488,15 @@ export default function ChillingCentersPage() {
                   <div className="space-y-4">
                     <SectionTitle icon={Warehouse} title="१) प्राथमिक माहिती & परवाना" />
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मालकाचे नाव</Label><Input value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">कोड नंबर *</Label><Input value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
-                      <div className="col-span-2 space-y-1"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरचे नाव *</Label><Input value={formData.name || ""} onChange={e => setFormData({...formData, name: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मालकाचे नाव</Label><Input value={formData.ownerName || ""} onChange={e => setFormData({...formData, ownerName: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">कोड नंबर *</Label><Input value={formData.code || ""} onChange={e => setFormData({...formData, code: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile || ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="col-span-2 space-y-1"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={formData.address || ""} onChange={e => setFormData({...formData, address: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">FSSAI क्रमांक</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">FSSAI मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">FSSAI क्रमांक</Label><Input value={formData.fssaiNumber || ""} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">FSSAI मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry || ""} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
                     </div>
                   </div>
 
@@ -509,7 +508,7 @@ export default function ChillingCentersPage() {
                     <div className="grid grid-cols-2 gap-3">
                       {(formData.tanks || []).map((tank) => (
                         <div key={tank.id} className="flex gap-2 items-end">
-                          <div className="flex-1 space-y-1"><Label className="text-[8px] font-black">{tank.label}</Label><Input value={tank.capacity} onChange={e => updateTank(tank.id, e.target.value)} placeholder="क्षमता (L)" className="h-8 border-2 border-black font-black text-xs" /></div>
+                          <div className="flex-1 space-y-1"><Label className="text-[8px] font-black">{tank.label}</Label><Input value={tank.capacity || ""} onChange={e => updateTank(tank.id, e.target.value)} placeholder="क्षमता (L)" className="h-8 border-2 border-black font-black text-xs" /></div>
                           <Button size="icon" variant="ghost" onClick={() => removeTank(tank.id)} className="h-8 w-8 text-rose-500"><X className="h-4 w-4" /></Button>
                         </div>
                       ))}
@@ -524,10 +523,10 @@ export default function ChillingCentersPage() {
                     <div className="space-y-2">
                       {(formData.tankerLogs || []).map((log) => (
                         <div key={log.id} className="grid grid-cols-5 gap-2 items-end bg-slate-50 p-2 rounded-lg border-2 border-black">
-                           <div className="space-y-1"><Label className="text-[8px] font-black">टँकर क्र.</Label><Input value={log.tankerNo} onChange={e => updateTankerLog(log.id, { tankerNo: e.target.value })} className="h-7 border-black text-[10px]" /></div>
-                           <div className="space-y-1"><Label className="text-[8px] font-black">In</Label><Input type="time" value={log.arrivalTime} onChange={e => updateTankerLog(log.id, { arrivalTime: e.target.value })} className="h-7 border-black text-[10px]" /></div>
-                           <div className="space-y-1"><Label className="text-[8px] font-black">Out</Label><Input type="time" value={log.departureTime} onChange={e => updateTankerLog(log.id, { departureTime: e.target.value })} className="h-7 border-black text-[10px]" /></div>
-                           <div className="space-y-1"><Label className="text-[8px] font-black">दूध (L)</Label><Input type="number" value={log.qtyFilled} onChange={e => updateTankerLog(log.id, { qtyFilled: e.target.value })} className="h-7 border-black text-[10px]" /></div>
+                           <div className="space-y-1"><Label className="text-[8px] font-black">टँकर क्र.</Label><Input value={log.tankerNo || ""} onChange={e => updateTankerLog(log.id, { tankerNo: e.target.value })} className="h-7 border-black text-[10px]" /></div>
+                           <div className="space-y-1"><Label className="text-[8px] font-black">In</Label><Input type="time" value={log.arrivalTime || ""} onChange={e => updateTankerLog(log.id, { arrivalTime: e.target.value })} className="h-7 border-black text-[10px]" /></div>
+                           <div className="space-y-1"><Label className="text-[8px] font-black">Out</Label><Input type="time" value={log.departureTime || ""} onChange={e => updateTankerLog(log.id, { departureTime: e.target.value })} className="h-7 border-black text-[10px]" /></div>
+                           <div className="space-y-1"><Label className="text-[8px] font-black">दूध (L)</Label><Input type="number" value={log.qtyFilled || ""} onChange={e => updateTankerLog(log.id, { qtyFilled: e.target.value })} className="h-7 border-black text-[10px]" /></div>
                            <Button size="icon" variant="ghost" onClick={() => removeTankerLog(log.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5" /></Button>
                         </div>
                       ))}
@@ -557,39 +556,39 @@ export default function ChillingCentersPage() {
                        ))}
                     </div>
                     <div className="grid grid-cols-3 gap-3">
-                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">पाणी स्रोत</Label><Input value={formData.waterSource} onChange={e => setFormData({...formData, waterSource: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
-                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">पॉवर बॅकअप</Label><Input value={formData.powerBackup} onChange={e => setFormData({...formData, powerBackup: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">पाणी स्रोत</Label><Input value={formData.waterSource || ""} onChange={e => setFormData({...formData, waterSource: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">पॉवर बॅकअप</Label><Input value={formData.powerBackup || ""} onChange={e => setFormData({...formData, powerBackup: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
                        <div className="space-y-1"><Label className="text-[9px] font-black uppercase">स्वच्छता ग्रेड</Label>
-                         <Select value={formData.hygieneGrade} onValueChange={v => setFormData({...formData, hygieneGrade: v})}>
+                         <Select value={formData.hygieneGrade || "A"} onValueChange={v => setFormData({...formData, hygieneGrade: v})}>
                            <SelectTrigger className="h-8 border-2 border-black font-black text-xs"><SelectValue /></SelectTrigger>
                            <SelectContent><SelectItem value="A" className="font-bold">A Grade</SelectItem><SelectItem value="B" className="font-bold">B Grade</SelectItem></SelectContent>
                          </Select>
                        </div>
                     </div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">फॅट मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">फॅट मशीन ब्रँड</Label><Input value={formData.fatMachineBrand || ""} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
                   </div>
 
                   <div className="space-y-4">
                     <SectionTitle icon={Milk} title="५) दूध सारांश & पुरवठा" />
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">इतर डेअरीला पुरवठा</Label><Input value={formData.otherDairySupply} onChange={e => setFormData({...formData, otherDairySupply: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" placeholder="उदा. चितळे डेअरी" /></div>
-                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">एकूण सप्लायर्स</Label><Input type="number" value={formData.supplierCount} onChange={e => setFormData({...formData, supplierCount: e.target.value})} className="h-8 border-2 border-black font-black text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">इतर डेअरीला पुरवठा</Label><Input value={formData.otherDairySupply || ""} onChange={e => setFormData({...formData, otherDairySupply: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" placeholder="उदा. चितळे डेअरी" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">एकूण सप्लायर्स</Label><Input type="number" value={formData.supplierCount || "0"} onChange={e => setFormData({...formData, supplierCount: e.target.value})} className="h-8 border-2 border-black font-black text-xs" /></div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
                         <Label className="text-[9px] font-black uppercase text-blue-600 block mb-1.5">गाय (Cow Q/F/S)</Label>
                         <div className="grid grid-cols-3 gap-1">
-                          <Input type="number" value={formData.cowMilk?.quantity} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                          <Input type="number" value={formData.cowMilk?.fat} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                          <Input type="number" value={formData.cowMilk?.snf} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                          <Input type="number" value={formData.cowMilk?.quantity || 0} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                          <Input type="number" value={formData.cowMilk?.fat || 0} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                          <Input type="number" value={formData.cowMilk?.snf || 0} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                         </div>
                       </div>
                       <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
                         <Label className="text-[9px] font-black uppercase text-amber-600 block mb-1.5">म्हेस (Buf Q/F/S)</Label>
                         <div className="grid grid-cols-3 gap-1">
-                          <Input type="number" value={formData.buffaloMilk?.quantity} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                          <Input type="number" value={formData.buffaloMilk?.fat} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                          <Input type="number" value={formData.buffaloMilk?.snf} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                          <Input type="number" value={formData.buffaloMilk?.quantity || 0} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                          <Input type="number" value={formData.buffaloMilk?.fat || 0} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                          <Input type="number" value={formData.buffaloMilk?.snf || 0} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                         </div>
                       </div>
                     </div>
@@ -607,11 +606,11 @@ export default function ChillingCentersPage() {
                         <TableBody>
                           {(formData.routes || []).map((row) => (
                             <TableRow key={row.id} className="h-10">
-                              <TableCell className="p-0 border-r border-black/10"><Input value={row.routeName} onChange={e => updateSubItem('routes', row.id, { routeName: e.target.value })} className="h-8 border-none text-[11px] p-2 bg-transparent font-bold" /></TableCell>
-                              <TableCell className="p-0 border-r border-black/10"><Input type="number" value={row.producerCount} onChange={e => updateSubItem('routes', row.id, { producerCount: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-black" /></TableCell>
-                              <TableCell className="p-0 border-r border-black/10 flex items-center h-10 px-1 gap-1"><Input type="number" value={row.cows} onChange={e => updateSubItem('routes', row.id, { cows: e.target.value })} className="h-7 border border-black/10 text-center text-[10px]" placeholder="G" /><Input type="number" value={row.buffaloes} onChange={e => updateSubItem('routes', row.id, { buffaloes: e.target.value })} className="h-7 border border-black/10 text-center text-[10px]" placeholder="M" /></TableCell>
-                              <TableCell className="p-0 border-r border-black/10"><Input type="number" value={row.distanceKm} onChange={e => updateSubItem('routes', row.id, { distanceKm: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-black" /></TableCell>
-                              <TableCell className="p-0 border-r border-black/10"><Input value={row.collectionArea} onChange={e => updateSubItem('routes', row.id, { collectionArea: e.target.value })} className="h-8 border-none text-[10px] p-2 bg-transparent font-medium" placeholder="गवळी नावे" /></TableCell>
+                              <TableCell className="p-0 border-r border-black/10"><Input value={row.routeName || ""} onChange={e => updateSubItem('routes', row.id, { routeName: e.target.value })} className="h-8 border-none text-[11px] p-2 bg-transparent font-bold" /></TableCell>
+                              <TableCell className="p-0 border-r border-black/10"><Input type="number" value={row.producerCount || "0"} onChange={e => updateSubItem('routes', row.id, { producerCount: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-black" /></TableCell>
+                              <TableCell className="p-0 border-r border-black/10 flex items-center h-10 px-1 gap-1"><Input type="number" value={row.cows || "0"} onChange={e => updateSubItem('routes', row.id, { cows: e.target.value })} className="h-7 border border-black/10 text-center text-[10px]" placeholder="G" /><Input type="number" value={row.buffaloes || "0"} onChange={e => updateSubItem('routes', row.id, { buffaloes: e.target.value })} className="h-7 border border-black/10 text-center text-[10px]" placeholder="M" /></TableCell>
+                              <TableCell className="p-0 border-r border-black/10"><Input type="number" value={row.distanceKm || "0"} onChange={e => updateSubItem('routes', row.id, { distanceKm: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-black" /></TableCell>
+                              <TableCell className="p-0 border-r border-black/10"><Input value={row.collectionArea || ""} onChange={e => updateSubItem('routes', row.id, { collectionArea: e.target.value })} className="h-8 border-none text-[10px] p-2 bg-transparent font-medium" placeholder="गवळी नावे" /></TableCell>
                               <TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => setFormData(prev => ({...prev, routes: prev.routes?.filter(r => r.id !== row.id)}))} className="h-8 w-8 text-rose-500"><Trash2 className="h-3.5 w-3.5"/></Button></TableCell>
                             </TableRow>
                           ))}
@@ -653,11 +652,11 @@ export default function ChillingCentersPage() {
                                <div className="space-y-4">
                                   <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
                                   <div className="grid grid-cols-2 gap-2.5">
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">नाव *</Label><Input value={g.name} onChange={e => updateSubItem('gavaliSuppliers', g.id, { name: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">गवळी कोड *</Label><Input value={g.supplierId} onChange={e => updateSubItem('gavaliSuppliers', g.id, { supplierId: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">ऑपरेटर</Label><Input value={g.operatorName} onChange={e => updateSubItem('gavaliSuppliers', g.id, { operatorName: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={g.mobile} onChange={e => updateSubItem('gavaliSuppliers', g.id, { mobile: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
-                                    <div className="col-span-2 space-y-0.5"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={g.address} onChange={e => updateSubItem('gavaliSuppliers', g.id, { address: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">नाव *</Label><Input value={g.name || ""} onChange={e => updateSubItem('gavaliSuppliers', g.id, { name: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">गवळी कोड *</Label><Input value={g.supplierId || ""} onChange={e => updateSubItem('gavaliSuppliers', g.id, { supplierId: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">ऑपरेटर</Label><Input value={g.operatorName || ""} onChange={e => updateSubItem('gavaliSuppliers', g.id, { operatorName: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={g.mobile || ""} onChange={e => updateSubItem('gavaliSuppliers', g.id, { mobile: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="col-span-2 space-y-0.5"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={g.address || ""} onChange={e => updateSubItem('gavaliSuppliers', g.id, { address: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
                                   </div>
                                </div>
 
@@ -673,10 +672,10 @@ export default function ChillingCentersPage() {
                                         <TableBody>
                                           {(d.sub_gavali_info || []).map((sub: any) => (
                                             <TableRow key={sub.id} className="h-8 border-t border-black/10">
-                                              <TableCell className="p-0 border-r"><Input value={sub.name} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { name: e.target.value })} className="h-7 border-none text-[10px] p-1 font-bold" /></TableCell>
-                                              <TableCell className="p-0 border-r"><Input value={sub.area} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { area: e.target.value })} className="h-7 border-none text-[10px] p-1" /></TableCell>
-                                              <TableCell className="p-0 border-r"><select value={sub.collection_type} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { collection_type: e.target.value })} className="h-7 border-none text-[9px] font-black bg-transparent w-full text-center outline-none"><option value="Spot">Spot</option><option value="Route">Route</option></select></TableCell>
-                                              <TableCell className="p-0 border-r"><Input type="number" value={sub.cow_qty} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { cow_qty: e.target.value })} className="h-7 border-none text-center text-[10px] font-black w-16" /></TableCell>
+                                              <TableCell className="p-0 border-r"><Input value={sub.name || ""} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { name: e.target.value })} className="h-7 border-none text-[10px] p-1 font-bold" /></TableCell>
+                                              <TableCell className="p-0 border-r"><Input value={sub.area || ""} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { area: e.target.value })} className="h-7 border-none text-[10px] p-1" /></TableCell>
+                                              <TableCell className="p-0 border-r"><select value={sub.collection_type || "Spot"} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { collection_type: e.target.value })} className="h-7 border-none text-[9px] font-black bg-transparent w-full text-center outline-none"><option value="Spot">Spot</option><option value="Route">Route</option></select></TableCell>
+                                              <TableCell className="p-0 border-r"><Input type="number" value={sub.cow_qty || "0"} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { cow_qty: e.target.value })} className="h-7 border-none text-center text-[10px] font-black w-16" /></TableCell>
                                               <TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id)} className="h-7 w-7 text-rose-400"><X className="h-3 w-3"/></Button></TableCell>
                                             </TableRow>
                                           ))}
@@ -700,20 +699,20 @@ export default function ChillingCentersPage() {
                                             <Badge className="bg-amber-600 text-white font-black text-[8px] h-5">G-{gIdx + 1}</Badge>
                                             <span className="text-[9px] font-black uppercase text-amber-900">गोठा: {gotha.owner_name || '---'}</span>
                                           </div>
-                                          <div className="flex gap-1.5"><Button size="icon" variant="ghost" className="h-6 w-6 text-rose-400" onClick={(e) => { e.stopPropagation(); removeInternalGotha(g.id, gotha.id); }}><Trash2 className="h-3 w-3" /></Button>{gotha.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</div>
+                                          <div className="flex gap-1.5"><Button size="icon" variant="ghost" className="h-6 w-6 text-rose-400" onClick={(e) => { e.stopPropagation(); removeInternalGotha(g.id, gotha.id); }}><Trash2 className="h-3.5 w-3.5" /></Button>{gotha.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</div>
                                         </div>
                                         {gotha.isOpen && (
                                           <div className="p-3 bg-white space-y-4 animate-in slide-in-from-top-2 duration-300">
                                             <div className="grid grid-cols-3 gap-2">
-                                              <div className="space-y-0.5"><Label className="text-[8px] font-black">मालक</Label><Input value={gotha.owner_name} onChange={e => updateInternalGotha(g.id, gotha.id, { owner_name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
-                                              <div className="space-y-0.5"><Label className="text-[8px] font-black">कोड</Label><Input value={gotha.code} onChange={e => updateInternalGotha(g.id, gotha.id, { code: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
-                                              <div className="space-y-0.5"><Label className="text-[8px] font-black">लोकेशन</Label><Input value={gotha.location} onChange={e => updateInternalGotha(g.id, gotha.id, { location: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                                              <div className="space-y-0.5"><Label className="text-[8px] font-black">मालक</Label><Input value={gotha.owner_name || ""} onChange={e => updateInternalGotha(g.id, gotha.id, { owner_name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                                              <div className="space-y-0.5"><Label className="text-[8px] font-black">कोड</Label><Input value={gotha.code || ""} onChange={e => updateInternalGotha(g.id, gotha.id, { code: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                                              <div className="space-y-0.5"><Label className="text-[8px] font-black">लोकेशन</Label><Input value={gotha.location || ""} onChange={e => updateInternalGotha(g.id, gotha.id, { location: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
                                             </div>
                                             <div className="space-y-2">
                                               <div className="flex items-center justify-between"><span className="text-[9px] font-black uppercase text-rose-600">जातीनुसार जनावरे</span><Button size="sm" variant="outline" onClick={() => addInternalGothaTableRow(g.id, gotha.id, 'breeds', { breed: "", count: 0, avg_milk: 0 })} className="h-6 text-[8px] font-black border-black px-2">+ जोडा</Button></div>
                                               <div className="border border-black rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-slate-50 h-6"><TableRow><TableHead className="h-6 px-1">ब्रीड</TableHead><TableHead className="h-6 px-1 text-center">नग</TableHead><TableHead className="h-6 px-1 text-center">L</TableHead><TableHead className="h-6 w-8"></TableHead></TableRow></TableHeader><TableBody>
                                                 {(gotha.breeds || []).map((b: any) => (
-                                                  <TableRow key={b.id} className="h-8"><TableCell className="p-0 border-r"><Input value={b.breed} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { breed: e.target.value })} className="h-7 border-none text-[10px] p-1 font-bold" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.count} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { count: e.target.value })} className="h-7 border-none text-center text-[10px] font-black" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.avg_milk} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { avg_milk: e.target.value })} className="h-7 border-none text-center text-[10px] font-black" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
+                                                  <TableRow key={b.id} className="h-8"><TableCell className="p-0 border-r"><Input value={b.breed || ""} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { breed: e.target.value })} className="h-7 border-none text-[10px] p-1 font-bold" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.count || 0} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { count: e.target.value })} className="h-7 border-none text-center text-[10px] font-black" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.avg_milk || 0} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { avg_milk: e.target.value })} className="h-7 border-none text-center text-[10px] font-black" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
                                                 ))}</TableBody></Table></div>
                                             </div>
                                             <div className="space-y-1.5"><span className="text-[9px] font-black uppercase text-emerald-700">स्वच्छता चेकलिस्ट (SIDE-BY-SIDE)</span><div className="grid grid-cols-2 gap-1 bg-emerald-50/50 p-2 rounded-lg border border-emerald-100">
@@ -739,25 +738,25 @@ export default function ChillingCentersPage() {
                                </div>
 
                                <div className="grid grid-cols-2 gap-3 border-t pt-4">
-                                  <div className="space-y-0.5"><Label className="text-[9px] font-black">सकाळ संकलन वेळ</Label><Input type="time" value={d.morning_collection_time} onChange={e => updateSupplierDeep('gavaliSuppliers', g.id, { morning_collection_time: e.target.value })} className="h-8 border-2 border-black" /></div>
-                                  <div className="space-y-0.5"><Label className="text-[9px] font-black">सायंकाळ वेळ</Label><Input type="time" value={d.evening_collection_time} onChange={e => updateSupplierDeep('gavaliSuppliers', g.id, { evening_collection_time: e.target.value })} className="h-8 border-2 border-black" /></div>
+                                  <div className="space-y-0.5"><Label className="text-[9px] font-black">सकाळ संकलन वेळ</Label><Input type="time" value={d.morning_collection_time || ""} onChange={e => updateSupplierDeep('gavaliSuppliers', g.id, { morning_collection_time: e.target.value })} className="h-8 border-2 border-black" /></div>
+                                  <div className="space-y-0.5"><Label className="text-[9px] font-black">सायंकाळ वेळ</Label><Input type="time" value={d.evening_collection_time || ""} onChange={e => updateSupplierDeep('gavaliSuppliers', g.id, { evening_collection_time: e.target.value })} className="h-8 border-2 border-black" /></div>
                                </div>
 
                                <div className="grid grid-cols-2 gap-3">
                                   <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
                                     <Label className="text-[9px] font-black uppercase text-blue-600 flex items-center gap-1"><Milk className="h-3 w-3"/> गाय (Q/F/S)</Label>
                                     <div className="grid grid-cols-3 gap-1 mt-1">
-                                      <Input type="number" value={g.cowMilk?.quantity} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={g.cowMilk?.fat} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={g.cowMilk?.snf} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.cowMilk?.quantity || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.cowMilk?.fat || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.cowMilk?.snf || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                                     </div>
                                   </div>
                                   <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
                                     <Label className="text-[9px] font-black uppercase text-amber-600 flex items-center gap-1"><Milk className="h-3 w-3"/> म्हैस (Q/F/S)</Label>
                                     <div className="grid grid-cols-3 gap-1 mt-1">
-                                      <Input type="number" value={g.buffaloMilk?.quantity} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={g.buffaloMilk?.fat} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={g.buffaloMilk?.snf} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.buffaloMilk?.quantity || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.buffaloMilk?.fat || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.buffaloMilk?.snf || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                                     </div>
                                   </div>
                                </div>
@@ -767,15 +766,15 @@ export default function ChillingCentersPage() {
                                   <div className="space-y-2">
                                     {(g.equipment || []).map(item => (
                                       <div key={item.id} className="grid grid-cols-12 gap-1.5 items-center bg-slate-50 p-1.5 rounded-lg border border-black/10">
-                                        <div className="col-span-6"><Input value={item.name} onChange={e => updateSupplierEquipment('gavaliSuppliers', g.id, item.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px] px-2 font-bold bg-white" placeholder="साहित्य" /></div>
-                                        <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateSupplierEquipment('gavaliSuppliers', g.id, item.id, { quantity: Number(e.target.value) })} className="h-7 border-2 border-black text-center font-black text-[10px] bg-white" /></div>
-                                        <div className="col-span-3"><Select value={item.ownership} onValueChange={v => updateSupplierEquipment('gavaliSuppliers', g.id, item.id, { ownership: v })}><SelectTrigger className="h-7 text-[9px] border-2 border-black font-black p-1 bg-white"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent></Select></div>
+                                        <div className="col-span-6"><Input value={item.name || ""} onChange={e => updateSupplierEquipment('gavaliSuppliers', g.id, item.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px] px-2 font-bold bg-white" placeholder="साहित्य" /></div>
+                                        <div className="col-span-2"><Input type="number" value={item.quantity || 0} onChange={e => updateSupplierEquipment('gavaliSuppliers', g.id, item.id, { quantity: Number(e.target.value) })} className="h-7 border-2 border-black text-center font-black text-[10px] bg-white" /></div>
+                                        <div className="col-span-3"><Select value={item.ownership || "Company"} onValueChange={v => updateSupplierEquipment('gavaliSuppliers', g.id, item.id, { ownership: v })}><SelectTrigger className="h-7 text-[9px] border-2 border-black font-black p-1 bg-white"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent></Select></div>
                                         <div className="col-span-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierEquipment('gavaliSuppliers', g.id, item.id)} className="h-7 w-7 text-rose-400"><X className="h-3.5 w-3.5"/></Button></div>
                                       </div>
                                     ))}
                                   </div>
                                </div>
-                               <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">विशेष शेरा</Label><Textarea value={g.additionalInfo} onChange={e => updateSubItem('gavaliSuppliers', g.id, { additionalInfo: e.target.value })} className="h-14 border-2 border-black text-[10px] p-2 rounded-xl" /></div>
+                               <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">विशेष शेरा</Label><Textarea value={g.additionalInfo || ""} onChange={e => updateSubItem('gavaliSuppliers', g.id, { additionalInfo: e.target.value })} className="h-14 border-2 border-black text-[10px] p-2 rounded-xl" /></div>
                             </div>
                           )}
                         </Card>
@@ -815,20 +814,20 @@ export default function ChillingCentersPage() {
                                <div className="space-y-4">
                                   <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
                                   <div className="grid grid-cols-2 gap-2.5">
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">गोठा नाव *</Label><Input value={go.name} onChange={e => updateSubItem('gothaSuppliers', go.id, { name: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मालक नाव *</Label><Input value={go.operatorName} onChange={e => updateSubItem('gothaSuppliers', go.id, { operatorName: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={go.mobile} onChange={e => updateSubItem('gothaSuppliers', go.id, { mobile: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={go.address} onChange={e => updateSubItem('gothaSuppliers', go.id, { address: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">गोठा नाव *</Label><Input value={go.name || ""} onChange={e => updateSubItem('gothaSuppliers', go.id, { name: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मालक नाव *</Label><Input value={go.operatorName || ""} onChange={e => updateSubItem('gothaSuppliers', go.id, { operatorName: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={go.mobile || ""} onChange={e => updateSubItem('gothaSuppliers', go.id, { mobile: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={go.address || ""} onChange={e => updateSubItem('gothaSuppliers', go.id, { address: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
                                   </div>
                                </div>
 
                                <div className="space-y-4">
                                   <SectionTitle icon={MapPin} title="२) गोठा आकारमान & दूध वेळ" color="text-amber-700" />
                                   <div className="grid grid-cols-2 gap-2.5">
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">एकूण एरिया</Label><Input value={d.gotha_total_area} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_total_area: e.target.value })} className="h-8 border-2 border-black text-xs" placeholder="उदा. १० गुंठे" /></div>
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">चारा एरिया</Label><Input value={d.gotha_fodder_area} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_fodder_area: e.target.value })} className="h-8 border-2 border-black text-xs" placeholder="उदा. १ एकर" /></div>
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">सकाळ दूध वेळ</Label><Input type="time" value={d.gotha_milking_shift_morning} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_milking_shift_morning: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
-                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">सायंकाळ दूध वेळ</Label><Input type="time" value={d.gotha_milking_shift_evening} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_milking_shift_evening: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">एकूण एरिया</Label><Input value={d.gotha_total_area || ""} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_total_area: e.target.value })} className="h-8 border-2 border-black text-xs" placeholder="उदा. १० गुंठे" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">चारा एरिया</Label><Input value={d.gotha_fodder_area || ""} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_fodder_area: e.target.value })} className="h-8 border-2 border-black text-xs" placeholder="उदा. १ एकर" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">सकाळ दूध वेळ</Label><Input type="time" value={d.gotha_milking_shift_morning || ""} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_milking_shift_morning: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">सायंकाळ दूध वेळ</Label><Input type="time" value={d.gotha_milking_shift_evening || ""} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_milking_shift_evening: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
                                   </div>
                                </div>
 
@@ -836,7 +835,7 @@ export default function ChillingCentersPage() {
                                   <div className="flex items-center justify-between"><span className="text-[10px] font-black uppercase text-rose-600 flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> जातीनुसार जनावरे & दूध</span><Button size="sm" variant="outline" onClick={() => addSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', { breed: "", count: 0, avg_milk: 0 })} className="h-6 text-[8px] font-black border-black px-2">+ जोडा</Button></div>
                                   <div className="border border-black rounded-lg overflow-hidden shadow-sm"><Table className="text-[10px]"><TableHeader className="bg-slate-50 h-7"><TableRow><TableHead className="h-7 px-2">ब्रीड</TableHead><TableHead className="h-7 px-2 text-center">नग</TableHead><TableHead className="h-7 px-2 text-right">Avg(L)</TableHead><TableHead className="h-7 w-8"></TableHead></TableRow></TableHeader><TableBody>
                                     {(d.gotha_breed_info || []).map((b: any) => (
-                                      <TableRow key={b.id} className="h-9 border-t border-black/10"><TableCell className="p-0 border-r"><Input value={b.breed} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { breed: e.target.value })} className="h-8 border-none text-[11px] p-1 font-bold text-center" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.count} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { count: e.target.value })} className="h-8 border-none text-[11px] text-center font-black" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.avg_milk} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { avg_milk: e.target.value })} className="h-8 border-none text-[11px] text-center font-black" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id)} className="h-8 w-8 text-rose-400"><X className="h-3.5 w-3.5"/></Button></TableCell></TableRow>
+                                      <TableRow key={b.id} className="h-9 border-t border-black/10"><TableCell className="p-0 border-r"><Input value={b.breed || ""} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { breed: e.target.value })} className="h-8 border-none text-[11px] p-1 font-bold text-center" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.count || 0} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { count: e.target.value })} className="h-8 border-none text-[11px] text-center font-black" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.avg_milk || 0} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { avg_milk: e.target.value })} className="h-8 border-none text-[11px] text-center font-black" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id)} className="h-8 w-8 text-rose-400"><X className="h-3.5 w-3.5"/></Button></TableCell></TableRow>
                                     ))}</TableBody></Table></div>
                                </div>
 
@@ -865,17 +864,17 @@ export default function ChillingCentersPage() {
                                   <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
                                     <Label className="text-[9px] font-black uppercase text-blue-600">गाय (Q/F/S)</Label>
                                     <div className="grid grid-cols-3 gap-1 mt-1">
-                                      <Input type="number" value={go.cowMilk?.quantity} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={go.cowMilk?.fat} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={go.cowMilk?.snf} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.cowMilk?.quantity || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.cowMilk?.fat || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.cowMilk?.snf || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                                     </div>
                                   </div>
                                   <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
                                     <Label className="text-[9px] font-black uppercase text-amber-600">म्हेस (Q/F/S)</Label>
                                     <div className="grid grid-cols-3 gap-1 mt-1">
-                                      <Input type="number" value={go.buffaloMilk?.quantity} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={go.buffaloMilk?.fat} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={go.buffaloMilk?.snf} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.buffaloMilk?.quantity || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.buffaloMilk?.fat || 0} onChange={e => updateSubItem('gavaliSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.buffaloMilk?.snf || 0} onChange={e => updateSubItem('gavaliSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                                     </div>
                                   </div>
                                </div>
@@ -885,15 +884,15 @@ export default function ChillingCentersPage() {
                                   <div className="space-y-2">
                                     {(go.equipment || []).map(item => (
                                       <div key={item.id} className="grid grid-cols-12 gap-1.5 items-center bg-slate-50 p-1.5 rounded-lg border border-black/10">
-                                        <div className="col-span-6"><Input value={item.name} onChange={e => updateSupplierEquipment('gothaSuppliers', go.id, item.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px] px-2 font-bold bg-white" placeholder="साहित्य" /></div>
-                                        <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateSupplierEquipment('gothaSuppliers', go.id, item.id, { quantity: Number(e.target.value) })} className="h-7 border-2 border-black text-center font-black text-[10px] bg-white" /></div>
-                                        <div className="col-span-3"><Select value={item.ownership} onValueChange={v => updateSupplierEquipment('gothaSuppliers', go.id, item.id, { ownership: v })}><SelectTrigger className="h-7 text-[9px] border-2 border-black font-black p-1 bg-white"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent></Select></div>
+                                        <div className="col-span-6"><Input value={item.name || ""} onChange={e => updateSupplierEquipment('gothaSuppliers', go.id, item.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px] px-2 font-bold bg-white" placeholder="साहित्य" /></div>
+                                        <div className="col-span-2"><Input type="number" value={item.quantity || 0} onChange={e => updateSupplierEquipment('gothaSuppliers', go.id, item.id, { quantity: Number(e.target.value) })} className="h-7 border-2 border-black text-center font-black text-[10px] bg-white" /></div>
+                                        <div className="col-span-3"><Select value={item.ownership || "Company"} onValueChange={v => updateSupplierEquipment('gothaSuppliers', go.id, item.id, { ownership: v })}><SelectTrigger className="h-7 text-[9px] border-2 border-black font-black p-1 bg-white"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent></Select></div>
                                         <div className="col-span-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierEquipment('gothaSuppliers', go.id, item.id)} className="h-7 w-7 text-rose-400"><X className="h-3.5 w-3.5"/></Button></div>
                                       </div>
                                     ))}
                                   </div>
                                </div>
-                               <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">विशेष शेरा</Label><Textarea value={go.additionalInfo} onChange={e => updateSubItem('gothaSuppliers', go.id, { additionalInfo: e.target.value })} className="h-14 border-2 border-black text-[10px] p-2 rounded-xl" /></div>
+                               <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">विशेष शेरा</Label><Textarea value={go.additionalInfo || ""} onChange={e => updateSubItem('gothaSuppliers', go.id, { additionalInfo: e.target.value })} className="h-14 border-2 border-black text-[10px] p-2 rounded-xl" /></div>
                             </div>
                           )}
                         </Card>
