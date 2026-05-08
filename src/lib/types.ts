@@ -1,4 +1,3 @@
-
 export type TaskStatus = 'pending' | 'completed';
 
 export interface Task {
@@ -60,9 +59,14 @@ export interface ProducerCenterAdditionalDetails {
   decreasing_producers?: any[];
   local_employees?: any[];
   milkman_gavali_details?: any[];
+  local_gavali?: any[];
+  lss_details?: any[];
   competitor_dairies?: any[];
+  competitor_facilities?: any[];
   sub_routes?: any[];
   collection_areas?: any[];
+  capable_gotha_producers?: any[];
+  high_milk_producers?: any[];
   milk_decrease_reasons?: string;
   efforts_taken?: string;
   required_actions?: string;
