@@ -817,6 +817,69 @@ function RouteDetailsContent() {
                   </div>
                 </div>
               )}
+
+              <div className="max-w-[500px]">
+                <SectionTitle icon={ShieldCheck} title="१३) परवाना & तांत्रिक" />
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">FSSAI क्र.</Label><Input value={formData.fssaiNumber || ""} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
+                  <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry || ""} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
+                  <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">काटा ब्रँड</Label><Input value={formData.scaleBrand || ""} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
+                  <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand || ""} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
+                </div>
+              </div>
+
+              <div className="max-w-[500px]">
+                <SectionTitle icon={Wallet} title="१४) व्यावसायिक & दूध तपशील" />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                    <Label className="text-[9px] font-black uppercase text-blue-600 block mb-1.5">गाय (Qty/F/S)</Label>
+                    <div className="grid grid-cols-3 gap-1">
+                      <Input type="number" value={formData.cowQty || "0"} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-7 border-black text-center font-black text-[10px]" />
+                      <Input type="number" value={formData.cowFat || "0"} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-7 border-black text-center font-black text-[10px]" />
+                      <Input type="number" value={formData.cowSnf || "0"} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-7 border-black text-center font-black text-[10px]" />
+                    </div>
+                  </div>
+                  <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
+                    <Label className="text-[9px] font-black uppercase text-amber-600 block mb-1.5">म्हेस (Qty/F/S)</Label>
+                    <div className="grid grid-cols-3 gap-1">
+                      <Input type="number" value={formData.bufQty || "0"} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-7 border-black text-center font-black text-[10px]" />
+                      <Input type="number" value={formData.bufFat || "0"} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-7 border-black text-center font-black text-[10px]" />
+                      <Input type="number" value={formData.bufSnf || "0"} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-7 border-black text-center font-black text-[10px]" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="max-w-[500px] space-y-3">
+                <SectionTitle icon={Box} title="१५) इन्व्हेंटरी & स्टेटस" />
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="flex flex-col items-center gap-1 p-2 bg-muted/10 rounded-lg border border-muted-foreground/5 cursor-pointer hover:bg-muted/20" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})}>
+                    <Laptop className={cn("h-4 w-4", formData.computerAvailable ? "text-primary" : "text-slate-400")} />
+                    <Label className="text-[8px] font-black uppercase">POP: {formData.computerAvailable ? "YES" : "NO"}</Label>
+                  </div>
+                  <div className="flex flex-col items-center gap-1 p-2 bg-muted/10 rounded-lg border border-muted-foreground/5 cursor-pointer hover:bg-muted/20" onClick={() => setFormData({...formData, upsInverterAvailable: !formData.upsInverterAvailable})}>
+                    <Zap className={cn("h-4 w-4", formData.upsInverterAvailable ? "text-amber-500" : "text-slate-400")} />
+                    <Label className="text-[8px] font-black uppercase">UPS: {formData.upsInverterAvailable ? "YES" : "NO"}</Label>
+                  </div>
+                  <div className="flex flex-col items-center gap-1 p-2 bg-muted/10 rounded-lg border border-muted-foreground/5 cursor-pointer hover:bg-muted/20" onClick={() => setFormData({...formData, solarAvailable: !formData.solarAvailable})}>
+                    <Sun className={cn("h-4 w-4", formData.solarAvailable ? "text-emerald-500" : "text-slate-400")} />
+                    <Label className="text-[8px] font-black uppercase">SOLAR: {formData.solarAvailable ? "YES" : "NO"}</Label>
+                  </div>
+                  <div className="flex flex-col items-center gap-1 p-2 bg-muted/10 rounded-lg border border-muted-foreground/5">
+                    <Label className="text-[8px] font-black uppercase opacity-50">CANS</Label>
+                    <Input type="number" value={formData.milkCansCount || "0"} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-5 text-[9px] border-none text-center bg-white rounded w-10" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">ICE (बर्फ)</Label><Input type="number" value={formData.iceBlocks || "0"} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-8 border-[1.5px] border-black text-center font-black" /></div>
+                  <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">भेसळ तपासणी कीट</Label><Input value={formData.adulterationKitInfo || ""} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-8 border-[1.5px] border-black text-xs" /></div>
+                </div>
+              </div>
+
+              <div className="max-w-[500px]">
+                <SectionTitle icon={FileText} title="विशेष शेरा (REMARK)" />
+                <Textarea value={formData.additionalNotes || ""} onChange={e => setFormData({...formData, additionalNotes: e.target.value})} className="h-16 text-[10px] border-[1.5px] border-black p-2 rounded-md" placeholder="..." />
+              </div>
             </div>
             <ScrollBar orientation="vertical" />
             <ScrollBar orientation="horizontal" />
