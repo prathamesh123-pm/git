@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, Suspense, useCallback } from "react"
@@ -10,7 +11,7 @@ import { Supplier, Route, EquipmentItem, SupplierType } from "@/lib/types"
 import { 
   Plus, Search, Filter, Phone, Trash2, Milk, X, 
   Edit, CheckCircle2, Box, UserCheck, Wallet, User, Printer, ShieldCheck, Clock, Layers, TrendingDown,
-  Building2, Activity, ClipboardCheck, ChevronDown, ChevronUp, Users2, PlusCircle
+  Building2, Activity, ClipboardCheck, ChevronDown, ChevronUp, Users2, PlusCircle, Briefcase, Info, ListPlus, MapPin
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -194,7 +195,7 @@ function SuppliersListPage() {
 
   const handleOpenEdit = (supp: Supplier) => {
     setSelectedSupplier(supp)
-    const details = supp.producer_center?.additional_details || {};
+    const d = supp.producer_center?.additional_details || {};
     setFormData({
       ...supp,
       cowQty: String(supp.cowMilk?.quantity || 0),
@@ -203,19 +204,46 @@ function SuppliersListPage() {
       bufQty: String(supp.buffaloMilk?.quantity || 0),
       bufFat: String(supp.buffaloMilk?.fat || 0),
       bufSnf: String(supp.buffaloMilk?.snf || 0),
-      morning_collection_time: details.morning_collection_time || "",
-      evening_collection_time: details.evening_collection_time || "",
-      start_year: details.start_year || "",
-      total_producers: String(details.total_producers || 0),
-      active_producers: String(details.active_producers || 0),
-      total_animals: String(details.total_animals || 0),
-      cows: String(details.cows || 0),
-      buffalo: String(details.buffalo || 0),
-      calves: String(details.calves || 0),
-      longTermProducers: details.long_term_producers || [],
-      decreasingProducers: details.decreasing_producers || [],
-      sub_gavali_info: details.sub_gavali_info || [],
-      internal_gothas: details.internal_gothas || []
+      morning_collection_time: d.morning_collection_time || "",
+      evening_collection_time: d.evening_collection_time || "",
+      start_year: d.start_year || "",
+      total_producers: String(d.total_producers || 0),
+      active_producers: String(d.active_producers || 0),
+      inactive_producers: String(d.inactive_producers || 0),
+      total_animals: String(d.total_animals || 0),
+      cows: String(d.cows || 0),
+      buffalo: String(d.buffalo || 0),
+      calves: String(d.calves || 0),
+      longTermProducers: d.long_term_producers || [],
+      decreasingProducers: d.decreasing_producers || [],
+      highCapacityProducers: d.high_capacity_producer_list || [],
+      highMilkProducers: d.high_milk_producer_list || [],
+      localEmployees: d.local_employees || [],
+      localGavliInfo: d.milkman_gavali_details || [],
+      lssFacilities: d.lss_details || [],
+      competitorFacilities: d.competitor_facilities || [],
+      subRoutes: d.sub_routes || [],
+      collectionAreas: d.collection_areas || [],
+      milk_decrease_reasons: d.milk_decrease_reasons || "",
+      efforts_taken: d.efforts_taken || "",
+      required_actions: d.required_actions || "",
+      internal_gothas: d.internal_gothas || [],
+      sub_gavali_info: d.sub_gavali_info || [],
+      gotha_total_area: d.gotha_total_area || "",
+      gotha_fodder_area: d.gotha_fodder_area || "",
+      gotha_purchase_source: d.gotha_purchase_source || "",
+      gotha_previous_dairy: d.gotha_previous_dairy || "",
+      gotha_breed_info: d.gotha_breed_info || [],
+      gotha_worker_info: d.gotha_worker_info || [],
+      gotha_fodder_management: d.gotha_fodder_management || "",
+      gotha_milking_shift_morning: d.gotha_milking_shift_morning || "",
+      gotha_milking_shift_evening: d.gotha_milking_shift_evening || "",
+      gotha_hygiene_remark: d.gotha_hygiene_remark || "",
+      gotha_hygiene_checklist: d.gotha_hygiene_checklist || {
+        floor_cleaned: false, animal_cleaned: false, utensils_sanitized: false,
+        worker_hygiene: false, proper_drainage: false, pest_control: false,
+        clean_water_trough: false, health_records: false
+      }
     })
     setIsEditing(true)
   }
@@ -232,14 +260,37 @@ function SuppliersListPage() {
       start_year: formData.start_year,
       total_producers: Number(formData.total_producers),
       active_producers: Number(formData.active_producers),
+      inactive_producers: Number(formData.inactive_producers),
       total_animals: Number(formData.total_animals),
       cows: Number(formData.cows),
       buffalo: Number(formData.buffalo),
       calves: Number(formData.calves),
       long_term_producers: formData.longTermProducers,
       decreasing_producers: formData.decreasingProducers,
+      high_capacity_producer_list: formData.highCapacityProducers,
+      high_milk_producer_list: formData.highMilkProducers,
+      local_employees: formData.localEmployees,
+      milkman_gavali_details: formData.localGavliInfo,
+      lss_details: formData.lssFacilities,
+      competitor_facilities: formData.competitorFacilities,
+      sub_routes: formData.subRoutes,
+      collection_areas: formData.collectionAreas,
+      milk_decrease_reasons: formData.milk_decrease_reasons,
+      efforts_taken: formData.efforts_taken,
+      required_actions: formData.required_actions,
+      internal_gothas: formData.internal_gothas,
       sub_gavali_info: formData.sub_gavali_info,
-      internal_gothas: formData.internal_gothas
+      gotha_total_area: formData.gotha_total_area,
+      gotha_fodder_area: formData.gotha_fodder_area,
+      gotha_purchase_source: formData.gotha_purchase_source,
+      gotha_previous_dairy: formData.gotha_previous_dairy,
+      gotha_breed_info: formData.gotha_breed_info,
+      gotha_worker_info: formData.gotha_worker_info,
+      gotha_fodder_management: formData.gotha_fodder_management,
+      gotha_milking_shift_morning: formData.gotha_milking_shift_morning,
+      gotha_milking_shift_evening: formData.gotha_milking_shift_evening,
+      gotha_hygiene_remark: formData.gotha_hygiene_remark,
+      gotha_hygiene_checklist: formData.gotha_hygiene_checklist
     }
 
     const data = {
@@ -270,6 +321,28 @@ function SuppliersListPage() {
       setSelectedSupplier(null)
       toast({ title: "यशस्वी", description: "सप्लायर हटवला." })
     }
+  }
+
+  const addRow = (key: string, initial: any) => {
+    setFormData((prev: any) => ({ ...prev, [key]: [...(prev[key] || []), { id: crypto.randomUUID(), ...initial }] }))
+  }
+
+  const removeRow = (key: string, id: string) => {
+    setFormData((prev: any) => ({ ...prev, [key]: (prev[key] || []).filter((r: any) => r.id !== id) }))
+  }
+
+  const updateRow = (key: string, id: string, updates: any) => {
+    setFormData((prev: any) => ({ ...prev, [key]: (prev[key] || []).map((r: any) => r.id === id ? { ...r, ...updates } : r) }))
+  }
+
+  const handleSubGavaliAdd = () => {
+    const newSub = { id: crypto.randomUUID(), isOpen: true, name: "", mobile: "", area: "", producers: "0", animals: "0", collection_type: "Spot", sub_route_info: "", cow_qty: "0", buf_qty: "0", other_info: "" }
+    setFormData((prev: any) => ({ ...prev, sub_gavali_info: [...(prev.sub_gavali_info || []), newSub] }))
+  }
+
+  const handleInternalGothaAdd = () => {
+    const newGotha = { id: crypto.randomUUID(), isOpen: true, owner_name: "", code: "", location: "", area: "", fodder_area: "", milking_morning: "", milking_evening: "", breeds: [], workers: [], hygiene_checklist: { floor_cleaned: false, animal_cleaned: false, utensils_sanitized: false, worker_hygiene: false, proper_drainage: false, clean_water_trough: false, pest_control: false, health_records: false } }
+    setFormData((prev: any) => ({ ...prev, internal_gothas: [...(prev.internal_gothas || []), newGotha] }))
   }
 
   const filteredSuppliers = useMemo(() => {
@@ -403,36 +476,180 @@ function SuppliersListPage() {
           </DialogHeader>
 
           <ScrollArea className="flex-1 bg-white">
-            <div className="p-3 space-y-6 pb-20 min-w-max">
-              <div className="max-w-[500px]">
-                <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
-                <div className="grid grid-cols-1 gap-2.5">
-                  <div className="space-y-1">
-                    <Label className="text-[9px] font-black uppercase opacity-60">सप्लायर प्रकार</Label>
-                    <Select value={formData.supplierType} onValueChange={(v: any) => setFormData({...formData, supplierType: v})}>
-                      <SelectTrigger className="h-10 border-2 border-black rounded-xl font-black"><SelectValue /></SelectTrigger>
-                      <SelectContent><SelectItem value="Gavali">गवळी</SelectItem><SelectItem value="Gotha">गोठा</SelectItem><SelectItem value="Center">उत्पादक केंद्र</SelectItem></SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">नाव *</Label><Input value={formData.name || ""} onChange={e => setFormData({...formData, name: e.target.value})} className="h-11 border-2 border-black font-bold text-xs" /></div>
-                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">आयडी (ID) *</Label><Input value={formData.supplierId || ""} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-11 border-2 border-black font-bold text-xs" /></div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">ऑपरेटर</Label><Input value={formData.operatorName || ""} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-11 border-2 border-black font-bold text-xs" /></div>
-                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile || ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-11 border-2 border-black font-bold text-xs" /></div>
-                  </div>
-                  <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={formData.address || ""} onChange={e => setFormData({...formData, address: e.target.value})} className="h-11 border-2 border-black font-bold text-xs" /></div>
-                  <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">रूट निवडा</Label>
-                    <Select value={formData.routeId} onValueChange={v => setFormData({...formData, routeId: v})}>
-                      <SelectTrigger className="h-11 border-2 border-black rounded-xl font-black"><SelectValue placeholder="रूट निवडा" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">रूट नाही</SelectItem>
-                        {routes?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+            <div className="p-3 space-y-8 pb-20 min-w-max">
+              <div className="max-w-[600px] space-y-6">
+                <div>
+                  <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
+                  <div className="grid grid-cols-1 gap-2.5">
+                    <div className="space-y-1">
+                      <Label className="text-[9px] font-black uppercase opacity-60">सप्लायर प्रकार</Label>
+                      <Select value={formData.supplierType || "Center"} onValueChange={(v: any) => setFormData({...formData, supplierType: v})}>
+                        <SelectTrigger className="h-10 border-2 border-black rounded-xl font-black"><SelectValue /></SelectTrigger>
+                        <SelectContent><SelectItem value="Gavali">गवळी</SelectItem><SelectItem value="Gotha">गोठा</SelectItem><SelectItem value="Center">उत्पादक केंद्र</SelectItem></SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">नाव *</Label><Input value={formData.name || ""} onChange={e => setFormData({...formData, name: e.target.value})} className="h-10 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">आयडी (ID) *</Label><Input value={formData.supplierId || ""} onChange={e => setFormData({...formData, supplierId: e.target.value})} className="h-10 border-2 border-black font-bold text-xs" /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">ऑपरेटर</Label><Input value={formData.operatorName || ""} onChange={e => setFormData({...formData, operatorName: e.target.value})} className="h-10 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile || ""} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-10 border-2 border-black font-bold text-xs" /></div>
+                    </div>
+                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={formData.address || ""} onChange={e => setFormData({...formData, address: e.target.value})} className="h-10 border-2 border-black font-bold text-xs" /></div>
+                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">रूट निवडा</Label>
+                      <Select value={formData.routeId || "none"} onValueChange={v => setFormData({...formData, routeId: v})}>
+                        <SelectTrigger className="h-10 border-2 border-black rounded-xl font-black"><SelectValue placeholder="रूट निवडा" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">रूट नाही</SelectItem>
+                          {routes?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
+
+                {(formData.supplierType === 'Center' || formData.supplierType === 'Gavali') && (
+                  <div className="space-y-6">
+                    <div>
+                      <SectionTitle icon={Clock} title="२) संकलन वेळ & उत्पादक सारांश" />
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-0.5"><Label className="text-[9px] font-black">सकाळ वेळ</Label><Input type="time" value={formData.morning_collection_time || ""} onChange={e => setFormData({...formData, morning_collection_time: e.target.value})} className="h-9 border-2 border-black" /></div>
+                        <div className="space-y-0.5"><Label className="text-[9px] font-black">सायंकाळ वेळ</Label><Input type="time" value={formData.evening_collection_time || ""} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-9 border-2 border-black" /></div>
+                        <div className="space-y-0.5"><Label className="text-[9px] font-black">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers || "0"} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-9 border-2 border-black text-center font-black" /></div>
+                        <div className="space-y-0.5"><Label className="text-[9px] font-black">सक्रिय उत्पादक</Label><Input type="number" value={formData.active_producers || "0"} onChange={e => setFormData({...formData, active_producers: e.target.value})} className="h-9 border-2 border-black text-center font-black text-emerald-600" /></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <SectionTitle icon={Milk} title="३) जनावरांची माहिती" />
+                      <div className="grid grid-cols-4 gap-2">
+                        <div className="space-y-0.5"><Label className="text-[8px] font-black">एकूण</Label><Input type="number" value={formData.total_animals || "0"} onChange={e => setFormData({...formData, total_animals: e.target.value})} className="h-8 border-2 border-black text-center text-[10px]" /></div>
+                        <div className="space-y-0.5"><Label className="text-[8px] font-black">गाई</Label><Input type="number" value={formData.cows || "0"} onChange={e => setFormData({...formData, cows: e.target.value})} className="h-8 border-2 border-black text-center text-[10px]" /></div>
+                        <div className="space-y-0.5"><Label className="text-[8px] font-black">म्हशी</Label><Input type="number" value={formData.buffalo || "0"} onChange={e => setFormData({...formData, buffalo: e.target.value})} className="h-8 border-2 border-black text-center text-[10px]" /></div>
+                        <div className="space-y-0.5"><Label className="text-[8px] font-black">वासरे</Label><Input type="number" value={formData.calves || "0"} onChange={e => setFormData({...formData, calves: e.target.value})} className="h-8 border-2 border-black text-center text-[10px]" /></div>
+                      </div>
+                    </div>
+
+                    {formData.supplierType === 'Center' && (
+                      <>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between"><SectionTitle icon={Layers} title="५) २+ वर्ष जुने उत्पादक" /><Button size="sm" variant="outline" onClick={() => addRow('longTermProducers', { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 })} className="h-6 text-[8px] font-black border-black px-2">+ जोडा</Button></div>
+                          <div className="border-2 border-black rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-slate-50"><TableRow><TableHead className="h-7 px-2">नाव</TableHead><TableHead className="h-7 px-2 text-center">जुने L</TableHead><TableHead className="h-7 px-2 text-center">नवे L</TableHead><TableHead className="h-7 px-2 text-center">जुनी ज</TableHead><TableHead className="h-7 w-8"></TableHead></TableRow></TableHeader><TableBody>
+                            {formData.longTermProducers.map((r: any) => (
+                              <TableRow key={r.id} className="h-8"><TableCell className="p-0 border-r"><Input value={r.producer_name || ""} onChange={e => updateRow('longTermProducers', r.id, { producer_name: e.target.value })} className="h-7 border-none text-[9px] p-1 font-bold" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.previous_milk || 0} onChange={e => updateRow('longTermProducers', r.id, { previous_milk: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.current_milk || 0} onChange={e => updateRow('longTermProducers', r.id, { current_milk: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.previous_animals || 0} onChange={e => updateRow('longTermProducers', r.id, { previous_animals: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeRow('longTermProducers', r.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
+                            ))}</TableBody></Table></div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between"><SectionTitle icon={TrendingDown} title="६) दूध घटलेले उत्पादक" color="text-rose-600" /><Button size="sm" variant="outline" onClick={() => addRow('decreasingProducers', { producer_name: "", previous_milk: 0, current_milk: 0, reason: "" })} className="h-6 text-[8px] font-black border-black px-2">+ जोडा</Button></div>
+                          <div className="border-2 border-black rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-rose-50"><TableRow><TableHead className="h-7 px-2">नाव</TableHead><TableHead className="h-7 px-2 text-center">जुने</TableHead><TableHead className="h-7 px-2 text-center">नवे</TableHead><TableHead className="h-7 px-2">कारण</TableHead><TableHead className="h-7 w-8"></TableHead></TableRow></TableHeader><TableBody>
+                            {formData.decreasingProducers.map((r: any) => (
+                              <TableRow key={r.id} className="h-8"><TableCell className="p-0 border-r"><Input value={r.producer_name || ""} onChange={e => updateRow('decreasingProducers', r.id, { producer_name: e.target.value })} className="h-7 border-none text-[9px] p-1 font-bold" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.previous_milk || 0} onChange={e => updateRow('decreasingProducers', r.id, { previous_milk: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.current_milk || 0} onChange={e => updateRow('decreasingProducers', r.id, { current_milk: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input value={r.reason || ""} onChange={e => updateRow('decreasingProducers', r.id, { reason: e.target.value })} className="h-7 border-none text-[9px] p-1" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeRow('decreasingProducers', r.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
+                            ))}</TableBody></Table></div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase opacity-60">१२) विशेष विश्लेषण & उपाययोजना</Label><Textarea value={formData.milk_decrease_reasons || ""} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="h-16 text-[10px] border-2 border-black p-2" placeholder="दूध कमी होण्याची कारणे..." /></div>
+                          <div className="space-y-1.5"><Textarea value={formData.efforts_taken || ""} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="h-16 text-[10px] border-2 border-black p-2" placeholder="सेंटरने केलेले प्रयत्न..." /></div>
+                        </div>
+                      </>
+                    )}
+
+                    {formData.supplierType === 'Gavali' && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between border-b-2 border-indigo-200 pb-1">
+                          <SectionTitle icon={Users2} title="सब-गवळी माहिती (SUB-GAVALI INFO)" color="text-indigo-700" />
+                          <Button size="sm" onClick={handleSubGavaliAdd} className="h-7 text-[9px] font-black uppercase px-3 bg-indigo-600 text-white rounded-lg shadow-md border-none"><Plus className="h-3 w-3 mr-1" /> सब-गवळी जोडा</Button>
+                        </div>
+                        <div className="space-y-3">
+                          {formData.sub_gavali_info.map((sub: any, sIdx: number) => (
+                            <Card key={sub.id} className="border-2 border-indigo-100 overflow-hidden rounded-xl shadow-sm">
+                              <div className={cn("p-2 flex items-center justify-between cursor-pointer", sub.isOpen ? "bg-indigo-100" : "bg-indigo-50")} onClick={() => setFormData({...formData, sub_gavali_info: formData.sub_gavali_info.map((s:any) => s.id === sub.id ? {...s, isOpen: !s.isOpen} : s)})}>
+                                <div className="flex items-center gap-2"><Badge className="bg-indigo-600 text-white font-black text-[8px] h-5">SG-{sIdx + 1}</Badge><span className="text-[9px] font-black uppercase text-indigo-900">{sub.name || 'तपशील भरा'}</span></div>
+                                <div className="flex gap-1.5"><Button size="icon" variant="ghost" className="h-6 w-6 text-rose-400" onClick={(e) => { e.stopPropagation(); setFormData({...formData, sub_gavali_info: formData.sub_gavali_info.filter((s:any) => s.id !== sub.id)}) }}><Trash2 className="h-3.5 w-3.5" /></Button>{sub.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</div>
+                              </div>
+                              {sub.isOpen && (
+                                <div className="p-3 bg-white space-y-4 animate-in slide-in-from-top-2 duration-300">
+                                  <div className="grid grid-cols-2 gap-2.5">
+                                    <div className="space-y-0.5"><Label className="text-[8px] font-black">नाव</Label><Input value={sub.name || ""} onChange={e => setFormData({...formData, sub_gavali_info: formData.sub_gavali_info.map((s:any) => s.id === sub.id ? {...s, name: e.target.value} : s)})} className="h-7 border-2 border-black text-[10px]" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[8px] font-black">मोबाईल</Label><Input value={sub.mobile || ""} onChange={e => setFormData({...formData, sub_gavali_info: formData.sub_gavali_info.map((s:any) => s.id === sub.id ? {...s, mobile: e.target.value} : s)})} className="h-7 border-2 border-black text-[10px]" /></div>
+                                  </div>
+                                </div>
+                              )}
+                            </Card>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {formData.supplierType === 'Gotha' && (
+                  <div className="space-y-6">
+                    <SectionTitle icon={Building2} title="२) गोठा आकारमान & दूध वेळ" color="text-amber-700" />
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <div className="space-y-0.5"><Label className="text-[9px] font-black">एकूण एरिया</Label><Input value={formData.gotha_total_area || ""} onChange={e => setFormData({...formData, gotha_total_area: e.target.value})} className="h-9 border-2 border-black" placeholder="उदा. १० गुंठे" /></div>
+                      <div className="space-y-0.5"><Label className="text-[9px] font-black">चारा एरिया</Label><Input value={formData.gotha_fodder_area || ""} onChange={e => setFormData({...formData, gotha_fodder_area: e.target.value})} className="h-9 border-2 border-black" placeholder="उदा. १ एकर" /></div>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <SectionTitle icon={ShieldCheck} title="१३) परवाना & तांत्रिक" />
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">FSSAI क्र.</Label><Input value={formData.fssaiNumber || ""} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-9 border-2 border-black font-bold text-xs" /></div>
+                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry || ""} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-9 border-2 border-black font-bold text-xs" /></div>
+                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">काटा ब्रँड</Label><Input value={formData.scaleBrand || ""} onChange={e => setFormData({...formData, scaleBrand: e.target.value})} className="h-9 border-2 border-black font-bold text-xs" /></div>
+                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मशीन ब्रँड</Label><Input value={formData.fatMachineBrand || ""} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-9 border-2 border-black font-bold text-xs" /></div>
+                  </div>
+                </div>
+
+                <div>
+                  <SectionTitle icon={Wallet} title="१४) व्यावसायिक & दूध तपशील" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                      <Label className="text-[9px] font-black uppercase text-blue-600 block mb-1.5">गाय (Qty/F/S)</Label>
+                      <div className="grid grid-cols-3 gap-1">
+                        <Input type="number" value={formData.cowQty || "0"} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 border-black text-center font-black text-[10px]" />
+                        <Input type="number" value={formData.cowFat || "0"} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 border-black text-center font-black text-[10px]" />
+                        <Input type="number" value={formData.cowSnf || "0"} onChange={e => setFormData({...formData, cowSnf: e.target.value})} className="h-8 border-black text-center font-black text-[10px]" />
+                      </div>
+                    </div>
+                    <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
+                      <Label className="text-[9px] font-black uppercase text-amber-600 block mb-1.5">म्हेस (Qty/F/S)</Label>
+                      <div className="grid grid-cols-3 gap-1">
+                        <Input type="number" value={formData.bufQty || "0"} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 border-black text-center font-black text-[10px]" />
+                        <Input type="number" value={formData.bufFat || "0"} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 border-black text-center font-black text-[10px]" />
+                        <Input type="number" value={formData.bufSnf || "0"} onChange={e => setFormData({...formData, bufSnf: e.target.value})} className="h-8 border-black text-center font-black text-[10px]" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <SectionTitle icon={Box} title="१५) इन्व्हेंटरी" />
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between"><h4 className="text-[9px] font-black uppercase tracking-widest">साहित्याची यादी</h4><Button variant="outline" size="sm" onClick={() => addRow('equipment', { name: "", quantity: 1, ownership: 'Company' })} className="h-7 text-[8px] font-black border-black px-3 rounded-xl">जोडा</Button></div>
+                    <div className="space-y-2">
+                      {(formData.equipment || []).map((item: any) => (
+                        <div key={item.id} className="grid grid-cols-12 gap-1.5 bg-muted/10 p-2 rounded-xl border border-muted-foreground/5 items-center">
+                          <div className="col-span-6"><Input value={item.name || ""} onChange={e => updateRow('equipment', item.id, {name: e.target.value})} className="h-8 text-[10px] border-none rounded-lg font-bold bg-white w-full" /></div>
+                          <div className="col-span-2"><Input type="number" value={item.quantity || 0} onChange={e => updateRow('equipment', item.id, {quantity: Number(e.target.value)})} className="h-8 text-[10px] text-center border-none rounded-lg font-black bg-white w-full" /></div>
+                          <div className="col-span-3">
+                            <Select value={item.ownership || "Company"} onValueChange={v => updateRow('equipment', item.id, {ownership: v as any})}>
+                              <SelectTrigger className="h-8 text-[8px] bg-white border-none rounded-lg font-black"><SelectValue /></SelectTrigger>
+                              <SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent>
+                            </Select>
+                          </div>
+                          <div className="col-span-1 flex justify-end"><Button variant="ghost" size="icon" onClick={() => removeRow('equipment', item.id)} className="h-7 w-7 text-rose-400 p-0"><X className="h-3.5 w-3.5" /></Button></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase opacity-60">विशेष शेरा (REMARK)</Label><Textarea value={formData.additionalInfo || ""} onChange={e => setFormData({...formData, additionalInfo: e.target.value})} className="h-20 text-[11px] bg-muted/10 border-2 border-black rounded-xl p-3 shadow-inner" /></div>
               </div>
             </div>
             <ScrollBar orientation="vertical" />
