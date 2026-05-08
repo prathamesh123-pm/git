@@ -12,7 +12,7 @@ import {
   Plus, Search, Filter, Phone, MapPin, Trash2, Milk, X, Laptop, Zap, Sun, ShieldAlert, 
   History, Edit, CheckCircle2, Box, UserCheck, Wallet, User, Printer, Truck, 
   ShieldCheck, Clock, Layers, TrendingDown, IndianRupee, Hash, ListPlus, 
-  Lightbulb, Info, FileText, PlusCircle, Briefcase, Users
+  Lightbulb, Info, FileText, PlusCircle, Briefcase, Users, Sparkles, Building2
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -393,7 +393,6 @@ function SuppliersContent() {
             <DialogDescription className="text-[9px] text-white/70 uppercase">संपूर्ण सविस्तर फॉर्म (४-वे स्क्रोल उपलब्ध)</DialogDescription>
           </DialogHeader>
 
-          {/* This is the 4-way scrollable container */}
           <ScrollArea className="flex-1 bg-white">
             <div className="p-3 space-y-6 pb-20 min-w-max">
               <div className="max-w-[500px]">
@@ -441,12 +440,14 @@ function SuppliersContent() {
                     </div>
                   </div>
 
-                  {/* Dynamic Professional Tables with Horizontal Scroll */}
+                  {/* Professional Dynamic Tables */}
                   {[
                     { id: 'longTermProducers', title: '४) २+ वर्ष जुने उत्पादक', icon: Layers, fields: [{n:'नाव',k:'producer_name',w:'140px'}, {n:'जुने दूध',k:'previous_milk',w:'70px'}, {n:'सध्याचे',k:'current_milk',w:'70px'}, {n:'जुनी जनावरे',k:'previous_animals',w:'80px'}, {n:'नवी',k:'current_animals',w:'80px'}], initial: { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 } },
                     { id: 'decreasingProducers', title: '५) दूध कमी झालेले उत्पादक', icon: TrendingDown, fields: [{n:'नाव',k:'producer_name',w:'140px'}, {n:'जुने दूध',k:'previous_milk',w:'70px'}, {n:'नवे दूध',k:'current_milk',w:'70px'}, {n:'कारण',k:'reason',w:'180px'}], initial: { producer_name: "", previous_milk: 0, current_milk: 0, reason: "" }, color: 'text-rose-600' },
                     { id: 'localEmployees', title: '८) डेअरी कर्मचारी माहिती', icon: Briefcase, fields: [{n:'नाव',k:'name',w:'140px'}, {n:'शेती',k:'land',w:'100px'}, {n:'गाई',k:'cows_count',w:'60px'}, {n:'म्हशी',k:'buffalo_count',w:'60px'}, {n:'दूध(L)',k:'total_supply',w:'70px'}], initial: { name: "", land: "", cows_count: 0, buffalo_count: 0, total_supply: 0 }, color: 'text-indigo-600' },
                     { id: 'localGavliInfo', title: '९) स्थानिक गवळी माहिती', icon: Users, fields: [{n:'नाव',k:'name',w:'140px'}, {n:'कोड',k:'code',w:'70px'}, {n:'गाय',k:'gay_dudh',w:'60px'}, {n:'म्हेस',k:'mhais_dudh',w:'60px'}, {n:'उत्पादक',k:'producers',w:'70px'}], initial: { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0 }, color: 'text-emerald-600' },
+                    { id: 'lssFacilities', title: '१०) LSS & डेअरी सुविधा माहिती', icon: Sparkles, fields: [{n:'सुविधा नाव',k:'item',w:'160px'}, {n:'स्थिती',k:'availability',w:'100px'}, {n:'शेरा',k:'remark',w:'180px'}], initial: { item: "", availability: "हो", remark: "" }, color: 'text-blue-600' },
+                    { id: 'competitorFacilities', title: '११) स्पर्धक डेअरी माहिती', icon: Building2, fields: [{n:'डेअरी नाव',k:'dairyName',w:'140px'}, {n:'दर (₹)',k:'rate',w:'80px'}, {n:'सुविधा',k:'facility',w:'180px'}], initial: { dairyName: "", rate: "", facility: "" }, color: 'text-amber-600' },
                     { id: 'subRoutes', title: '१२) अंतर्गत उप-रूट माहिती', icon: Truck, fields: [{n:'गाडी',k:'vehicleType',w:'120px'}, {n:'किमी',k:'km',w:'60px'}, {n:'परिसर',k:'area',w:'120px'}, {n:'उत्पादक',k:'producers',w:'70px'}, {n:'दूध(L)',k:'milkQty',w:'70px'}], initial: { vehicleType: "", km: "", area: "", producers: 0, milkQty: 0 }, color: 'text-amber-600' }
                   ].map(sec => (
                     <div key={sec.id} className="space-y-2">
@@ -480,9 +481,6 @@ function SuppliersContent() {
                                   </TableCell>
                                 </TableRow>
                               ))}
-                              {(formData as any)[sec.id].length === 0 && (
-                                <TableRow><TableCell colSpan={sec.fields.length + 1} className="h-12 text-center italic text-muted-foreground">माहिती जोडण्यासाठी 'जोडा' दाबा.</TableCell></TableRow>
-                              )}
                             </TableBody>
                           </Table>
                           <ScrollBar orientation="horizontal" />
@@ -525,7 +523,7 @@ function SuppliersContent() {
                 </div>
                 <div className="grid grid-cols-1 gap-3">
                   <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
-                    <Label className="text-[9px] font-black uppercase text-blue-600 block mb-1.5 flex items-center gap-1.5"><Milk className="h-3 w-3"/> गाय दूध (Quantity/Fat/SNF)</Label>
+                    <Label className="text-[9px] font-black uppercase text-blue-600 block mb-1.5 flex items-center gap-1.5"><Milk className="h-3 w-3"/> गाय दूध (Q/F/S)</Label>
                     <div className="grid grid-cols-3 gap-2">
                       <Input type="number" value={formData.cowQty} onChange={e => setFormData({...formData, cowQty: e.target.value})} className="h-8 border-black text-center font-black text-[12px]" placeholder="Q" />
                       <Input type="number" value={formData.cowFat} onChange={e => setFormData({...formData, cowFat: e.target.value})} className="h-8 border-black text-center font-black text-[12px]" placeholder="F" />
@@ -533,7 +531,7 @@ function SuppliersContent() {
                     </div>
                   </div>
                   <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
-                    <Label className="text-[9px] font-black uppercase text-amber-600 block mb-1.5 flex items-center gap-1.5"><Milk className="h-3 w-3"/> म्हेस दूध (Quantity/Fat/SNF)</Label>
+                    <Label className="text-[9px] font-black uppercase text-amber-600 block mb-1.5 flex items-center gap-1.5"><Milk className="h-3 w-3"/> म्हेस दूध (Q/F/S)</Label>
                     <div className="grid grid-cols-3 gap-2">
                       <Input type="number" value={formData.bufQty} onChange={e => setFormData({...formData, bufQty: e.target.value})} className="h-8 border-black text-center font-black text-[12px]" placeholder="Q" />
                       <Input type="number" value={formData.bufFat} onChange={e => setFormData({...formData, bufFat: e.target.value})} className="h-8 border-black text-center font-black text-[12px]" placeholder="F" />
@@ -555,7 +553,7 @@ function SuppliersContent() {
                   <div className="flex flex-col"><Label className="text-[8px] font-black ml-1 uppercase opacity-60">CANS</Label><Input type="number" value={formData.milkCansCount} onChange={e => setFormData({...formData, milkCansCount: e.target.value})} className="h-8 border-2 border-black text-center font-black text-[12px]" /></div>
                   <div className="flex flex-col"><Label className="text-[8px] font-black ml-1 uppercase opacity-60">ICE (बर्फ)</Label><Input type="number" value={formData.iceBlocks} onChange={e => setFormData({...formData, iceBlocks: e.target.value})} className="h-8 border-2 border-black text-center font-black text-[12px]" /></div>
                 </div>
-                <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-slate-500">Adulteration Kit (भेसळ तपासणी)</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" placeholder="उदा. हो, चितळे कीट" /></div>
+                <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase text-slate-500">भेसळ तपासणी कीट</Label><Input value={formData.adulterationKitInfo} onChange={e => setFormData({...formData, adulterationKitInfo: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
                 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between"><Label className="text-[10px] font-black uppercase tracking-wider">साहित्याची यादी (ASSETS)</Label><Button size="sm" variant="outline" onClick={() => addRow('equipment', { name: "", quantity: 1, ownership: 'Company' })} className="h-7 text-[9px] font-black px-3 rounded-lg border-2 border-black bg-slate-50">जोडा</Button></div>
@@ -595,4 +593,3 @@ function SuppliersContent() {
 export default function SuppliersPage() {
   return <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}><SuppliersContent /></Suspense>
 }
-
