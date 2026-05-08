@@ -9,11 +9,12 @@ import {
   Printer, Milk, ShieldCheck, Box, Truck, 
   Zap, Warehouse, User, MapPin, CheckCircle2,
   Trash2, Droplets, Sun, Waves, Wind, FlaskConical, Shirt, Clock, Calendar, Info, FileText,
-  Users, TrendingUp, IndianRupee, Layers, ListPlus, Activity, ClipboardCheck, ChevronUp, ChevronDown, Building2, Users2, Sparkles, Briefcase, PlusCircle, Laptop
+  Users, TrendingUp, IndianRupee, Layers, ListPlus, Activity, ClipboardCheck, ChevronUp, ChevronDown, Building2, Users2, Sparkles, Briefcase, PlusCircle, Laptop,
+  Flame, Scale, HeartPulse, ShieldAlert
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
-import { ChillingCenter, Supplier, EquipmentItem, SupplierType, ChillingRouteItem } from "@/lib/types"
+import { ChillingCenter, Supplier, EquipmentItem, SupplierType, ChillingRouteItem, TankItem, TankerLogItem } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
@@ -129,7 +130,15 @@ export default function ChillingCentersPage() {
     }
   }
 
-  // --- Sub-Entity Form Logic ---
+  // --- Sub-Entity Logic ---
+
+  const addTank = () => setFormData(prev => ({ ...prev, tanks: [...(prev.tanks || []), { id: crypto.randomUUID(), label: `टाकी ${(prev.tanks?.length || 0) + 1}`, capacity: "" }] }))
+  const removeTank = (id: string) => setFormData(prev => ({ ...prev, tanks: prev.tanks?.filter(t => t.id !== id) }))
+  const updateTank = (id: string, val: string) => setFormData(prev => ({ ...prev, tanks: prev.tanks?.map(t => t.id === id ? { ...t, capacity: val } : t) }))
+
+  const addTankerLog = () => setFormData(prev => ({ ...prev, tankerLogs: [...(prev.tankerLogs || []), { id: crypto.randomUUID(), tankerNo: "", arrivalTime: "", departureTime: "", qtyFilled: "" }] }))
+  const removeTankerLog = (id: string) => setFormData(prev => ({ ...prev, tankerLogs: prev.tankerLogs?.filter(t => t.id !== id) }))
+  const updateTankerLog = (id: string, updates: Partial<TankerLogItem>) => setFormData(prev => ({ ...prev, tankerLogs: prev.tankerLogs?.map(t => t.id === id ? { ...t, ...updates } : t) }))
 
   const createInitialSupplier = (type: SupplierType): Supplier => ({
     id: crypto.randomUUID(),
@@ -331,8 +340,44 @@ export default function ChillingCentersPage() {
                   <h3 className="text-[18pt] sm:text-[22pt] font-black uppercase text-primary tracking-[0.1em]">{selectedCenter.name}</h3>
                   <p className="text-[10pt] font-black text-muted-foreground uppercase tracking-widest mt-1">ID: {selectedCenter.code} | चिलिंग सेंटर सविस्तर अहवाल</p>
                 </div>
-                {/* Simplified preview in card, full detail in dialog edit */}
-                <p className="text-center italic opacity-30 text-[10px] uppercase font-black py-10">सविस्तर माहिती आणि उप-घटकांचा अहवाल पाहण्यासाठी बदला बटन दाबा.</p>
+                
+                {/* Detailed Printable Content Section 1: Main Info */}
+                <div className="grid grid-cols-2 gap-10 w-full mb-6 text-[12px] font-bold">
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-1 mb-2">१) प्राथमिक माहिती (PRIMARY)</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">मालक</span><span>{selectedCenter.ownerName || "-"}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">मोबाईल</span><span>{selectedCenter.mobile || "-"}</span></div>
+                      <div className="flex flex-col gap-1"><span className="text-muted-foreground uppercase text-[10px]">पत्ता</span><span>{selectedCenter.address || "-"}</span></div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <h4 className="text-[11px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-1 mb-2">२) तांत्रिक & परवाना</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">FSSAI क्र.</span><span>{selectedCenter.fssaiNumber || "-"}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">पाणी स्रोत</span><span>{selectedCenter.waterSource || "-"}</span></div>
+                      <div className="flex justify-between border-b border-dashed border-black/20 pb-1"><span className="text-muted-foreground uppercase text-[10px]">बॅकअप</span><span>{selectedCenter.powerBackup || "-"}</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="w-full space-y-6">
+                  <h4 className="text-[11px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-1 mb-2">३) टाक्यांची माहिती (STORAGE TANKS)</h4>
+                  <table className="w-full border-collapse border border-black text-[10px]">
+                    <thead className="bg-slate-50"><tr><th className="p-2 border border-black text-left">टाकी लेबल</th><th className="p-2 border border-black text-right">क्षमता (L)</th></tr></thead>
+                    <tbody>
+                      {(selectedCenter.tanks || []).map((t, idx) => (
+                        <tr key={idx}><td className="p-2 border border-black font-bold uppercase">{t.label}</td><td className="p-2 border border-black text-right font-black">{t.capacity} L</td></tr>
+                      ))}
+                      {(!selectedCenter.tanks || selectedCenter.tanks.length === 0) && (<tr><td colSpan={2} className="p-4 text-center opacity-30 italic">माहिती उपलब्ध नाही</td></tr>)}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="w-full mt-10 pt-16 grid grid-cols-2 gap-20 text-center uppercase font-black text-[11pt] tracking-widest">
+                  <div className="border-t-2 border-black pt-3">अधिकारी स्वाक्षरी</div>
+                  <div className="border-t-2 border-black pt-3">सेंटर मालक</div>
+                </div>
               </div>
             </ScrollArea>
           ) : (
@@ -353,7 +398,7 @@ export default function ChillingCentersPage() {
 
           <div className="bg-slate-50 border-b flex overflow-x-auto no-print">
             {[
-              { id: 'main', label: '१) मुख्य माहिती', icon: Warehouse },
+              { id: 'main', label: '१) मुख्य माहिती (Chilling)', icon: Warehouse },
               { id: 'routes', label: '२) रूट व्यवस्थापन', icon: Truck },
               { id: 'gavali', label: '३) गवळी माहिती', icon: Users },
               { id: 'gotha', label: '४) गोठा माहिती', icon: Building2 },
@@ -363,27 +408,116 @@ export default function ChillingCentersPage() {
           </div>
 
           <ScrollArea className="flex-1 bg-white">
-            <div className="p-4 space-y-6 pb-20">
+            <div className="p-4 space-y-8 pb-24">
               
               {activeSubTab === 'main' && (
-                <div className="space-y-6 max-w-[600px]">
-                  <SectionTitle icon={Warehouse} title="१.१) प्राथमिक माहिती & परवाना" />
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मालकाचे नाव</Label><Input value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">कोड नंबर *</Label><Input value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
-                    <div className="col-span-2 space-y-1"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                <div className="space-y-8 max-w-[700px]">
+                  <div className="space-y-4">
+                    <SectionTitle icon={Warehouse} title="१) प्राथमिक माहिती & परवाना" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">सेंटरचे नाव *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मालकाचे नाव</Label><Input value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">कोड नंबर *</Label><Input value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="col-span-2 space-y-1"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">FSSAI क्रमांक</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">FSSAI मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                    </div>
                   </div>
-                  <SectionTitle icon={Droplets} title="१.२) तांत्रिक, स्वच्छता & दूध" />
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="flex items-center space-x-2 bg-slate-50 p-2 rounded border-2 border-black"><Checkbox checked={formData.hasBmc} onCheckedChange={v => setFormData({...formData, hasBmc: !!v})} /><Label className="text-[9px] font-black">BMC उपलब्ध</Label></div>
-                    <div className="flex items-center space-x-2 bg-slate-50 p-2 rounded border-2 border-black"><Checkbox checked={formData.hasIbt} onCheckedChange={v => setFormData({...formData, hasIbt: !!v})} /><Label className="text-[9px] font-black">IBT उपलब्ध</Label></div>
-                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">स्वच्छता ग्रेड</Label>
-                      <Select value={formData.hygieneGrade} onValueChange={v => setFormData({...formData, hygieneGrade: v})}>
-                        <SelectTrigger className="h-8 border-2 border-black font-black text-xs"><SelectValue /></SelectTrigger>
-                        <SelectContent><SelectItem value="A" className="font-bold">A Grade</SelectItem><SelectItem value="B" className="font-bold">B Grade</SelectItem></SelectContent>
-                      </Select>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b pb-1">
+                      <SectionTitle icon={Box} title="२) टाक्यांची माहिती (TANKS)" />
+                      <Button size="sm" variant="outline" onClick={addTank} className="h-6 text-[8px] font-black border-black">+ जोडा</Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {(formData.tanks || []).map((tank) => (
+                        <div key={tank.id} className="flex gap-2 items-end">
+                          <div className="flex-1 space-y-1"><Label className="text-[8px] font-black">{tank.label}</Label><Input value={tank.capacity} onChange={e => updateTank(tank.id, e.target.value)} placeholder="क्षमता (L)" className="h-8 border-2 border-black font-black text-xs" /></div>
+                          <Button size="icon" variant="ghost" onClick={() => removeTank(tank.id)} className="h-8 w-8 text-rose-500"><X className="h-4 w-4" /></Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b pb-1">
+                      <SectionTitle icon={Truck} title="३) टँकर लॉग (TANKER LOG)" />
+                      <Button size="sm" variant="outline" onClick={addTankerLog} className="h-6 text-[8px] font-black border-black">+ जोडा</Button>
+                    </div>
+                    <div className="space-y-2">
+                      {(formData.tankerLogs || []).map((log) => (
+                        <div key={log.id} className="grid grid-cols-5 gap-2 items-end bg-slate-50 p-2 rounded-lg border-2 border-black">
+                           <div className="space-y-1"><Label className="text-[8px] font-black">टँकर क्र.</Label><Input value={log.tankerNo} onChange={e => updateTankerLog(log.id, { tankerNo: e.target.value })} className="h-7 border-black text-[10px]" /></div>
+                           <div className="space-y-1"><Label className="text-[8px] font-black">वेळ (In)</Label><Input type="time" value={log.arrivalTime} onChange={e => updateTankerLog(log.id, { arrivalTime: e.target.value })} className="h-7 border-black text-[10px]" /></div>
+                           <div className="space-y-1"><Label className="text-[8px] font-black">वेळ (Out)</Label><Input type="time" value={log.departureTime} onChange={e => updateTankerLog(log.id, { departureTime: e.target.value })} className="h-7 border-black text-[10px]" /></div>
+                           <div className="space-y-1"><Label className="text-[8px] font-black">दूध (L)</Label><Input type="number" value={log.qtyFilled} onChange={e => updateTankerLog(log.id, { qtyFilled: e.target.value })} className="h-7 border-black text-[10px]" /></div>
+                           <Button size="icon" variant="ghost" onClick={() => removeTankerLog(log.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5" /></Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <SectionTitle icon={ShieldCheck} title="४) तांत्रिक, स्वच्छता & ऑडिट" />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-slate-50 p-4 rounded-xl border-2 border-black">
+                       {[
+                         { k: 'hasEtp', l: 'ETP उपलब्ध', i: Droplets },
+                         { k: 'hasSolar', l: 'सोलर पॅनेल', i: Sun },
+                         { k: 'hasHotWater', l: 'गरम पाण्याची सोय', i: Waves },
+                         { k: 'hasDrainage', l: 'ड्रेनेज सिस्टीम', i: Wind },
+                         { k: 'hasLab', l: 'प्रयोगशाळा (LAB)', i: FlaskConical },
+                         { k: 'staffUniform', l: 'स्टाफ गणवेश', i: Shirt },
+                         { k: 'hasTransportLicenses', l: 'वाहतूक परवाने', i: FileText },
+                         { k: 'pestControlDone', l: 'पेस्ट कंट्रोल', i: ShieldAlert },
+                         { k: 'staffHealthCheckDone', l: 'हेल्थ चेकअप', i: HeartPulse },
+                         { k: 'calibrationDone', l: 'कॅलिब्रेशन (Weight)', i: Scale },
+                         { k: 'fireSafetyOk', l: 'फायर सेफ्टी Ok', i: Flame },
+                       ].map(item => (
+                         <div key={item.k} className="flex items-center space-x-2 bg-white p-1.5 rounded border border-black/10">
+                           <Checkbox checked={(formData as any)[item.k]} onCheckedChange={v => setFormData({...formData, [item.k]: !!v})} />
+                           <Label className="text-[9px] font-black uppercase leading-none">{item.l}</Label>
+                         </div>
+                       ))}
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">पाणी स्रोत</Label><Input value={formData.waterSource} onChange={e => setFormData({...formData, waterSource: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">पॉवर बॅकअप</Label><Input value={formData.powerBackup} onChange={e => setFormData({...formData, powerBackup: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                       <div className="space-y-1"><Label className="text-[9px] font-black uppercase">स्वच्छता ग्रेड</Label>
+                         <Select value={formData.hygieneGrade} onValueChange={v => setFormData({...formData, hygieneGrade: v})}>
+                           <SelectTrigger className="h-8 border-2 border-black font-black text-xs"><SelectValue /></SelectTrigger>
+                           <SelectContent><SelectItem value="A" className="font-bold">A Grade</SelectItem><SelectItem value="B" className="font-bold">B Grade</SelectItem></SelectContent>
+                         </Select>
+                       </div>
+                    </div>
+                    <div className="space-y-1"><Label className="text-[9px] font-black uppercase">फॅट मशीन ब्रँड</Label><Input value={formData.fatMachineBrand} onChange={e => setFormData({...formData, fatMachineBrand: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" /></div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <SectionTitle icon={Milk} title="५) दूध सारांश & पुरवठा" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">इतर डेअरीला पुरवठा</Label><Input value={formData.otherDairySupply} onChange={e => setFormData({...formData, otherDairySupply: e.target.value})} className="h-8 border-2 border-black font-bold text-xs" placeholder="उदा. चितळे डेअरी" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black uppercase">एकूण सप्लायर्स</Label><Input type="number" value={formData.supplierCount} onChange={e => setFormData({...formData, supplierCount: e.target.value})} className="h-8 border-2 border-black font-black text-xs" /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                        <Label className="text-[9px] font-black uppercase text-blue-600 block mb-1">गाय (Cow Q/F/S)</Label>
+                        <div className="grid grid-cols-3 gap-1">
+                          <Input type="number" value={formData.cowMilk?.quantity} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                          <Input type="number" value={formData.cowMilk?.fat} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                          <Input type="number" value={formData.cowMilk?.snf} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                        </div>
+                      </div>
+                      <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
+                        <Label className="text-[9px] font-black uppercase text-amber-600 block mb-1">म्हेस (Buf Q/F/S)</Label>
+                        <div className="grid grid-cols-3 gap-1">
+                          <Input type="number" value={formData.buffaloMilk?.quantity} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                          <Input type="number" value={formData.buffaloMilk?.fat} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                          <Input type="number" value={formData.buffaloMilk?.snf} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -421,9 +555,9 @@ export default function ChillingCentersPage() {
                     <SectionTitle icon={Users} title="गवळी माहिती (सविस्तर १६+ कलमी फॉर्म)" />
                     <Button size="sm" onClick={() => addSubEntity('gavaliSuppliers')} className="h-7 text-[9px] font-black uppercase px-3 rounded-lg"><Plus className="h-3 w-3 mr-1" /> गवळी जोडा</Button>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-w-[700px]">
                     {(formData.gavaliSuppliers || []).map((g, gIdx) => (
-                      <Card key={g.id} className="border-2 border-black overflow-hidden rounded-2xl shadow-md max-w-[650px]">
+                      <Card key={g.id} className="border-2 border-black overflow-hidden rounded-2xl shadow-md">
                         <div className="p-2 bg-primary text-white flex justify-between items-center cursor-pointer" onClick={() => updateSubItem('gavaliSuppliers', g.id, { isOpen: !g.isOpen })}>
                           <span className="text-[10px] font-black uppercase">गवळी #{gIdx + 1}: {g.name || '---'}</span>
                           <div className="flex items-center gap-2">
@@ -433,12 +567,12 @@ export default function ChillingCentersPage() {
                         </div>
                         {g.isOpen && (
                           <div className="p-3 bg-white space-y-6 animate-in slide-in-from-top-2 duration-300">
-                             {/* Content - Sections 1-16 (Simplified representation due to size, focusing on key requested tables) */}
+                             {/* Gavali Details - Reusing the standard 16-point structure */}
                              <div className="grid grid-cols-2 gap-3">
                                <div className="space-y-1"><Label className="text-[9px] font-black">नाव *</Label><Input value={g.name} onChange={e => updateSubItem('gavaliSuppliers', g.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
                                <div className="space-y-1"><Label className="text-[9px] font-black">गवळी कोड *</Label><Input value={g.supplierId} onChange={e => updateSubItem('gavaliSuppliers', g.id, { supplierId: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
                              </div>
-                             
+
                              <div className="space-y-2 border-t pt-2">
                                <div className="flex items-center justify-between"><span className="text-[9px] font-black uppercase text-indigo-700">सब-गवळी माहिती (SUB-GAVALI)</span><Button size="sm" variant="outline" onClick={() => addSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', { name: "", mobile: "", area: "", producers: 0, cow_qty: 0 })} className="h-6 text-[8px] font-black border-black px-2">+ जोडा</Button></div>
                                <div className="border border-black rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-slate-50 h-6"><TableRow><TableHead className="h-6 px-1">नाव</TableHead><TableHead className="h-6 px-1">एरिया</TableHead><TableHead className="h-6 px-1 text-center">दूध</TableHead><TableHead className="h-6 w-8"></TableHead></TableRow></TableHeader><TableBody>
@@ -467,7 +601,7 @@ export default function ChillingCentersPage() {
                                </div>
                              </div>
 
-                             <div className="space-y-1.5 border-t pt-2"><Label className="text-[9px] font-black uppercase">विशेष शेरा (REMARK)</Label><Textarea value={g.additionalInfo} onChange={e => updateSubItem('gavaliSuppliers', g.id, { additionalInfo: e.target.value })} className="h-12 border-2 border-black text-[10px] p-2" /></div>
+                             <div className="space-y-1.5 border-t pt-2"><Label className="text-[9px] font-black uppercase">विशेष शेरा</Label><Textarea value={g.additionalInfo} onChange={e => updateSubItem('gavaliSuppliers', g.id, { additionalInfo: e.target.value })} className="h-12 border-2 border-black text-[10px] p-2" /></div>
                           </div>
                         )}
                       </Card>
@@ -482,9 +616,9 @@ export default function ChillingCentersPage() {
                     <SectionTitle icon={Building2} title="गोठा माहिती (सविस्तर फॉर्म)" color="text-amber-700" />
                     <Button size="sm" onClick={() => addSubEntity('gothaSuppliers')} className="h-7 text-[9px] font-black uppercase px-3 rounded-lg"><Plus className="h-3 w-3 mr-1" /> गोठा जोडा</Button>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-w-[700px]">
                     {(formData.gothaSuppliers || []).map((go, goIdx) => (
-                      <Card key={go.id} className="border-2 border-black overflow-hidden rounded-2xl shadow-md max-w-[650px]">
+                      <Card key={go.id} className="border-2 border-black overflow-hidden rounded-2xl shadow-md">
                         <div className="p-2 bg-amber-600 text-white flex justify-between items-center cursor-pointer" onClick={() => updateSubItem('gothaSuppliers', go.id, { isOpen: !go.isOpen })}>
                           <span className="text-[10px] font-black uppercase">गोठा #{goIdx + 1}: {go.name || '---'}</span>
                           <div className="flex items-center gap-2">
@@ -497,7 +631,6 @@ export default function ChillingCentersPage() {
                              <div className="grid grid-cols-2 gap-3">
                                <div className="space-y-1"><Label className="text-[9px] font-black">गोठा नाव *</Label><Input value={go.name} onChange={e => updateSubItem('gothaSuppliers', go.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
                                <div className="space-y-1"><Label className="text-[9px] font-black">मालक नाव *</Label><Input value={go.operatorName} onChange={e => updateSubItem('gothaSuppliers', go.id, { operatorName: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
-                               <div className="col-span-2 space-y-1"><Label className="text-[9px] font-black">लोकेशन</Label><Input value={go.address} onChange={e => updateSubItem('gothaSuppliers', go.id, { address: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
                              </div>
 
                              <div className="space-y-2 border-t pt-2">
@@ -528,7 +661,7 @@ export default function ChillingCentersPage() {
                                          const currentChecklist = go.producer_center?.additional_details?.gotha_hygiene_checklist || {};
                                          updateSupplierDeep('gothaSuppliers', go.id, { gotha_hygiene_checklist: { ...currentChecklist, [item.key]: !!checked } });
                                        }} 
-                                       className="h-3.5 w-3.5 border-emerald-400"
+                                       className="h-3 w-3 border-emerald-400"
                                      />
                                      <Label htmlFor={`hyg-${go.id}-${item.key}`} className="text-[8px] font-bold text-slate-700 cursor-pointer">{item.label}</Label>
                                    </div>
