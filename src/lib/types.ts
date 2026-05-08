@@ -78,6 +78,7 @@ export interface ProducerCenterAdditionalDetails {
   gotha_milking_shift_evening?: string;
   gotha_hygiene_checklist?: Record<string, boolean>;
   gotha_breed_info?: any[];
+  foundation_year?: string;
 }
 
 export interface Supplier {
