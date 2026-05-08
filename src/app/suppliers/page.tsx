@@ -15,7 +15,7 @@ import {
   Lightbulb, Info, FileText, PlusCircle, Briefcase, Users, Sparkles, Building2
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
@@ -87,6 +87,7 @@ function SuppliersContent() {
     lssFacilities: [] as any[],
     competitorFacilities: [] as any[],
     subRoutes: [] as any[],
+    collectionAreas: [] as any[],
     milk_decrease_reasons: "",
     efforts_taken: "",
     required_actions: ""
@@ -117,6 +118,7 @@ function SuppliersContent() {
       longTermProducers: [], decreasingProducers: [], highCapacityProducers: [],
       highMilkProducers: [], localEmployees: [], localGavliInfo: [],
       lssFacilities: [], competitorFacilities: [], subRoutes: [],
+      collectionAreas: [],
       milk_decrease_reasons: "", efforts_taken: "", required_actions: ""
     })
   }
@@ -147,6 +149,7 @@ function SuppliersContent() {
       lss_details: formData.lssFacilities,
       competitor_dairies: formData.competitorFacilities,
       sub_routes: formData.subRoutes,
+      collection_areas: formData.collectionAreas,
       milk_decrease_reasons: formData.milk_decrease_reasons,
       efforts_taken: formData.efforts_taken,
       required_actions: formData.required_actions
@@ -159,7 +162,7 @@ function SuppliersContent() {
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
       iceBlocks: Number(formData.iceBlocks),
       milkCansCount: Number(formData.milkCansCount),
-      producer_center: formData.supplierType === 'Center' ? { additional_details } : null,
+      producer_center: (formData.supplierType === 'Center' || formData.supplierType === 'Gavali') ? { additional_details } : null,
       village: formData.address,
       updatedAt: new Date().toISOString()
     }
@@ -228,6 +231,7 @@ function SuppliersContent() {
       lssFacilities: details.lss_details || [],
       competitorFacilities: details.competitor_dairies || [],
       subRoutes: details.sub_routes || [],
+      collectionAreas: details.collection_areas || [],
       milk_decrease_reasons: details.milk_decrease_reasons || "",
       efforts_taken: details.efforts_taken || "",
       required_actions: details.required_actions || ""
@@ -318,7 +322,7 @@ function SuppliersContent() {
                  <div className="space-y-0.5"><p className="text-[8px] uppercase text-muted-foreground">प्रकार</p><p className="uppercase">{selectedSupplier.supplierType}</p></div>
               </div>
 
-              {selectedSupplier.supplierType === 'Center' && selectedSupplier.producer_center && (
+              {(selectedSupplier.supplierType === 'Center' || selectedSupplier.supplierType === 'Gavali') && selectedSupplier.producer_center && (
                 <div className="w-full space-y-4">
                   <SectionTitle icon={Clock} title="२) संकलन वेळ & उत्पादक" />
                   <div className="grid grid-cols-2 gap-4 text-[10px] font-bold">
@@ -418,7 +422,7 @@ function SuppliersContent() {
                 </div>
               </div>
 
-              {formData.supplierType === 'Center' && (
+              {(formData.supplierType === 'Center' || formData.supplierType === 'Gavali') && (
                 <div className="space-y-6">
                   <div className="max-w-[500px] space-y-3">
                     <SectionTitle icon={Clock} title="२) संकलन वेळ & उत्पादक सारांश" />
@@ -442,14 +446,15 @@ function SuppliersContent() {
 
                   {/* Professional Dynamic Tables */}
                   {[
-                    { id: 'longTermProducers', title: '४) २+ वर्ष जुने उत्पादक', icon: Layers, fields: [{n:'नाव',k:'producer_name',w:'140px'}, {n:'जुने दूध',k:'previous_milk',w:'70px'}, {n:'सध्याचे',k:'current_milk',w:'70px'}, {n:'जुनी जनावरे',k:'previous_animals',w:'80px'}, {n:'नवी',k:'current_animals',w:'80px'}], initial: { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 } },
-                    { id: 'decreasingProducers', title: '५) दूध कमी झालेले उत्पादक', icon: TrendingDown, fields: [{n:'नाव',k:'producer_name',w:'140px'}, {n:'जुने दूध',k:'previous_milk',w:'70px'}, {n:'नवे दूध',k:'current_milk',w:'70px'}, {n:'कारण',k:'reason',w:'180px'}], initial: { producer_name: "", previous_milk: 0, current_milk: 0, reason: "" }, color: 'text-rose-600' },
-                    { id: 'localEmployees', title: '८) डेअरी कर्मचारी माहिती', icon: Briefcase, fields: [{n:'नाव',k:'name',w:'140px'}, {n:'शेती',k:'land',w:'100px'}, {n:'गाई',k:'cows_count',w:'60px'}, {n:'म्हशी',k:'buffalo_count',w:'60px'}, {n:'दूध(L)',k:'total_supply',w:'70px'}], initial: { name: "", land: "", cows_count: 0, buffalo_count: 0, total_supply: 0 }, color: 'text-indigo-600' },
-                    { id: 'localGavliInfo', title: '९) स्थानिक गवळी माहिती', icon: Users, fields: [{n:'नाव',k:'name',w:'140px'}, {n:'कोड',k:'code',w:'70px'}, {n:'गाय',k:'gay_dudh',w:'60px'}, {n:'म्हेस',k:'mhais_dudh',w:'60px'}, {n:'उत्पादक',k:'producers',w:'70px'}], initial: { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0 }, color: 'text-emerald-600' },
-                    { id: 'lssFacilities', title: '१०) LSS & डेअरी सुविधा माहिती', icon: Sparkles, fields: [{n:'सुविधा नाव',k:'item',w:'160px'}, {n:'स्थिती',k:'availability',w:'100px'}, {n:'शेरा',k:'remark',w:'180px'}], initial: { item: "", availability: "हो", remark: "" }, color: 'text-blue-600' },
-                    { id: 'competitorFacilities', title: '११) स्पर्धक डेअरी माहिती', icon: Building2, fields: [{n:'डेअरी नाव',k:'dairyName',w:'140px'}, {n:'दर (₹)',k:'rate',w:'80px'}, {n:'सुविधा',k:'facility',w:'180px'}], initial: { dairyName: "", rate: "", facility: "" }, color: 'text-amber-600' },
-                    { id: 'subRoutes', title: '१२) अंतर्गत उप-रूट माहिती', icon: Truck, fields: [{n:'गाडी',k:'vehicleType',w:'120px'}, {n:'किमी',k:'km',w:'60px'}, {n:'परिसर',k:'area',w:'120px'}, {n:'उत्पादक',k:'producers',w:'70px'}, {n:'दूध(L)',k:'milkQty',w:'70px'}], initial: { vehicleType: "", km: "", area: "", producers: 0, milkQty: 0 }, color: 'text-amber-600' }
-                  ].map(sec => (
+                    { id: 'collectionAreas', title: '४) संकलन एरिया & गावे', icon: MapPin, fields: [{n:'गाव नाव',k:'village',w:'140px'}, {n:'उत्पादक',k:'producers',w:'70px'}, {n:'दूध(L)',k:'milkQty',w:'70px'}], initial: { village: "", producers: 0, milkQty: 0 }, visible: formData.supplierType === 'Gavali' },
+                    { id: 'longTermProducers', title: '५) २+ वर्ष जुने उत्पादक', icon: Layers, fields: [{n:'नाव',k:'producer_name',w:'140px'}, {n:'जुने दूध',k:'previous_milk',w:'70px'}, {n:'सध्याचे',k:'current_milk',w:'70px'}, {n:'जुनी जनावरे',k:'previous_animals',w:'80px'}, {n:'नवी',k:'current_animals',w:'80px'}], initial: { producer_name: "", previous_milk: 0, current_milk: 0, previous_animals: 0, current_animals: 0 }, visible: true },
+                    { id: 'decreasingProducers', title: '६) दूध घटलेले उत्पादक', icon: TrendingDown, fields: [{n:'नाव',k:'producer_name',w:'140px'}, {n:'जुने दूध',k:'previous_milk',w:'70px'}, {n:'नवे दूध',k:'current_milk',w:'70px'}, {n:'कारण',k:'reason',w:'180px'}], initial: { producer_name: "", previous_milk: 0, current_milk: 0, reason: "" }, color: 'text-rose-600', visible: true },
+                    { id: 'localEmployees', title: '७) डेअरी कर्मचारी माहिती', icon: Briefcase, fields: [{n:'नाव',k:'name',w:'140px'}, {n:'शेती',k:'land',w:'100px'}, {n:'गाई',k:'cows_count',w:'60px'}, {n:'म्हशी',k:'buffalo_count',w:'60px'}, {n:'दूध(L)',k:'total_supply',w:'70px'}], initial: { name: "", land: "", cows_count: 0, buffalo_count: 0, total_supply: 0 }, color: 'text-indigo-600', visible: true },
+                    { id: 'localGavliInfo', title: '८) स्थानिक गवळी माहिती', icon: Users, fields: [{n:'नाव',k:'name',w:'140px'}, {n:'कोड',k:'code',w:'70px'}, {n:'गाय',k:'gay_dudh',w:'60px'}, {n:'म्हेस',k:'mhais_dudh',w:'60px'}, {n:'उत्पादक',k:'producers',w:'70px'}], initial: { name: "", code: "", gay_dudh: 0, mhais_dudh: 0, producers: 0 }, color: 'text-emerald-600', visible: true },
+                    { id: 'lssFacilities', title: '९) LSS & डेअरी सुविधा माहिती', icon: Sparkles, fields: [{n:'सुविधा नाव',k:'item',w:'160px'}, {n:'स्थिती',k:'availability',w:'100px'}, {n:'शेरा',k:'remark',w:'180px'}], initial: { item: "", availability: "हो", remark: "" }, color: 'text-blue-600', visible: true },
+                    { id: 'competitorFacilities', title: '१०) स्पर्धक डेअरी माहिती', icon: Building2, fields: [{n:'डेअरी नाव',k:'dairyName',w:'140px'}, {n:'दर (₹)',k:'rate',w:'80px'}, {n:'सुविधा',k:'facility',w:'180px'}], initial: { dairyName: "", rate: "", facility: "" }, color: 'text-amber-600', visible: true },
+                    { id: 'subRoutes', title: '११) अंतर्गत उप-रूट माहिती', icon: Truck, fields: [{n:'गाडी',k:'vehicleType',w:'120px'}, {n:'किमी',k:'km',w:'60px'}, {n:'परिसर',k:'area',w:'120px'}, {n:'उत्पादक',k:'producers',w:'70px'}, {n:'दूध(L)',k:'milkQty',w:'70px'}], initial: { vehicleType: "", km: "", area: "", producers: 0, milkQty: 0 }, color: 'text-amber-600', visible: true }
+                  ].map(sec => sec.visible && (
                     <div key={sec.id} className="space-y-2">
                       <div className="flex items-center justify-between max-w-[500px]">
                         <SectionTitle icon={sec.icon} title={sec.title} color={sec.color || 'text-primary'} />
@@ -490,7 +495,7 @@ function SuppliersContent() {
                   ))}
 
                   <div className="max-w-[500px] space-y-4">
-                    <SectionTitle icon={Lightbulb} title="१३) विशेष विश्लेषण & उपाययोजना" />
+                    <SectionTitle icon={Lightbulb} title="१२) विशेष विश्लेषण & उपाययोजना" />
                     <div className="space-y-3">
                        <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-rose-600">दूध कमी होण्याची कारणे</Label><Textarea value={formData.milk_decrease_reasons} onChange={e => setFormData({...formData, milk_decrease_reasons: e.target.value})} className="min-h-[60px] border-2 border-black text-[11px] font-medium p-2 rounded-xl" /></div>
                        <div className="space-y-1"><Label className="text-[9px] font-black uppercase text-indigo-600">सेंटरने केलेले प्रयत्न</Label><Textarea value={formData.efforts_taken} onChange={e => setFormData({...formData, efforts_taken: e.target.value})} className="min-h-[60px] border-2 border-black text-[11px] font-medium p-2 rounded-xl" /></div>
@@ -501,7 +506,7 @@ function SuppliersContent() {
               )}
 
               <div className="max-w-[500px] space-y-3">
-                <SectionTitle icon={ShieldCheck} title="१४) परवाना & तांत्रिक" />
+                <SectionTitle icon={ShieldCheck} title="१३) परवाना & तांत्रिक" />
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1"><Label className="text-[9px] font-black">FSSAI क्र.</Label><Input value={formData.fssaiNumber} onChange={e => setFormData({...formData, fssaiNumber: e.target.value})} className="h-8 border-2 border-black font-bold" /></div>
                   <div className="space-y-1"><Label className="text-[9px] font-black">मुदत तारीख</Label><Input type="date" value={formData.fssaiExpiry} onChange={e => setFormData({...formData, fssaiExpiry: e.target.value})} className="h-8 border-2 border-black" /></div>
@@ -511,7 +516,7 @@ function SuppliersContent() {
               </div>
 
               <div className="max-w-[500px] space-y-3">
-                <SectionTitle icon={Wallet} title="१५) व्यावसायिक & दूध तपशील" />
+                <SectionTitle icon={Wallet} title="१४) व्यावसायिक & दूध तपशील" />
                 <div className="grid grid-cols-2 gap-3 mb-3">
                   <div className="space-y-1"><Label className="text-[9px] font-black uppercase">पेमेंट सायकल</Label><Input value={formData.paymentCycle} onChange={e => setFormData({...formData, paymentCycle: e.target.value})} className="h-8 border-2 border-black font-black" /></div>
                   <div className="space-y-1"><Label className="text-[9px] font-black uppercase">जागा</Label>
@@ -542,7 +547,7 @@ function SuppliersContent() {
               </div>
 
               <div className="max-w-[500px] space-y-4">
-                <SectionTitle icon={Box} title="१६) इन्व्हेंटरी & स्टेटस" />
+                <SectionTitle icon={Box} title="१५) इन्व्हेंटरी & स्टेटस" />
                 <div className="grid grid-cols-2 gap-3">
                   <Button variant="outline" size="sm" type="button" onClick={() => setFormData({...formData, computerAvailable: !formData.computerAvailable})} className={cn("h-9 border-2 border-black font-black text-[10px] uppercase shadow-sm transition-all active:scale-95", formData.computerAvailable ? "bg-primary text-white border-primary" : "bg-white")}>
                     <Laptop className={cn("h-3.5 w-3.5 mr-1.5", formData.computerAvailable ? "text-white" : "text-slate-400")} /> POP: {formData.computerAvailable ? 'YES' : 'NO'}
