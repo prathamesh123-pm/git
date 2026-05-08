@@ -13,7 +13,7 @@ import {
   Truck, Edit, ChevronRight, ArrowLeft, X, Laptop, Zap, Sun, Trash2, Milk, Box, Wallet, 
   ShieldCheck, Printer, CheckCircle2, Clock, Layers, Users, TrendingDown, 
   IndianRupee, History, Briefcase, Info, FileText, MapPin, Lightbulb, PlusCircle, ListPlus, Sparkles, Building2,
-  UsersRound, Sprout, ShoppingCart, Activity
+  UsersRound, Sprout, ShoppingCart, Activity, ClipboardCheck
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -25,6 +25,7 @@ import { collection, doc } from "firebase/firestore"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const SectionTitle = ({ icon: Icon, title, color = "text-primary" }: any) => (
   <div className={cn("flex items-center gap-1.5 border-b pb-1 mb-2 mt-3", color === 'text-primary' ? 'border-primary/20' : 'border-black/20')}>
@@ -100,7 +101,17 @@ function SuppliersContent() {
     gotha_fodder_management: "",
     gotha_milking_shift_morning: "",
     gotha_milking_shift_evening: "",
-    gotha_hygiene_remark: ""
+    gotha_hygiene_remark: "",
+    gotha_hygiene_checklist: {
+      floor_cleaned: false,
+      animal_cleaned: false,
+      utensils_sanitized: false,
+      worker_hygiene: false,
+      proper_drainage: false,
+      pest_control: false,
+      clean_water_trough: false,
+      health_records: false
+    }
   })
 
   const resetFormData = () => {
@@ -124,7 +135,17 @@ function SuppliersContent() {
       milk_decrease_reasons: "", efforts_taken: "", required_actions: "",
       gotha_total_area: "", gotha_fodder_area: "", gotha_purchase_source: "", gotha_previous_dairy: "",
       gotha_breed_info: [], gotha_worker_info: [], gotha_fodder_management: "",
-      gotha_milking_shift_morning: "", gotha_milking_shift_evening: "", gotha_hygiene_remark: ""
+      gotha_milking_shift_morning: "", gotha_milking_shift_evening: "", gotha_hygiene_remark: "",
+      gotha_hygiene_checklist: {
+        floor_cleaned: false,
+        animal_cleaned: false,
+        utensils_sanitized: false,
+        worker_hygiene: false,
+        proper_drainage: false,
+        pest_control: false,
+        clean_water_trough: false,
+        health_records: false
+      }
     })
   }
 
@@ -178,7 +199,7 @@ function SuppliersContent() {
       milk_decrease_reasons: details.milk_decrease_reasons || "",
       efforts_taken: details.efforts_taken || "",
       required_actions: details.required_actions || "",
-      // Gotha details from nested object if applicable
+      // Gotha details
       gotha_total_area: (details as any).gotha_total_area || "",
       gotha_fodder_area: (details as any).gotha_fodder_area || "",
       gotha_purchase_source: (details as any).gotha_purchase_source || "",
@@ -188,7 +209,17 @@ function SuppliersContent() {
       gotha_fodder_management: (details as any).gotha_fodder_management || "",
       gotha_milking_shift_morning: (details as any).gotha_milking_shift_morning || "",
       gotha_milking_shift_evening: (details as any).gotha_milking_shift_evening || "",
-      gotha_hygiene_remark: (details as any).gotha_hygiene_remark || ""
+      gotha_hygiene_remark: (details as any).gotha_hygiene_remark || "",
+      gotha_hygiene_checklist: (details as any).gotha_hygiene_checklist || {
+        floor_cleaned: false,
+        animal_cleaned: false,
+        utensils_sanitized: false,
+        worker_hygiene: false,
+        proper_drainage: false,
+        pest_control: false,
+        clean_water_trough: false,
+        health_records: false
+      }
     })
     setIsDialogOpen(true)
   }
@@ -233,7 +264,8 @@ function SuppliersContent() {
       gotha_fodder_management: formData.gotha_fodder_management,
       gotha_milking_shift_morning: formData.gotha_milking_shift_morning,
       gotha_milking_shift_evening: formData.gotha_milking_shift_evening,
-      gotha_hygiene_remark: formData.gotha_hygiene_remark
+      gotha_hygiene_remark: formData.gotha_hygiene_remark,
+      gotha_hygiene_checklist: formData.gotha_hygiene_checklist
     };
 
     const data = {
@@ -262,6 +294,16 @@ function SuppliersContent() {
 
   const updateRow = (key: string, id: string, updates: any) => {
     setFormData(prev => ({ ...prev, [key]: (prev[key as keyof typeof prev] as any[]).map(r => r.id === id ? { ...r, ...updates } : r) }))
+  }
+
+  const updateHygieneChecklist = (key: string, value: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      gotha_hygiene_checklist: {
+        ...prev.gotha_hygiene_checklist,
+        [key]: value
+      }
+    }))
   }
 
   const filteredSuppliers = useMemo(() => suppliersList.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase())), [suppliersList, searchQuery])
@@ -463,6 +505,32 @@ function SuppliersContent() {
                     <div className="grid grid-cols-1 gap-3">
                       <div className="space-y-1"><Label className="text-[9px] font-black">चारा व्यवस्थापन माहिती</Label><Textarea value={formData.gotha_fodder_management} onChange={e => setFormData({...formData, gotha_fodder_management: e.target.value})} placeholder="मका, कडवळ, सायलेंज इ." className="min-h-[60px] border-2 border-black text-[11px] p-2 rounded-xl" /></div>
                       <div className="space-y-1"><Label className="text-[9px] font-black">गोठा स्वच्छता शेरा</Label><Textarea value={formData.gotha_hygiene_remark} onChange={e => setFormData({...formData, gotha_hygiene_remark: e.target.value})} placeholder="स्वच्छता कशी आहे? सुधारणा हवी का?" className="min-h-[60px] border-2 border-black text-[11px] p-2 rounded-xl" /></div>
+                    </div>
+                  </div>
+
+                  <div className="max-w-[500px] space-y-4">
+                    <SectionTitle icon={ClipboardCheck} title="७) गोठा स्वच्छता चेकलिस्ट (HYGIENE)" color="text-emerald-700" />
+                    <div className="grid grid-cols-1 gap-3 bg-emerald-50/50 p-4 rounded-xl border-2 border-emerald-100">
+                      {[
+                        { key: 'floor_cleaned', label: 'गोठ्याची फरशी रोज धुतली जाते (Daily Floor Wash)' },
+                        { key: 'animal_cleaned', label: 'दूध काढण्यापूर्वी जनावरांची स्वच्छता (Animal Cleaning)' },
+                        { key: 'utensils_sanitized', label: 'दुधाची भांडी/मशीन निर्जंतुक केली जातात (Utensil Sanitization)' },
+                        { key: 'worker_hygiene', label: 'कामगारांची वैयक्तिक स्वच्छता (Worker Hygiene)' },
+                        { key: 'proper_drainage', label: 'सांडपाण्याची योग्य निचरा व्यवस्था (Proper Drainage)' },
+                        { key: 'pest_control', label: 'माश्या/डासांचे नियमित नियंत्रण (Pest Control)' },
+                        { key: 'clean_water_trough', label: 'स्वच्छ पाणी आणि चाऱ्याची जागा (Clean Troughs)' },
+                        { key: 'health_records', label: 'जनावरांचे लसीकरण व आरोग्य रेकॉर्ड (Health Records)' },
+                      ].map((item) => (
+                        <div key={item.key} className="flex items-center space-x-3 bg-white p-2.5 rounded-lg border border-emerald-100 shadow-sm transition-all hover:bg-emerald-50">
+                          <Checkbox 
+                            id={`hygiene-${item.key}`} 
+                            checked={(formData.gotha_hygiene_checklist as any)[item.key]} 
+                            onCheckedChange={(checked) => updateHygieneChecklist(item.key, !!checked)} 
+                            className="h-4 w-4 border-emerald-400"
+                          />
+                          <Label htmlFor={`hygiene-${item.key}`} className="text-[10px] font-bold text-slate-700 cursor-pointer">{item.label}</Label>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

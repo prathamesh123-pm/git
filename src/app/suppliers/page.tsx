@@ -12,7 +12,8 @@ import {
   Plus, Search, Filter, Phone, MapPin, Trash2, Milk, X, Laptop, Zap, Sun, ShieldAlert, 
   History, Edit, CheckCircle2, Box, UserCheck, Wallet, User, Printer, Truck, 
   ShieldCheck, Clock, Layers, TrendingDown, IndianRupee, Hash, ListPlus, 
-  Lightbulb, Info, FileText, PlusCircle, Briefcase, Users, Sparkles, Building2
+  Lightbulb, Info, FileText, PlusCircle, Briefcase, Users, Sparkles, Building2,
+  UsersRound, Sprout, ShoppingCart, Activity, ClipboardCheck
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -24,6 +25,7 @@ import { collection, doc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const SectionTitle = ({ icon: Icon, title, color = "text-primary" }: any) => (
   <div className={cn("flex items-center gap-1.5 border-b pb-1 mb-2 mt-3", color === 'text-primary' ? 'border-primary/20' : 'border-black/20')}>
@@ -90,7 +92,28 @@ function SuppliersContent() {
     collectionAreas: [] as any[],
     milk_decrease_reasons: "",
     efforts_taken: "",
-    required_actions: ""
+    required_actions: "",
+    // Gotha Specific
+    gotha_total_area: "",
+    gotha_fodder_area: "",
+    gotha_purchase_source: "",
+    gotha_previous_dairy: "",
+    gotha_breed_info: [] as any[],
+    gotha_worker_info: [] as any[],
+    gotha_fodder_management: "",
+    gotha_milking_shift_morning: "",
+    gotha_milking_shift_evening: "",
+    gotha_hygiene_remark: "",
+    gotha_hygiene_checklist: {
+      floor_cleaned: false,
+      animal_cleaned: false,
+      utensils_sanitized: false,
+      worker_hygiene: false,
+      proper_drainage: false,
+      pest_control: false,
+      clean_water_trough: false,
+      health_records: false
+    }
   })
 
   useEffect(() => setMounted(true), [])
@@ -119,7 +142,20 @@ function SuppliersContent() {
       highMilkProducers: [], localEmployees: [], localGavliInfo: [],
       lssFacilities: [], competitorFacilities: [], subRoutes: [],
       collectionAreas: [],
-      milk_decrease_reasons: "", efforts_taken: "", required_actions: ""
+      milk_decrease_reasons: "", efforts_taken: "", required_actions: "",
+      gotha_total_area: "", gotha_fodder_area: "", gotha_purchase_source: "", gotha_previous_dairy: "",
+      gotha_breed_info: [], gotha_worker_info: [], gotha_fodder_management: "",
+      gotha_milking_shift_morning: "", gotha_milking_shift_evening: "", gotha_hygiene_remark: "",
+      gotha_hygiene_checklist: {
+        floor_cleaned: false,
+        animal_cleaned: false,
+        utensils_sanitized: false,
+        worker_hygiene: false,
+        proper_drainage: false,
+        pest_control: false,
+        clean_water_trough: false,
+        health_records: false
+      }
     })
   }
 
@@ -152,7 +188,19 @@ function SuppliersContent() {
       collection_areas: formData.collectionAreas,
       milk_decrease_reasons: formData.milk_decrease_reasons,
       efforts_taken: formData.efforts_taken,
-      required_actions: formData.required_actions
+      required_actions: formData.required_actions,
+      // Gotha Specific
+      gotha_total_area: formData.gotha_total_area,
+      gotha_fodder_area: formData.gotha_fodder_area,
+      gotha_purchase_source: formData.gotha_purchase_source,
+      gotha_previous_dairy: formData.gotha_previous_dairy,
+      gotha_breed_info: formData.gotha_breed_info,
+      gotha_worker_info: formData.gotha_worker_info,
+      gotha_fodder_management: formData.gotha_fodder_management,
+      gotha_milking_shift_morning: formData.gotha_milking_shift_morning,
+      gotha_milking_shift_evening: formData.gotha_milking_shift_evening,
+      gotha_hygiene_remark: formData.gotha_hygiene_remark,
+      gotha_hygiene_checklist: formData.gotha_hygiene_checklist
     };
 
     const supplierData = {
@@ -162,7 +210,7 @@ function SuppliersContent() {
       buffaloMilk: { quantity: Number(formData.bufQty), fat: Number(formData.bufFat), snf: Number(formData.bufSnf) },
       iceBlocks: Number(formData.iceBlocks),
       milkCansCount: Number(formData.milkCansCount),
-      producer_center: (formData.supplierType === 'Center' || formData.supplierType === 'Gavali') ? { additional_details } : null,
+      producer_center: (formData.supplierType === 'Center' || formData.supplierType === 'Gavali' || formData.supplierType === 'Gotha') ? { additional_details } : null,
       village: formData.address,
       updatedAt: new Date().toISOString()
     }
@@ -189,6 +237,16 @@ function SuppliersContent() {
 
   const updateRow = (key: string, id: string, updates: any) => {
     setFormData(prev => ({ ...prev, [key]: (prev[key as keyof typeof prev] as any[]).map(r => r.id === id ? { ...r, ...updates } : r) }))
+  }
+
+  const updateHygieneChecklist = (key: string, value: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      gotha_hygiene_checklist: {
+        ...prev.gotha_hygiene_checklist,
+        [key]: value
+      }
+    }))
   }
 
   const prepareEdit = (supp: Supplier) => {
@@ -234,7 +292,27 @@ function SuppliersContent() {
       collectionAreas: details.collection_areas || [],
       milk_decrease_reasons: details.milk_decrease_reasons || "",
       efforts_taken: details.efforts_taken || "",
-      required_actions: details.required_actions || ""
+      required_actions: details.required_actions || "",
+      gotha_total_area: (details as any).gotha_total_area || "",
+      gotha_fodder_area: (details as any).gotha_fodder_area || "",
+      gotha_purchase_source: (details as any).gotha_purchase_source || "",
+      gotha_previous_dairy: (details as any).gotha_previous_dairy || "",
+      gotha_breed_info: (details as any).gotha_breed_info || [],
+      gotha_worker_info: (details as any).gotha_worker_info || [],
+      gotha_fodder_management: (details as any).gotha_fodder_management || "",
+      gotha_milking_shift_morning: (details as any).gotha_milking_shift_morning || "",
+      gotha_milking_shift_evening: (details as any).gotha_milking_shift_evening || "",
+      gotha_hygiene_remark: (details as any).gotha_hygiene_remark || "",
+      gotha_hygiene_checklist: (details as any).gotha_hygiene_checklist || {
+        floor_cleaned: false,
+        animal_cleaned: false,
+        utensils_sanitized: false,
+        worker_hygiene: false,
+        proper_drainage: false,
+        pest_control: false,
+        clean_water_trough: false,
+        health_records: false
+      }
     })
     setIsEditing(true)
   }
@@ -322,13 +400,13 @@ function SuppliersContent() {
                  <div className="space-y-0.5"><p className="text-[8px] uppercase text-muted-foreground">प्रकार</p><p className="uppercase">{selectedSupplier.supplierType}</p></div>
               </div>
 
-              {(selectedSupplier.supplierType === 'Center' || selectedSupplier.supplierType === 'Gavali') && selectedSupplier.producer_center && (
+              {(selectedSupplier.supplierType === 'Center' || selectedSupplier.supplierType === 'Gavali' || selectedSupplier.supplierType === 'Gotha') && selectedSupplier.producer_center && (
                 <div className="w-full space-y-4">
                   <SectionTitle icon={Clock} title="२) संकलन वेळ & उत्पादक" />
                   <div className="grid grid-cols-2 gap-4 text-[10px] font-bold">
                     <div>सकाळ: {selectedSupplier.producer_center.additional_details?.morning_collection_time || "-"}</div>
                     <div>सायंकाळ: {selectedSupplier.producer_center.additional_details?.evening_collection_time || "-"}</div>
-                    <div>एकूण उत्पादक: {selectedSupplier.producer_center.additional_details?.total_producers || 0}</div>
+                    <div>एकूण उत्पादक: {selectedSupplier.producer_center.additional_details?.total_producers || selectedSupplier.producer_center.additional_details?.total_animals || 0}</div>
                     <div>सक्रिय: {selectedSupplier.producer_center.additional_details?.active_producers || 0}</div>
                   </div>
                   <SectionTitle icon={Milk} title="३) जनावरांची माहिती" />
@@ -421,6 +499,125 @@ function SuppliersContent() {
                   <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">स्थापना वर्ष</Label><Input value={formData.start_year} placeholder="YYYY" onChange={e => setFormData({...formData, start_year: e.target.value})} className="h-8 border-[1.5px] border-black font-bold text-xs" /></div>
                 </div>
               </div>
+
+              {/* Gotha Specific Form Section */}
+              {formData.supplierType === 'Gotha' && (
+                <div className="space-y-6">
+                  <div className="max-w-[500px] space-y-3">
+                    <SectionTitle icon={Building2} title="२) गोठा आकारमान & दूध वेळ" />
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-0.5"><Label className="text-[9px] font-black">गोठा एकूण एरिया</Label><Input value={formData.gotha_total_area} onChange={e => setFormData({...formData, gotha_total_area: e.target.value})} placeholder="उदा. १० गुंठे" className="h-8 border-2 border-black" /></div>
+                      <div className="space-y-0.5"><Label className="text-[9px] font-black">चारा एरिया</Label><Input value={formData.gotha_fodder_area} onChange={e => setFormData({...formData, gotha_fodder_area: e.target.value})} placeholder="उदा. २ एकर" className="h-8 border-2 border-black" /></div>
+                      <div className="space-y-0.5"><Label className="text-[9px] font-black">सकाळ दूध वेळ</Label><Input type="time" value={formData.gotha_milking_shift_morning} onChange={e => setFormData({...formData, gotha_milking_shift_morning: e.target.value})} className="h-8 border-2 border-black" /></div>
+                      <div className="space-y-0.5"><Label className="text-[9px] font-black">सायंकाळ दूध वेळ</Label><Input type="time" value={formData.gotha_milking_shift_evening} onChange={e => setFormData({...formData, gotha_milking_shift_evening: e.target.value})} className="h-8 border-2 border-black" /></div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between max-w-[500px]">
+                      <SectionTitle icon={Activity} title="३) जनावरे & ब्रीड माहिती" color="text-rose-600" />
+                      <Button size="sm" onClick={() => addRow('gotha_breed_info', { breed: "", count: 0, avg_milk: 0 })} className="h-7 text-[9px] font-black uppercase px-3 rounded-lg border-2 border-black bg-slate-50"><PlusCircle className="h-3 w-3 mr-1"/> जोडा</Button>
+                    </div>
+                    <div className="border-[1.5px] border-black rounded-xl overflow-hidden shadow-sm">
+                      <ScrollArea className="w-full">
+                        <Table className="min-w-[400px] text-[10px] uppercase">
+                          <TableHeader className="bg-slate-100 font-black h-8">
+                            <TableRow>
+                              <TableHead className="px-2 text-center h-8">ब्रीड (जात)</TableHead>
+                              <TableHead className="px-2 text-center h-8 w-20">संख्या</TableHead>
+                              <TableHead className="px-2 text-center h-8 w-24">सरासरी दूध (L)</TableHead>
+                              <TableHead className="w-10 h-8"></TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {formData.gotha_breed_info.map((row: any) => (
+                              <TableRow key={row.id} className="h-9 hover:bg-slate-50">
+                                <TableCell className="p-0 border-r border-black/10"><Input value={row.breed} onChange={e => updateRow('gotha_breed_info', row.id, { breed: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-bold focus-visible:ring-0" placeholder="HF / गिर" /></TableCell>
+                                <TableCell className="p-0 border-r border-black/10"><Input type="number" value={row.count} onChange={e => updateRow('gotha_breed_info', row.id, { count: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-black focus-visible:ring-0" /></TableCell>
+                                <TableCell className="p-0 border-r border-black/10"><Input type="number" value={row.avg_milk} onChange={e => updateRow('gotha_breed_info', row.id, { avg_milk: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-black focus-visible:ring-0" /></TableCell>
+                                <TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeRow('gotha_breed_info', row.id)} className="h-8 w-8 text-rose-500"><Trash2 className="h-3.5 w-3.5"/></Button></TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                        <ScrollBar orientation="horizontal" />
+                      </ScrollArea>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between max-w-[500px]">
+                      <SectionTitle icon={UsersRound} title="४) कामगार माहिती" color="text-indigo-600" />
+                      <Button size="sm" onClick={() => addRow('gotha_worker_info', { name: "", mobile: "" })} className="h-7 text-[9px] font-black uppercase px-3 rounded-lg border-2 border-black bg-slate-50"><PlusCircle className="h-3 w-3 mr-1"/> जोडा</Button>
+                    </div>
+                    <div className="border-[1.5px] border-black rounded-xl overflow-hidden shadow-sm">
+                      <ScrollArea className="w-full">
+                        <Table className="min-w-[400px] text-[10px] uppercase">
+                          <TableHeader className="bg-slate-100 font-black h-8">
+                            <TableRow>
+                              <TableHead className="px-2 text-center h-8">कामगाराचे नाव</TableHead>
+                              <TableHead className="px-2 text-center h-8 w-40">मोबाईल</TableHead>
+                              <TableHead className="w-10 h-8"></TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {formData.gotha_worker_info.map((row: any) => (
+                              <TableRow key={row.id} className="h-9 hover:bg-slate-50">
+                                <TableCell className="p-0 border-r border-black/10"><Input value={row.name} onChange={e => updateRow('gotha_worker_info', row.id, { name: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-bold focus-visible:ring-0" /></TableCell>
+                                <TableCell className="p-0 border-r border-black/10"><Input value={row.mobile} onChange={e => updateRow('gotha_worker_info', row.id, { mobile: e.target.value })} className="h-8 border-none text-[11px] text-center p-1 bg-transparent font-bold focus-visible:ring-0" /></TableCell>
+                                <TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeRow('gotha_worker_info', row.id)} className="h-8 w-8 text-rose-500"><Trash2 className="h-3.5 w-3.5"/></Button></TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                        <ScrollBar orientation="horizontal" />
+                      </ScrollArea>
+                    </div>
+                  </div>
+
+                  <div className="max-w-[500px] space-y-3">
+                    <SectionTitle icon={ShoppingCart} title="५) खरेदी & इतिहास" color="text-amber-600" />
+                    <div className="grid grid-cols-1 gap-3">
+                      <div className="space-y-1"><Label className="text-[9px] font-black">गाई/म्हशी कोठून खरेदी केल्या?</Label><Input value={formData.gotha_purchase_source} onChange={e => setFormData({...formData, gotha_purchase_source: e.target.value})} placeholder="उदा. सोलापूर बाजार / पंजाब" className="h-8 border-2 border-black font-bold" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black">यापूर्वीचे दूध कोठे होते?</Label><Input value={formData.gotha_previous_dairy} onChange={e => setFormData({...formData, gotha_previous_dairy: e.target.value})} placeholder="उदा. चितळे / वारणा / घरगुती" className="h-8 border-2 border-black font-bold" /></div>
+                    </div>
+                  </div>
+
+                  <div className="max-w-[500px] space-y-3">
+                    <SectionTitle icon={Sprout} title="६) चारा & स्वच्छता" color="text-emerald-600" />
+                    <div className="grid grid-cols-1 gap-3">
+                      <div className="space-y-1"><Label className="text-[9px] font-black">चारा व्यवस्थापन माहिती</Label><Textarea value={formData.gotha_fodder_management} onChange={e => setFormData({...formData, gotha_fodder_management: e.target.value})} placeholder="मका, कडवळ, सायलेंज इ." className="min-h-[60px] border-2 border-black text-[11px] p-2 rounded-xl" /></div>
+                      <div className="space-y-1"><Label className="text-[9px] font-black">गोठा स्वच्छता शेरा</Label><Textarea value={formData.gotha_hygiene_remark} onChange={e => setFormData({...formData, gotha_hygiene_remark: e.target.value})} placeholder="स्वच्छता कशी आहे? सुधारणा हवी का?" className="min-h-[60px] border-2 border-black text-[11px] p-2 rounded-xl" /></div>
+                    </div>
+                  </div>
+
+                  <div className="max-w-[500px] space-y-4">
+                    <SectionTitle icon={ClipboardCheck} title="७) गोठा स्वच्छता चेकलिस्ट (HYGIENE)" color="text-emerald-700" />
+                    <div className="grid grid-cols-1 gap-3 bg-emerald-50/50 p-4 rounded-xl border-2 border-emerald-100">
+                      {[
+                        { key: 'floor_cleaned', label: 'गोठ्याची फरशी रोज धुतली जाते (Daily Floor Wash)' },
+                        { key: 'animal_cleaned', label: 'दूध काढण्यापूर्वी जनावरांची स्वच्छता (Animal Cleaning)' },
+                        { key: 'utensils_sanitized', label: 'दुधाची भांडी/मशीन निर्जंतुक केली जातात (Utensil Sanitization)' },
+                        { key: 'worker_hygiene', label: 'कामगारांची वैयक्तिक स्वच्छता (Worker Hygiene)' },
+                        { key: 'proper_drainage', label: 'सांडपाण्याची योग्य निचरा व्यवस्था (Proper Drainage)' },
+                        { key: 'pest_control', label: 'माश्या/डासांचे नियमित नियंत्रण (Pest Control)' },
+                        { key: 'clean_water_trough', label: 'स्वच्छ पाणी आणि चाऱ्याची जागा (Clean Troughs)' },
+                        { key: 'health_records', label: 'जनावरांचे लसीकरण व आरोग्य रेकॉर्ड (Health Records)' },
+                      ].map((item) => (
+                        <div key={item.key} className="flex items-center space-x-3 bg-white p-2.5 rounded-lg border border-emerald-100 shadow-sm transition-all hover:bg-emerald-50">
+                          <Checkbox 
+                            id={`hygiene-master-${item.key}`} 
+                            checked={(formData.gotha_hygiene_checklist as any)[item.key]} 
+                            onCheckedChange={(checked) => updateHygieneChecklist(item.key, !!checked)} 
+                            className="h-4 w-4 border-emerald-400"
+                          />
+                          <Label htmlFor={`hygiene-master-${item.key}`} className="text-[10px] font-bold text-slate-700 cursor-pointer">{item.label}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {(formData.supplierType === 'Center' || formData.supplierType === 'Gavali') && (
                 <div className="space-y-6">
