@@ -71,22 +71,10 @@ export interface ProducerCenterAdditionalDetails {
   milk_decrease_reasons?: string;
   efforts_taken?: string;
   required_actions?: string;
-  // Internal Gotha fields for Center/Gavali
-  has_internal_gotha?: boolean;
-  internal_gotha_area?: string;
-  internal_gotha_fodder_area?: string;
-  internal_gotha_milking_morning?: string;
-  internal_gotha_milking_evening?: string;
   internal_gotha_breed_info?: any[];
   internal_gotha_worker_info?: any[];
-  internal_gotha_fodder_mgmt?: string;
-  internal_gotha_purchase_source?: string;
-  internal_gotha_prev_dairy?: string;
-  internal_gotha_hygiene_remark?: string;
-  internal_gotha_hygiene_checklist?: Record<string, boolean>;
-  // Sub-Gavali for Gavali
+  internal_gothas?: any[];
   sub_gavali_info?: any[];
-  // Gotha Specific (Dedicated)
   gotha_total_area?: string;
   gotha_fodder_area?: string;
   gotha_purchase_source?: string;
@@ -139,6 +127,17 @@ export interface Supplier {
   updatedAt: string;
 }
 
+export interface ChillingRouteItem {
+  id: string;
+  routeName: string;
+  producerCount: string;
+  cows: string;
+  buffaloes: string;
+  distanceKm: string;
+  collectionArea: string;
+  milkmanNames: string;
+}
+
 export interface ChillingCenter {
   id: string;
   name: string;
@@ -173,6 +172,10 @@ export interface ChillingCenter {
   staffHealthCheckDone: boolean;
   calibrationDone: boolean;
   fireSafetyOk: boolean;
+  // Sub-sections requested
+  routes?: ChillingRouteItem[];
+  gavaliSuppliers?: Supplier[];
+  gothaSuppliers?: Supplier[];
   updatedAt: string;
 }
 
