@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -41,7 +42,7 @@
   }
 
   .compact-input {
-    @apply h-8 text-[12px] font-bold bg-slate-50 border border-slate-300 rounded-md px-2 focus-visible:ring-primary shadow-inner w-full outline-none transition-all;
+    @apply h-8 text-[12px] font-bold bg-slate-50 border-[1.5px] border-black rounded-md px-2 focus-visible:ring-primary shadow-inner w-full outline-none transition-all;
   }
 
   .responsive-table-wrapper {
@@ -73,10 +74,16 @@ input, textarea, select, .shadcn-input-like, button[role="combobox"], .border-bl
 ::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 @media print {
+  @page {
+    margin: 10mm;
+    size: A4 portrait;
+  }
+
   body > *:not(div[data-radix-portal]) {
     display: none !important;
   }
 
+  /* Handle Radix Dialogs which are used for "Edit" forms often */
   div[data-radix-portal] {
     display: block !important;
     position: static !important;
@@ -100,7 +107,7 @@ input, textarea, select, .shadcn-input-like, button[role="combobox"], .border-bl
     visibility: visible !important;
   }
 
-  .no-print, .no-print-dialog, [data-sidebar-wrapper], header {
+  .no-print, .no-print-dialog, [data-sidebar-wrapper], header, nav, footer {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
@@ -111,18 +118,23 @@ input, textarea, select, .shadcn-input-like, button[role="combobox"], .border-bl
     color: black !important;
     height: auto !important;
     overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .printable-report {
     display: block !important;
-    width: 100% !important;
-    max-width: none !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
     background: white !important;
     color: black !important;
-    padding: 10mm !important;
-    margin: 0 !important;
+    padding: 15mm !important;
+    margin: 0 auto !important;
     transform: none !important;
     visibility: visible !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   .printable-report * {
@@ -130,21 +142,36 @@ input, textarea, select, .shadcn-input-like, button[role="combobox"], .border-bl
     background-color: transparent !important;
     border-color: black !important;
     box-shadow: none !important;
+    text-shadow: none !important;
   }
 
   table {
     border-collapse: collapse !important;
     border: 1.5px solid black !important;
     width: 100% !important;
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
   }
 
   th, td {
     border: 1px solid black !important;
     padding: 4pt !important;
+    word-break: break-word;
   }
 
-  @page {
-    margin: 5mm;
-    size: auto;
+  .bg-primary, .bg-primary\/5, .bg-slate-50, .bg-slate-100 {
+    background-color: #f8fafc !important; /* Force light gray for better b/w prints */
+  }
+
+  .border-primary, .border-rose-600 {
+    border-color: black !important;
+  }
+
+  .text-primary, .text-rose-600, .text-blue-600 {
+    color: black !important;
   }
 }
