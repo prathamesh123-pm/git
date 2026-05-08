@@ -225,6 +225,9 @@ function SuppliersContent() {
     const newGotha = {
       id: crypto.randomUUID(),
       isOpen: true,
+      owner_name: "",
+      code: "",
+      location: "",
       area: "",
       fodder_area: "",
       milking_morning: "",
@@ -575,7 +578,12 @@ function SuppliersContent() {
 
                         {gotha.isOpen && (
                           <div className="p-3 bg-white space-y-5 animate-in slide-in-from-top-2 duration-300">
-                            <div className="grid grid-cols-2 gap-2.5">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">मालकाचे नाव</Label><Input value={gotha.owner_name} onChange={e => handleInternalGothaUpdate(gotha.id, { owner_name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">कोड नंबर</Label><Input value={gotha.code} onChange={e => handleInternalGothaUpdate(gotha.id, { code: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                              <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">लोकेशन</Label><Input value={gotha.location} onChange={e => handleInternalGothaUpdate(gotha.id, { location: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                               <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">गोठा एरिया</Label><Input value={gotha.area} onChange={e => handleInternalGothaUpdate(gotha.id, { area: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
                               <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">चारा एरिया</Label><Input value={gotha.fodder_area} onChange={e => handleInternalGothaUpdate(gotha.id, { fodder_area: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
                               <div className="space-y-0.5"><Label className="text-[8px] font-black uppercase opacity-60">सकाळ दूध वेळ</Label><Input type="time" value={gotha.milking_morning} onChange={e => handleInternalGothaUpdate(gotha.id, { milking_morning: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
@@ -601,9 +609,9 @@ function SuppliersContent() {
                               </div>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-2">
                               <span className="text-[9px] font-black uppercase text-emerald-700 flex items-center gap-1.5"><ClipboardCheck className="h-3.5 w-3.5" /> गोठा स्वच्छता (HYGIENE)</span>
-                              <div className="grid grid-cols-1 gap-2 bg-emerald-50/30 p-2 rounded-xl border border-emerald-100">
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 bg-emerald-50/30 p-2 rounded-xl border border-emerald-100">
                                 {[
                                   { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
                                   { key: 'animal_cleaned', label: 'जनावरे स्वच्छता' },
@@ -612,7 +620,7 @@ function SuppliersContent() {
                                   { key: 'proper_drainage', label: 'सांडपाणी निचरा' },
                                   { key: 'clean_water_trough', label: 'स्वच्छ पाणी/चारा' },
                                 ].map((item) => (
-                                  <div key={item.key} className="flex items-center space-x-2 bg-white p-1.5 rounded-lg border border-emerald-100">
+                                  <div key={item.key} className="flex items-center space-x-1.5 bg-white p-1 rounded-lg border border-emerald-100">
                                     <Checkbox 
                                       id={`hygiene-${gotha.id}-${item.key}`} 
                                       checked={gotha.hygiene_checklist[item.key]} 
@@ -620,9 +628,9 @@ function SuppliersContent() {
                                         const newChecklist = { ...gotha.hygiene_checklist, [item.key]: !!checked };
                                         handleInternalGothaUpdate(gotha.id, { hygiene_checklist: newChecklist });
                                       }} 
-                                      className="h-3.5 w-3.5 border-emerald-400"
+                                      className="h-3 w-3 border-emerald-400"
                                     />
-                                    <Label htmlFor={`hygiene-${gotha.id}-${item.key}`} className="text-[9px] font-bold text-slate-700 cursor-pointer">{item.label}</Label>
+                                    <Label htmlFor={`hygiene-${gotha.id}-${item.key}`} className="text-[8px] font-bold text-slate-700 cursor-pointer">{item.label}</Label>
                                   </div>
                                 ))}
                               </div>
@@ -714,25 +722,25 @@ function SuppliersContent() {
 
                   <div className="max-w-[500px] space-y-4">
                     <SectionTitle icon={ClipboardCheck} title="गोठा स्वच्छता चेकलिस्ट" color="text-emerald-700" />
-                    <div className="grid grid-cols-1 gap-3 bg-emerald-50/50 p-4 rounded-xl border-2 border-emerald-100">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-emerald-50/50 p-4 rounded-xl border-2 border-emerald-100">
                       {[
-                        { key: 'floor_cleaned', label: 'गोठ्याची फरशी रोज धुतली जाते' },
-                        { key: 'animal_cleaned', label: 'दूध काढण्यापूर्वी जनावरांची स्वच्छता' },
-                        { key: 'utensils_sanitized', label: 'दुधाची भांडी/मशीन निर्जंतुक केली जातात' },
-                        { key: 'worker_hygiene', label: 'कामगारांची वैयक्तिक स्वच्छता' },
-                        { key: 'proper_drainage', label: 'सांडपाण्याची योग्य सोय' },
-                        { key: 'pest_control', label: 'माश्या/डासांचे नियमित नियंत्रण' },
-                        { key: 'clean_water_trough', label: 'स्वच्छ पाणी आणि चाऱ्याची जागा' },
-                        { key: 'health_records', label: 'जनावरे आरोग्य रेकॉर्ड' },
+                        { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
+                        { key: 'animal_cleaned', label: 'जनावरे स्वच्छता' },
+                        { key: 'utensils_sanitized', label: 'भांडी निर्जंतुक' },
+                        { key: 'worker_hygiene', label: 'कामगार स्वच्छता' },
+                        { key: 'proper_drainage', label: 'सांडपाणी निचरा' },
+                        { key: 'pest_control', label: 'माश्या/डासांचे नियंत्रण' },
+                        { key: 'clean_water_trough', label: 'स्वच्छ पाणी/चारा' },
+                        { key: 'health_records', label: 'आरोग्य रेकॉर्ड' },
                       ].map((item) => (
-                        <div key={item.key} className="flex items-center space-x-3 bg-white p-2.5 rounded-lg border border-emerald-100 shadow-sm">
+                        <div key={item.key} className="flex items-center space-x-2 bg-white p-1.5 rounded-lg border border-emerald-100 shadow-sm">
                           <Checkbox 
                             id={`hygiene-single-${item.key}`} 
                             checked={(formData.gotha_hygiene_checklist as any)[item.key]} 
                             onCheckedChange={(checked) => setFormData({...formData, gotha_hygiene_checklist: { ...formData.gotha_hygiene_checklist, [item.key]: !!checked }})} 
-                            className="h-4 w-4 border-emerald-400"
+                            className="h-3.5 w-3.5 border-emerald-400"
                           />
-                          <Label htmlFor={`hygiene-single-${item.key}`} className="text-[10px] font-bold text-slate-700 cursor-pointer">{item.label}</Label>
+                          <Label htmlFor={`hygiene-single-${item.key}`} className="text-[9px] font-bold text-slate-700 cursor-pointer">{item.label}</Label>
                         </div>
                       ))}
                     </div>
