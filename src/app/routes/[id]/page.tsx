@@ -624,30 +624,6 @@ function RouteDetailsContent() {
                         <div className="space-y-0.5"><Label className="text-[8px] font-black">वासरे</Label><Input type="number" value={formData.calves || "0"} onChange={e => setFormData({...formData, calves: e.target.value})} className="h-8 border-2 border-black text-center text-[10px]" /></div>
                       </div>
                     </div>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between"><SectionTitle icon={MapPin} title="४) संकलन एरिया & गावे" /><Button size="sm" variant="outline" onClick={() => addRow('collectionAreas', { village_name: "", producers: 0, milk_ltr: 0 })} className="h-6 text-[8px] font-black border-black px-2">जोडा</Button></div>
-                      <div className="border-2 border-black rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-slate-50"><TableRow><TableHead className="h-7 px-2">गाव नाव</TableHead><TableHead className="h-7 px-2 text-center">उत्पादक</TableHead><TableHead className="h-7 px-2 text-center">दूध(L)</TableHead><TableHead className="h-7 w-8"></TableHead></TableRow></TableHeader><TableBody>
-                        {(formData.collectionAreas || []).map((r: any) => (
-                          <TableRow key={r.id} className="h-8"><TableCell className="p-0 border-r"><Input value={r.village_name || ""} onChange={e => updateRow('collectionAreas', r.id, { village_name: e.target.value })} className="h-7 border-none text-[9px] p-1 font-bold" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.producers || 0} onChange={e => updateRow('collectionAreas', r.id, { producers: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.milk_ltr || 0} onChange={e => updateRow('collectionAreas', r.id, { milk_ltr: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeRow('collectionAreas', r.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
-                        ))}</TableBody></Table></div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between"><SectionTitle icon={Briefcase} title="७) डेअरी कर्मचारी माहिती" /><Button size="sm" variant="outline" onClick={() => addRow('dairy_employees', { name: "", farming: "", cows: 0, buffalo: 0, milk_ltr: 0, supply_where: "" })} className="h-6 text-[8px] font-black border-black px-2">जोडा</Button></div>
-                      <div className="border-2 border-black rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-slate-50"><TableRow><TableHead className="h-7 px-2">नाव</TableHead><TableHead className="h-7 px-2 text-center">शेती</TableHead><TableHead className="h-7 px-2 text-center">गाई</TableHead><TableHead className="h-7 px-2 text-center">म्हशी</TableHead><TableHead className="h-7 px-2 text-center">दूध(L)</TableHead><TableHead className="h-7 px-2">पुरवठा कोठे</TableHead><TableHead className="h-7 w-8"></TableHead></TableRow></TableHeader><TableBody>
-                        {(formData.dairy_employees || []).map((r: any) => (
-                          <TableRow key={r.id} className="h-8"><TableCell className="p-0 border-r"><Input value={r.name || ""} onChange={e => updateRow('dairy_employees', r.id, { name: e.target.value })} className="h-7 border-none text-[9px] p-1 font-bold" /></TableCell><TableCell className="p-0 border-r"><Input value={r.farming || ""} onChange={e => updateRow('dairy_employees', r.id, { farming: e.target.value })} className="h-7 border-none text-[9px] p-1 text-center" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.cows || 0} onChange={e => updateRow('dairy_employees', r.id, { cows: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.buffalo || 0} onChange={e => updateRow('dairy_employees', r.id, { buffalo: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.milk_ltr || 0} onChange={e => updateRow('dairy_employees', r.id, { milk_ltr: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input value={r.supply_where || ""} onChange={e => updateRow('dairy_employees', r.id, { supply_where: e.target.value })} className="h-7 border-none text-[9px] p-1" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeRow('dairy_employees', r.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
-                        ))}</TableBody></Table></div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between"><SectionTitle icon={Users2} title="८) स्थानिक गवळी माहिती" /><Button size="sm" variant="outline" onClick={() => addRow('localGavliInfo', { name: "", code: "", cow_milk: 0, buf_milk: 0, producers: 0 })} className="h-6 text-[8px] font-black border-black px-2">जोडा</Button></div>
-                      <div className="border-2 border-black rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-slate-50"><TableRow><TableHead className="h-7 px-2">नाव</TableHead><TableHead className="h-7 px-2 text-center">कोड</TableHead><TableHead className="h-7 px-2 text-center">गाय</TableHead><TableHead className="h-7 px-2 text-center">म्हेस</TableHead><TableHead className="h-7 px-2 text-center">उत्पादक</TableHead><TableHead className="h-7 w-8"></TableHead></TableRow></TableHeader><TableBody>
-                        {(formData.localGavliInfo || []).map((r: any) => (
-                          <TableRow key={r.id} className="h-8"><TableCell className="p-0 border-r"><Input value={r.name || ""} onChange={e => updateRow('localGavliInfo', r.id, { name: e.target.value })} className="h-7 border-none text-[9px] p-1 font-bold" /></TableCell><TableCell className="p-0 border-r"><Input value={r.code || ""} onChange={e => updateRow('localGavliInfo', r.id, { code: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.cow_milk || 0} onChange={e => updateRow('localGavliInfo', r.id, { cow_milk: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.buf_milk || 0} onChange={e => updateRow('localGavliInfo', r.id, { buf_milk: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={r.producers || 0} onChange={e => updateRow('localGavliInfo', r.id, { producers: e.target.value })} className="h-7 border-none text-center text-[9px]" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeRow('localGavliInfo', r.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
-                        ))}</TableBody></Table></div>
-                    </div>
                   </div>
                 )}
 
@@ -778,7 +754,7 @@ function RouteDetailsContent() {
           </ScrollArea>
 
           <DialogFooter className="p-3 border-t bg-muted/10 shrink-0 flex flex-row gap-2 no-print z-[100] sticky bottom-0">
-            <Button variant="outline" onClick={() => { setIsAdding(false); setIsEditing(false); resetFormData(); }} className="flex-1 h-11 rounded-xl font-black uppercase text-[10px] border-2 border-black bg-white">रद्द</Button>
+            <Button variant="outline" onClick={() => { setIsDialogOpen(false); resetFormData(); }} className="flex-1 h-11 rounded-xl font-black uppercase text-[10px] border-2 border-black bg-white">रद्द</Button>
             <Button onClick={handleSave} className="flex-[2] h-11 rounded-xl shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest transition-all active:scale-95 bg-primary text-white"><CheckCircle2 className="h-4 w-4 mr-1.5" /> माहिती जतन करा</Button>
           </DialogFooter>
         </DialogContent>
@@ -787,6 +763,11 @@ function RouteDetailsContent() {
   )
 }
 
-export default function SuppliersPage() {
-  return <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}><SuppliersListPage /></Suspense>
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>}>
+      <RouteDetailsContent />
+    </Suspense>
+  )
 }
+
