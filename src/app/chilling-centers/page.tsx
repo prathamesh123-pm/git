@@ -10,7 +10,7 @@ import {
   Zap, Warehouse, User, MapPin, CheckCircle2,
   Trash2, Droplets, Sun, Waves, Wind, FlaskConical, Shirt, Clock, Calendar, Info, FileText,
   Users, TrendingUp, IndianRupee, Layers, ListPlus, Activity, ClipboardCheck, ChevronUp, ChevronDown, Building2, Users2, Sparkles, Briefcase, PlusCircle, Laptop,
-  Flame, Scale, HeartPulse, ShieldAlert
+  Flame, Scale, HeartPulse, ShieldAlert, ShoppingCart, Sprout, Hash
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -130,8 +130,6 @@ export default function ChillingCentersPage() {
     }
   }
 
-  // --- Sub-Entity Logic ---
-
   const addTank = () => setFormData(prev => ({ ...prev, tanks: [...(prev.tanks || []), { id: crypto.randomUUID(), label: `टाकी ${(prev.tanks?.length || 0) + 1}`, capacity: "" }] }))
   const removeTank = (id: string) => setFormData(prev => ({ ...prev, tanks: prev.tanks?.filter(t => t.id !== id) }))
   const updateTank = (id: string, val: string) => setFormData(prev => ({ ...prev, tanks: prev.tanks?.map(t => t.id === id ? { ...t, capacity: val } : t) }))
@@ -157,9 +155,11 @@ export default function ChillingCentersPage() {
         sub_gavali_info: [], internal_gothas: [], local_employees: [],
         milkman_gavali_details: [], lss_details: [], competitor_dairies: [], sub_routes: [],
         gotha_breed_info: [], gotha_worker_info: [],
+        collection_areas: [],
         gotha_hygiene_checklist: {
           floor_cleaned: false, animal_cleaned: false, utensils_sanitized: false,
-          worker_hygiene: false, proper_drainage: false, clean_water_trough: false
+          worker_hygiene: false, proper_drainage: false, clean_water_trough: false,
+          pest_control: false, health_records: false
         }
       }
     }
@@ -262,6 +262,60 @@ export default function ChillingCentersPage() {
     }))
   }
 
+  const addSupplierEquipment = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [listKey]: (prev[listKey] as Supplier[]).map(s => s.id === suppId ? { ...s, equipment: [...(s.equipment || []), { id: crypto.randomUUID(), name: "", quantity: 1, ownership: 'Company' }] } : s)
+    }))
+  }
+
+  const updateSupplierEquipment = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string, eqId: string, updates: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [listKey]: (prev[listKey] as Supplier[]).map(s => s.id === suppId ? { ...s, equipment: (s.equipment || []).map(e => e.id === eqId ? { ...e, ...updates } : e) } : s)
+    }))
+  }
+
+  const removeSupplierEquipment = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string, eqId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [listKey]: (prev[listKey] as Supplier[]).map(s => s.id === suppId ? { ...s, equipment: (s.equipment || []).filter(e => e.id !== eqId) } : s)
+    }))
+  }
+
+  const addInternalGotha = (suppId: string) => {
+    const newGotha = {
+      id: crypto.randomUUID(), isOpen: true, owner_name: "", code: "", location: "", area: "", fodder_area: "",
+      milking_morning: "", milking_evening: "", breeds: [], workers: [], hygiene_checklist: { floor_cleaned: false, animal_cleaned: false, utensils_sanitized: false, worker_hygiene: false, proper_drainage: false, clean_water_trough: false, pest_control: false, health_records: false }
+    }
+    updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: [...(formData.gavaliSuppliers?.find(s => s.id === suppId)?.producer_center?.additional_details?.internal_gothas || []), newGotha] })
+  }
+
+  const updateInternalGotha = (suppId: string, gothaId: string, updates: any) => {
+    const currentGothas = formData.gavaliSuppliers?.find(s => s.id === suppId)?.producer_center?.additional_details?.internal_gothas || [];
+    updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: currentGothas.map((g: any) => g.id === gothaId ? { ...g, ...updates } : g) })
+  }
+
+  const removeInternalGotha = (suppId: string, gothaId: string) => {
+    const currentGothas = formData.gavaliSuppliers?.find(s => s.id === suppId)?.producer_center?.additional_details?.internal_gothas || [];
+    updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: currentGothas.filter((g: any) => g.id !== gothaId) })
+  }
+
+  const addInternalGothaTableRow = (suppId: string, gothaId: string, listKey: 'breeds' | 'workers', initial: any) => {
+    const currentGothas = formData.gavaliSuppliers?.find(s => s.id === suppId)?.producer_center?.additional_details?.internal_gothas || [];
+    updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: currentGothas.map((g: any) => g.id === gothaId ? { ...g, [listKey]: [...g[listKey], { id: crypto.randomUUID(), ...initial }] } : g) })
+  }
+
+  const updateInternalGothaTableRow = (suppId: string, gothaId: string, listKey: 'breeds' | 'workers', rowId: string, rowUpdates: any) => {
+    const currentGothas = formData.gavaliSuppliers?.find(s => s.id === suppId)?.producer_center?.additional_details?.internal_gothas || [];
+    updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: currentGothas.map((g: any) => g.id === gothaId ? { ...g, [listKey]: g[listKey].map((r: any) => r.id === rowId ? { ...r, ...rowUpdates } : r) } : g) })
+  }
+
+  const removeInternalGothaTableRow = (suppId: string, gothaId: string, listKey: 'breeds' | 'workers', rowId: string) => {
+    const currentGothas = formData.gavaliSuppliers?.find(s => s.id === suppId)?.producer_center?.additional_details?.internal_gothas || [];
+    updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: currentGothas.map((g: any) => g.id === gothaId ? { ...g, [listKey]: g[listKey].filter((r: any) => r.id !== rowId) } : g) })
+  }
+
   const summaryStats = useMemo(() => {
     if (!selectedCenter) return { gavalis: 0, producers: 0, cows: 0, buffaloes: 0, totalAnimals: 0 };
     let totalGavalis = (selectedCenter.gavaliSuppliers?.length || 0);
@@ -341,7 +395,6 @@ export default function ChillingCentersPage() {
                   <p className="text-[10pt] font-black text-muted-foreground uppercase tracking-widest mt-1">ID: {selectedCenter.code} | चिलिंग सेंटर सविस्तर अहवाल</p>
                 </div>
                 
-                {/* Detailed Printable Content Section 1: Main Info */}
                 <div className="grid grid-cols-2 gap-10 w-full mb-6 text-[12px] font-bold">
                   <div className="space-y-4">
                     <h4 className="text-[11px] font-black uppercase text-primary tracking-widest border-b-2 border-black pb-1 mb-2">१) प्राथमिक माहिती (PRIMARY)</h4>
@@ -398,7 +451,7 @@ export default function ChillingCentersPage() {
 
           <div className="bg-slate-50 border-b flex overflow-x-auto no-print">
             {[
-              { id: 'main', label: '१) मुख्य माहिती (Chilling)', icon: Warehouse },
+              { id: 'main', label: '१) मुख्य माहिती', icon: Warehouse },
               { id: 'routes', label: '२) रूट व्यवस्थापन', icon: Truck },
               { id: 'gavali', label: '३) गवळी माहिती', icon: Users },
               { id: 'gotha', label: '४) गोठा माहिती', icon: Building2 },
@@ -451,8 +504,8 @@ export default function ChillingCentersPage() {
                       {(formData.tankerLogs || []).map((log) => (
                         <div key={log.id} className="grid grid-cols-5 gap-2 items-end bg-slate-50 p-2 rounded-lg border-2 border-black">
                            <div className="space-y-1"><Label className="text-[8px] font-black">टँकर क्र.</Label><Input value={log.tankerNo} onChange={e => updateTankerLog(log.id, { tankerNo: e.target.value })} className="h-7 border-black text-[10px]" /></div>
-                           <div className="space-y-1"><Label className="text-[8px] font-black">वेळ (In)</Label><Input type="time" value={log.arrivalTime} onChange={e => updateTankerLog(log.id, { arrivalTime: e.target.value })} className="h-7 border-black text-[10px]" /></div>
-                           <div className="space-y-1"><Label className="text-[8px] font-black">वेळ (Out)</Label><Input type="time" value={log.departureTime} onChange={e => updateTankerLog(log.id, { departureTime: e.target.value })} className="h-7 border-black text-[10px]" /></div>
+                           <div className="space-y-1"><Label className="text-[8px] font-black">In</Label><Input type="time" value={log.arrivalTime} onChange={e => updateTankerLog(log.id, { arrivalTime: e.target.value })} className="h-7 border-black text-[10px]" /></div>
+                           <div className="space-y-1"><Label className="text-[8px] font-black">Out</Label><Input type="time" value={log.departureTime} onChange={e => updateTankerLog(log.id, { departureTime: e.target.value })} className="h-7 border-black text-[10px]" /></div>
                            <div className="space-y-1"><Label className="text-[8px] font-black">दूध (L)</Label><Input type="number" value={log.qtyFilled} onChange={e => updateTankerLog(log.id, { qtyFilled: e.target.value })} className="h-7 border-black text-[10px]" /></div>
                            <Button size="icon" variant="ghost" onClick={() => removeTankerLog(log.id)} className="h-7 w-7 text-rose-500"><X className="h-3.5 w-3.5" /></Button>
                         </div>
@@ -550,128 +603,265 @@ export default function ChillingCentersPage() {
               )}
 
               {activeSubTab === 'gavali' && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div className="flex items-center justify-between border-b-2 border-primary/20 pb-1">
                     <SectionTitle icon={Users} title="गवळी माहिती (सविस्तर १६+ कलमी फॉर्म)" />
                     <Button size="sm" onClick={() => addSubEntity('gavaliSuppliers')} className="h-7 text-[9px] font-black uppercase px-3 rounded-lg"><Plus className="h-3 w-3 mr-1" /> गवळी जोडा</Button>
                   </div>
-                  <div className="space-y-4 max-w-[700px]">
-                    {(formData.gavaliSuppliers || []).map((g, gIdx) => (
-                      <Card key={g.id} className="border-2 border-black overflow-hidden rounded-2xl shadow-md">
-                        <div className="p-2 bg-primary text-white flex justify-between items-center cursor-pointer" onClick={() => updateSubItem('gavaliSuppliers', g.id, { isOpen: !g.isOpen })}>
-                          <span className="text-[10px] font-black uppercase">गवळी #{gIdx + 1}: {g.name || '---'}</span>
-                          <div className="flex items-center gap-2">
-                            <Button size="icon" variant="ghost" className="h-6 w-6 text-white/50 hover:text-white" onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, gavaliSuppliers: prev.gavaliSuppliers?.filter(item => item.id !== g.id)})); }}><Trash2 className="h-4 w-4" /></Button>
-                            {g.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <div className="space-y-6 max-w-[800px]">
+                    {(formData.gavaliSuppliers || []).map((g, gIdx) => {
+                      const d = g.producer_center?.additional_details || {};
+                      return (
+                        <Card key={g.id} className="border-2 border-black overflow-hidden rounded-2xl shadow-md bg-white">
+                          <div className="p-2 bg-primary text-white flex justify-between items-center cursor-pointer" onClick={() => updateSubItem('gavaliSuppliers', g.id, { isOpen: !g.isOpen })}>
+                            <span className="text-[10px] font-black uppercase">गवळी #{gIdx + 1}: {g.name || 'तपशील भरा'}</span>
+                            <div className="flex items-center gap-2">
+                              <Button size="icon" variant="ghost" className="h-6 w-6 text-white/50 hover:text-white" onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, gavaliSuppliers: prev.gavaliSuppliers?.filter(item => item.id !== g.id)})); }}><Trash2 className="h-4 w-4" /></Button>
+                              {g.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                            </div>
                           </div>
-                        </div>
-                        {g.isOpen && (
-                          <div className="p-3 bg-white space-y-6 animate-in slide-in-from-top-2 duration-300">
-                             {/* Gavali Details - Reusing the standard 16-point structure */}
-                             <div className="grid grid-cols-2 gap-3">
-                               <div className="space-y-1"><Label className="text-[9px] font-black">नाव *</Label><Input value={g.name} onChange={e => updateSubItem('gavaliSuppliers', g.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
-                               <div className="space-y-1"><Label className="text-[9px] font-black">गवळी कोड *</Label><Input value={g.supplierId} onChange={e => updateSubItem('gavaliSuppliers', g.id, { supplierId: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
-                             </div>
-
-                             <div className="space-y-2 border-t pt-2">
-                               <div className="flex items-center justify-between"><span className="text-[9px] font-black uppercase text-indigo-700">सब-गवळी माहिती (SUB-GAVALI)</span><Button size="sm" variant="outline" onClick={() => addSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', { name: "", mobile: "", area: "", producers: 0, cow_qty: 0 })} className="h-6 text-[8px] font-black border-black px-2">+ जोडा</Button></div>
-                               <div className="border border-black rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-slate-50 h-6"><TableRow><TableHead className="h-6 px-1">नाव</TableHead><TableHead className="h-6 px-1">एरिया</TableHead><TableHead className="h-6 px-1 text-center">दूध</TableHead><TableHead className="h-6 w-8"></TableHead></TableRow></TableHeader><TableBody>
-                                  {(g.producer_center?.additional_details?.sub_gavali_info || []).map((sg: any) => (
-                                    <TableRow key={sg.id} className="h-8"><TableCell className="p-0 border-r"><Input value={sg.name} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sg.id, { name: e.target.value })} className="h-7 border-none text-[10px] p-1 font-bold" /></TableCell><TableCell className="p-0 border-r"><Input value={sg.area} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sg.id, { area: e.target.value })} className="h-7 border-none text-[10px] p-1" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={sg.cow_qty} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sg.id, { cow_qty: e.target.value })} className="h-7 border-none text-center text-[10px] font-black" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sg.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
-                                  ))}
-                               </TableBody></Table></div>
-                             </div>
-
-                             <div className="grid grid-cols-2 gap-3 border-t pt-2">
-                               <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
-                                 <Label className="text-[9px] font-black uppercase text-blue-600">गाय (Q/F/S)</Label>
-                                 <div className="grid grid-cols-3 gap-1 mt-1">
-                                   <Input type="number" value={g.cowMilk?.quantity} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center text-[10px]" />
-                                   <Input type="number" value={g.cowMilk?.fat} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center text-[10px]" />
-                                   <Input type="number" value={g.cowMilk?.snf} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center text-[10px]" />
-                                 </div>
+                          {g.isOpen && (
+                            <div className="p-3 space-y-6 animate-in slide-in-from-top-2 duration-300">
+                               {/* Detailed 16-point structure for Gavali */}
+                               <div className="space-y-4">
+                                  <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
+                                  <div className="grid grid-cols-2 gap-2.5">
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">नाव *</Label><Input value={g.name} onChange={e => updateSubItem('gavaliSuppliers', g.id, { name: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">गवळी कोड *</Label><Input value={g.supplierId} onChange={e => updateSubItem('gavaliSuppliers', g.id, { supplierId: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">ऑपरेटर</Label><Input value={g.operatorName} onChange={e => updateSubItem('gavaliSuppliers', g.id, { operatorName: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={g.mobile} onChange={e => updateSubItem('gavaliSuppliers', g.id, { mobile: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="col-span-2 space-y-0.5"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={g.address} onChange={e => updateSubItem('gavaliSuppliers', g.id, { address: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                  </div>
                                </div>
-                               <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
-                                 <Label className="text-[9px] font-black uppercase text-amber-600">म्हेस (Q/F/S)</Label>
-                                 <div className="grid grid-cols-3 gap-1 mt-1">
-                                   <Input type="number" value={g.buffaloMilk?.quantity} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center text-[10px]" />
-                                   <Input type="number" value={g.buffaloMilk?.fat} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center text-[10px]" />
-                                   <Input type="number" value={g.buffaloMilk?.snf} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center text-[10px]" />
-                                 </div>
-                               </div>
-                             </div>
 
-                             <div className="space-y-1.5 border-t pt-2"><Label className="text-[9px] font-black uppercase">विशेष शेरा</Label><Textarea value={g.additionalInfo} onChange={e => updateSubItem('gavaliSuppliers', g.id, { additionalInfo: e.target.value })} className="h-12 border-2 border-black text-[10px] p-2" /></div>
-                          </div>
-                        )}
-                      </Card>
-                    ))}
+                               <div className="space-y-3">
+                                  <div className="flex items-center justify-between border-b-2 border-indigo-200 pb-1">
+                                    <span className="text-[10px] font-black uppercase text-indigo-700 flex items-center gap-1.5"><Users2 className="h-3.5 w-3.5"/> सब-गवळी माहिती (SUB-GAVALI)</span>
+                                    <Button size="sm" variant="outline" onClick={() => addSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', { name: "", mobile: "", area: "", producers: "0", animals: "0", collection_type: "Spot", cow_qty: "0", buf_qty: "0" })} className="h-6 text-[8px] font-black border-black px-2">+ जोडा</Button>
+                                  </div>
+                                  <div className="border border-black rounded-lg overflow-hidden shadow-sm">
+                                    <ScrollArea className="w-full">
+                                      <Table className="min-w-max text-[9px] uppercase">
+                                        <TableHeader className="bg-slate-50 font-black h-7"><TableRow><TableHead className="h-7 px-2">नाव</TableHead><TableHead className="h-7 px-2">एरिया</TableHead><TableHead className="h-7 px-2 text-center">प्रकार</TableHead><TableHead className="h-7 px-2 text-center">दूध</TableHead><TableHead className="h-7 w-8"></TableHead></TableRow></TableHeader>
+                                        <TableBody>
+                                          {(d.sub_gavali_info || []).map((sub: any) => (
+                                            <TableRow key={sub.id} className="h-8 border-t border-black/10">
+                                              <TableCell className="p-0 border-r"><Input value={sub.name} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { name: e.target.value })} className="h-7 border-none text-[10px] p-1 font-bold" /></TableCell>
+                                              <TableCell className="p-0 border-r"><Input value={sub.area} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { area: e.target.value })} className="h-7 border-none text-[10px] p-1" /></TableCell>
+                                              <TableCell className="p-0 border-r"><select value={sub.collection_type} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { collection_type: e.target.value })} className="h-7 border-none text-[9px] font-black bg-transparent w-full text-center outline-none"><option value="Spot">Spot</option><option value="Route">Route</option></select></TableCell>
+                                              <TableCell className="p-0 border-r"><Input type="number" value={sub.cow_qty} onChange={e => updateSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id, { cow_qty: e.target.value })} className="h-7 border-none text-center text-[10px] font-black w-16" /></TableCell>
+                                              <TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierTableRow('gavaliSuppliers', g.id, 'sub_gavali_info', sub.id)} className="h-7 w-7 text-rose-400"><X className="h-3 w-3"/></Button></TableCell>
+                                            </TableRow>
+                                          ))}
+                                        </TableBody>
+                                      </Table>
+                                      <ScrollBar orientation="horizontal" />
+                                    </ScrollArea>
+                                  </div>
+                               </div>
+
+                               <div className="space-y-4">
+                                  <div className="flex items-center justify-between border-b-2 border-amber-200 pb-1">
+                                    <SectionTitle icon={Building2} title="अंतर्गत मोठे गोठे (INTERNAL GOTHAS)" color="text-amber-700" />
+                                    <Button size="sm" variant="outline" onClick={() => addInternalGotha(g.id)} className="h-7 text-[9px] font-black uppercase px-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg shadow-md border-none"><Plus className="h-3 w-3 mr-1" /> गोठा जोडा</Button>
+                                  </div>
+                                  <div className="space-y-3">
+                                    {(d.internal_gothas || []).map((gotha: any, gIdx: number) => (
+                                      <Card key={gotha.id} className="border-2 border-amber-100 overflow-hidden rounded-xl shadow-sm">
+                                        <div className="p-2 bg-amber-50 flex items-center justify-between cursor-pointer" onClick={() => updateInternalGotha(g.id, gotha.id, { isOpen: !gotha.isOpen })}>
+                                          <span className="text-[9px] font-black uppercase text-amber-900">गोठा #{gIdx + 1}: {gotha.owner_name || '---'}</span>
+                                          <div className="flex gap-1.5"><Button size="icon" variant="ghost" className="h-6 w-6 text-rose-400" onClick={(e) => { e.stopPropagation(); removeInternalGotha(g.id, gotha.id); }}><Trash2 className="h-3 w-3" /></Button>{gotha.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</div>
+                                        </div>
+                                        {gotha.isOpen && (
+                                          <div className="p-3 bg-white space-y-4 animate-in slide-in-from-top-2 duration-300">
+                                            <div className="grid grid-cols-3 gap-2">
+                                              <div className="space-y-0.5"><Label className="text-[8px] font-black">मालक</Label><Input value={gotha.owner_name} onChange={e => updateInternalGotha(g.id, gotha.id, { owner_name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                                              <div className="space-y-0.5"><Label className="text-[8px] font-black">कोड</Label><Input value={gotha.code} onChange={e => updateInternalGotha(g.id, gotha.id, { code: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                                              <div className="space-y-0.5"><Label className="text-[8px] font-black">लोकेशन</Label><Input value={gotha.location} onChange={e => updateInternalGotha(g.id, gotha.id, { location: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                                            </div>
+                                            <div className="space-y-2">
+                                              <div className="flex items-center justify-between"><span className="text-[9px] font-black uppercase text-rose-600">जातीनुसार जनावरे</span><Button size="sm" variant="outline" onClick={() => addInternalGothaTableRow(g.id, gotha.id, 'breeds', { breed: "", count: 0, avg_milk: 0 })} className="h-6 text-[8px] font-black border-black px-2">+ जोडा</Button></div>
+                                              <div className="border border-black rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-slate-50 h-6"><TableRow><TableHead className="h-6 px-1">ब्रीड</TableHead><TableHead className="h-6 px-1 text-center">नग</TableHead><TableHead className="h-6 px-1 text-center">L</TableHead><TableHead className="h-6 w-8"></TableHead></TableRow></TableHeader><TableBody>
+                                                {(gotha.breeds || []).map((b: any) => (
+                                                  <TableRow key={b.id} className="h-8"><TableCell className="p-0 border-r"><Input value={b.breed} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { breed: e.target.value })} className="h-7 border-none text-[10px] p-1 font-bold" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.count} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { count: e.target.value })} className="h-7 border-none text-center text-[10px] font-black" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.avg_milk} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { avg_milk: e.target.value })} className="h-7 border-none text-center text-[10px] font-black" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
+                                                ))}</TableBody></Table></div>
+                                            </div>
+                                            <div className="space-y-1.5"><span className="text-[9px] font-black uppercase text-emerald-700">स्वच्छता चेकलिस्ट (SIDE-BY-SIDE)</span><div className="grid grid-cols-2 gap-1 bg-emerald-50/50 p-2 rounded-lg border border-emerald-100">
+                                              {[
+                                                { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
+                                                { key: 'animal_cleaned', label: 'जनावरे स्वच्छता' },
+                                                { key: 'utensils_sanitized', label: 'भांडी निर्जंतुक' },
+                                                { key: 'worker_hygiene', label: 'कामगार स्वच्छता' },
+                                                { key: 'proper_drainage', label: 'सांडपाणी निचरा' },
+                                                { key: 'clean_water_trough', label: 'स्वच्छ पाणी/चारा' },
+                                              ].map((item) => (
+                                                <div key={item.key} className="flex items-center space-x-1.5 bg-white p-1 rounded border border-emerald-100 shadow-sm">
+                                                  <Checkbox id={`hyg-${gotha.id}-${item.key}`} checked={gotha.hygiene_checklist?.[item.key]} onCheckedChange={(v) => updateInternalGotha(g.id, gotha.id, { hygiene_checklist: { ...gotha.hygiene_checklist, [item.key]: !!v } })} className="h-3 w-3 border-emerald-400" />
+                                                  <Label htmlFor={`hyg-${gotha.id}-${item.key}`} className="text-[8px] font-bold text-slate-700">{item.label}</Label>
+                                                </div>
+                                              ))}
+                                            </div></div>
+                                          </div>
+                                        )}
+                                      </Card>
+                                    ))}
+                                  </div>
+                               </div>
+
+                               <div className="grid grid-cols-2 gap-3 border-t pt-4">
+                                  <div className="space-y-0.5"><Label className="text-[9px] font-black">सकाळ संकलन वेळ</Label><Input type="time" value={d.morning_collection_time} onChange={e => updateSupplierDeep('gavaliSuppliers', g.id, { morning_collection_time: e.target.value })} className="h-8 border-2 border-black" /></div>
+                                  <div className="space-y-0.5"><Label className="text-[9px] font-black">सायंकाळ वेळ</Label><Input type="time" value={d.evening_collection_time} onChange={e => updateSupplierDeep('gavaliSuppliers', g.id, { evening_collection_time: e.target.value })} className="h-8 border-2 border-black" /></div>
+                               </div>
+
+                               <div className="grid grid-cols-2 gap-3">
+                                  <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                                    <Label className="text-[9px] font-black uppercase text-blue-600 flex items-center gap-1"><Milk className="h-3 w-3"/> गाय (Q/F/S)</Label>
+                                    <div className="grid grid-cols-3 gap-1 mt-1">
+                                      <Input type="number" value={g.cowMilk?.quantity} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.cowMilk?.fat} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.cowMilk?.snf} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                    </div>
+                                  </div>
+                                  <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
+                                    <Label className="text-[9px] font-black uppercase text-amber-600 flex items-center gap-1"><Milk className="h-3 w-3"/> म्हैस (Q/F/S)</Label>
+                                    <div className="grid grid-cols-3 gap-1 mt-1">
+                                      <Input type="number" value={g.buffaloMilk?.quantity} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.buffaloMilk?.fat} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.buffaloMilk?.snf} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                    </div>
+                                  </div>
+                               </div>
+
+                               <div className="space-y-4">
+                                  <div className="flex items-center justify-between border-b pb-1"><span className="text-[10px] font-black uppercase tracking-widest text-slate-500">साहित्य (INVENTORY)</span><Button size="sm" variant="outline" onClick={() => addSupplierEquipment('gavaliSuppliers', g.id)} className="h-6 text-[8px] font-black border-black">+ जोडा</Button></div>
+                                  <div className="space-y-2">
+                                    {(g.equipment || []).map(item => (
+                                      <div key={item.id} className="grid grid-cols-12 gap-1.5 items-center bg-slate-50 p-1.5 rounded-lg border border-black/10">
+                                        <div className="col-span-6"><Input value={item.name} onChange={e => updateSupplierEquipment('gavaliSuppliers', g.id, item.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px] px-2 font-bold bg-white" placeholder="साहित्य" /></div>
+                                        <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateSupplierEquipment('gavaliSuppliers', g.id, item.id, { quantity: Number(e.target.value) })} className="h-7 border-2 border-black text-center font-black text-[10px] bg-white" /></div>
+                                        <div className="col-span-3"><Select value={item.ownership} onValueChange={v => updateSupplierEquipment('gavaliSuppliers', g.id, item.id, { ownership: v })}><SelectTrigger className="h-7 text-[9px] border-2 border-black font-black p-1 bg-white"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent></Select></div>
+                                        <div className="col-span-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierEquipment('gavaliSuppliers', g.id, item.id)} className="h-7 w-7 text-rose-400"><X className="h-3.5 w-3.5"/></Button></div>
+                                      </div>
+                                    ))}
+                                  </div>
+                               </div>
+                               <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">विशेष शेरा</Label><Textarea value={g.additionalInfo} onChange={e => updateSubItem('gavaliSuppliers', g.id, { additionalInfo: e.target.value })} className="h-14 border-2 border-black text-[10px] p-2 rounded-xl" /></div>
+                            </div>
+                          )}
+                        </Card>
+                      )
+                    })}
                   </div>
                 </div>
               )}
 
               {activeSubTab === 'gotha' && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div className="flex items-center justify-between border-b-2 border-amber-200 pb-1">
-                    <SectionTitle icon={Building2} title="गोठा माहिती (सविस्तर फॉर्म)" color="text-amber-700" />
-                    <Button size="sm" onClick={() => addSubEntity('gothaSuppliers')} className="h-7 text-[9px] font-black uppercase px-3 rounded-lg"><Plus className="h-3 w-3 mr-1" /> गोठा जोडा</Button>
+                    <SectionTitle icon={Building2} title="गोठा माहिती (सविस्तर १६+ कलमी फॉर्म)" color="text-amber-700" />
+                    <Button size="sm" onClick={() => addSubEntity('gothaSuppliers')} className="h-7 text-[9px] font-black uppercase px-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg shadow-md border-none"><Plus className="h-3 w-3 mr-1" /> गोठा जोडा</Button>
                   </div>
-                  <div className="space-y-4 max-w-[700px]">
-                    {(formData.gothaSuppliers || []).map((go, goIdx) => (
-                      <Card key={go.id} className="border-2 border-black overflow-hidden rounded-2xl shadow-md">
-                        <div className="p-2 bg-amber-600 text-white flex justify-between items-center cursor-pointer" onClick={() => updateSubItem('gothaSuppliers', go.id, { isOpen: !go.isOpen })}>
-                          <span className="text-[10px] font-black uppercase">गोठा #{goIdx + 1}: {go.name || '---'}</span>
-                          <div className="flex items-center gap-2">
-                            <Button size="icon" variant="ghost" className="h-6 w-6 text-white/50 hover:text-white" onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, gothaSuppliers: prev.gothaSuppliers?.filter(item => item.id !== go.id)})); }}><Trash2 className="h-4 w-4" /></Button>
-                            {go.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <div className="space-y-6 max-w-[700px]">
+                    {(formData.gothaSuppliers || []).map((go, goIdx) => {
+                      const d = go.producer_center?.additional_details || {};
+                      return (
+                        <Card key={go.id} className="border-2 border-black overflow-hidden rounded-2xl shadow-md bg-white">
+                          <div className="p-2 bg-amber-600 text-white flex justify-between items-center cursor-pointer" onClick={() => updateSubItem('gothaSuppliers', go.id, { isOpen: !go.isOpen })}>
+                            <span className="text-[10px] font-black uppercase">गोठा #{goIdx + 1}: {go.name || 'तपशील भरा'}</span>
+                            <div className="flex items-center gap-2">
+                              <Button size="icon" variant="ghost" className="h-6 w-6 text-white/50 hover:text-white" onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, gothaSuppliers: prev.gothaSuppliers?.filter(item => item.id !== go.id)})); }}><Trash2 className="h-4 w-4" /></Button>
+                              {go.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                            </div>
                           </div>
-                        </div>
-                        {go.isOpen && (
-                          <div className="p-3 bg-white space-y-6 animate-in slide-in-from-top-2 duration-300">
-                             <div className="grid grid-cols-2 gap-3">
-                               <div className="space-y-1"><Label className="text-[9px] font-black">गोठा नाव *</Label><Input value={go.name} onChange={e => updateSubItem('gothaSuppliers', go.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
-                               <div className="space-y-1"><Label className="text-[9px] font-black">मालक नाव *</Label><Input value={go.operatorName} onChange={e => updateSubItem('gothaSuppliers', go.id, { operatorName: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
-                             </div>
-
-                             <div className="space-y-2 border-t pt-2">
-                               <div className="flex items-center justify-between"><span className="text-[9px] font-black uppercase text-rose-700">जनावरे & ब्रीड (BREEDS)</span><Button size="sm" variant="outline" onClick={() => addSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', { breed: "", count: 0, avg_milk: 0 })} className="h-6 text-[8px] font-black border-black px-2">+ जोडा</Button></div>
-                               <div className="border border-black rounded-lg overflow-hidden"><Table className="text-[9px]"><TableHeader className="bg-slate-50 h-6"><TableRow><TableHead className="h-6 px-1">ब्रीड</TableHead><TableHead className="h-6 px-1 text-center">नग</TableHead><TableHead className="h-6 px-1 text-center">Avg(L)</TableHead><TableHead className="h-6 w-8"></TableHead></TableRow></TableHeader><TableBody>
-                                  {(go.producer_center?.additional_details?.gotha_breed_info || []).map((b: any) => (
-                                    <TableRow key={b.id} className="h-8"><TableCell className="p-0 border-r"><Input value={b.breed} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { breed: e.target.value })} className="h-7 border-none text-[10px] p-1 font-bold text-center" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.count} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { count: e.target.value })} className="h-7 border-none text-[10px] text-center font-black" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.avg_milk} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { avg_milk: e.target.value })} className="h-7 border-none text-[10px] text-center font-black" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
-                                  ))}
-                               </TableBody></Table></div>
-                             </div>
-
-                             <div className="space-y-2 border-t pt-2">
-                               <span className="text-[9px] font-black uppercase text-emerald-700">स्वच्छता चेकलिस्ट (SIDE-BY-SIDE)</span>
-                               <div className="grid grid-cols-2 gap-2 bg-emerald-50/30 p-3 rounded-xl border border-emerald-100">
-                                 {[
-                                   { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
-                                   { key: 'animal_cleaned', label: 'जनावरे स्वच्छता' },
-                                   { key: 'utensils_sanitized', label: 'भांडी निर्जंतुक' },
-                                   { key: 'worker_hygiene', label: 'कामगार स्वच्छता' },
-                                   { key: 'proper_drainage', label: 'सांडपाणी निचरा' },
-                                   { key: 'clean_water_trough', label: 'स्वच्छ पाणी/चारा' },
-                                 ].map((item) => (
-                                   <div key={item.key} className="flex items-center space-x-2 bg-white p-1.5 rounded-lg border border-emerald-100">
-                                     <Checkbox 
-                                       id={`hyg-${go.id}-${item.key}`} 
-                                       checked={go.producer_center?.additional_details?.gotha_hygiene_checklist?.[item.key] || false} 
-                                       onCheckedChange={(checked) => {
-                                         const currentChecklist = go.producer_center?.additional_details?.gotha_hygiene_checklist || {};
-                                         updateSupplierDeep('gothaSuppliers', go.id, { gotha_hygiene_checklist: { ...currentChecklist, [item.key]: !!checked } });
-                                       }} 
-                                       className="h-3 w-3 border-emerald-400"
-                                     />
-                                     <Label htmlFor={`hyg-${go.id}-${item.key}`} className="text-[8px] font-bold text-slate-700 cursor-pointer">{item.label}</Label>
-                                   </div>
-                                 ))}
+                          {go.isOpen && (
+                            <div className="p-3 space-y-6 animate-in slide-in-from-top-2 duration-300">
+                               <div className="space-y-4">
+                                  <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
+                                  <div className="grid grid-cols-2 gap-2.5">
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">गोठा नाव *</Label><Input value={go.name} onChange={e => updateSubItem('gothaSuppliers', go.id, { name: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मालक नाव *</Label><Input value={go.operatorName} onChange={e => updateSubItem('gothaSuppliers', go.id, { operatorName: e.target.value })} className="h-8 border-2 border-black text-xs font-bold" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={go.mobile} onChange={e => updateSubItem('gothaSuppliers', go.id, { mobile: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">पत्ता</Label><Input value={go.address} onChange={e => updateSubItem('gothaSuppliers', go.id, { address: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                  </div>
                                </div>
-                             </div>
-                          </div>
-                        )}
-                      </Card>
-                    ))}
+
+                               <div className="space-y-4">
+                                  <SectionTitle icon={MapPin} title="२) गोठा आकारमान & दूध वेळ" color="text-amber-700" />
+                                  <div className="grid grid-cols-2 gap-2.5">
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">एकूण एरिया</Label><Input value={d.gotha_total_area} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_total_area: e.target.value })} className="h-8 border-2 border-black text-xs" placeholder="उदा. १० गुंठे" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">चारा एरिया</Label><Input value={d.gotha_fodder_area} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_fodder_area: e.target.value })} className="h-8 border-2 border-black text-xs" placeholder="उदा. १ एकर" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">सकाळ दूध वेळ</Label><Input type="time" value={d.gotha_milking_shift_morning} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_milking_shift_morning: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[9px] font-black">सायंकाळ दूध वेळ</Label><Input type="time" value={d.gotha_milking_shift_evening} onChange={e => updateSupplierDeep('gothaSuppliers', go.id, { gotha_milking_shift_evening: e.target.value })} className="h-8 border-2 border-black text-xs" /></div>
+                                  </div>
+                               </div>
+
+                               <div className="space-y-2">
+                                  <div className="flex items-center justify-between"><span className="text-[10px] font-black uppercase text-rose-600 flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> जातीनुसार जनावरे & दूध</span><Button size="sm" variant="outline" onClick={() => addSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', { breed: "", count: 0, avg_milk: 0 })} className="h-6 text-[8px] font-black border-black px-2">+ जोडा</Button></div>
+                                  <div className="border border-black rounded-lg overflow-hidden shadow-sm"><Table className="text-[10px]"><TableHeader className="bg-slate-50 h-7"><TableRow><TableHead className="h-7 px-2">ब्रीड</TableHead><TableHead className="h-7 px-2 text-center">नग</TableHead><TableHead className="h-7 px-2 text-right">Avg(L)</TableHead><TableHead className="h-7 w-8"></TableHead></TableRow></TableHeader><TableBody>
+                                    {(d.gotha_breed_info || []).map((b: any) => (
+                                      <TableRow key={b.id} className="h-9 border-t border-black/10"><TableCell className="p-0 border-r"><Input value={b.breed} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { breed: e.target.value })} className="h-8 border-none text-[11px] p-1 font-bold text-center" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.count} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { count: e.target.value })} className="h-8 border-none text-[11px] text-center font-black" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.avg_milk} onChange={e => updateSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id, { avg_milk: e.target.value })} className="h-8 border-none text-[11px] text-center font-black" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierTableRow('gothaSuppliers', go.id, 'gotha_breed_info', b.id)} className="h-8 w-8 text-rose-400"><X className="h-3.5 w-3.5"/></Button></TableCell></TableRow>
+                                    ))}</TableBody></Table></div>
+                               </div>
+
+                               <div className="space-y-2">
+                                  <span className="text-[10px] font-black uppercase text-emerald-700 flex items-center gap-1.5"><ClipboardCheck className="h-3.5 w-3.5"/> गोठा स्वच्छता चेकलिस्ट (Side-by-Side)</span>
+                                  <div className="grid grid-cols-2 gap-1.5 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                                    {[
+                                      { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
+                                      { key: 'animal_cleaned', label: 'जनावरे स्वच्छता' },
+                                      { key: 'utensils_sanitized', label: 'भांडी निर्जंतुक' },
+                                      { key: 'worker_hygiene', label: 'कामगार स्वच्छता' },
+                                      { key: 'proper_drainage', label: 'सांडपाणी निचरा' },
+                                      { key: 'pest_control', label: 'माश्या/डास नियंत्रण' },
+                                      { key: 'clean_water_trough', label: 'स्वच्छ पाणी/चारा' },
+                                      { key: 'health_records', label: 'आरोग्य रेकॉर्ड' },
+                                    ].map((item) => (
+                                      <div key={item.key} className="flex items-center space-x-1.5 bg-white p-1.5 rounded-lg border border-emerald-100 shadow-sm">
+                                        <Checkbox id={`hyg-go-${go.id}-${item.key}`} checked={d.gotha_hygiene_checklist?.[item.key]} onCheckedChange={(v) => { const current = d.gotha_hygiene_checklist || {}; updateSupplierDeep('gothaSuppliers', go.id, { gotha_hygiene_checklist: { ...current, [item.key]: !!v } }) }} className="h-3.5 w-3.5 border-emerald-400" />
+                                        <Label htmlFor={`hyg-go-${go.id}-${item.key}`} className="text-[9px] font-bold text-slate-700">{item.label}</Label>
+                                      </div>
+                                    ))}
+                                  </div>
+                               </div>
+
+                               <div className="grid grid-cols-2 gap-3 border-t pt-4">
+                                  <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                                    <Label className="text-[9px] font-black uppercase text-blue-600">गाय (Q/F/S)</Label>
+                                    <div className="grid grid-cols-3 gap-1 mt-1">
+                                      <Input type="number" value={go.cowMilk?.quantity} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.cowMilk?.fat} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.cowMilk?.snf} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                    </div>
+                                  </div>
+                                  <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
+                                    <Label className="text-[9px] font-black uppercase text-amber-600">म्हैस (Q/F/S)</Label>
+                                    <div className="grid grid-cols-3 gap-1 mt-1">
+                                      <Input type="number" value={go.buffaloMilk?.quantity} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.buffaloMilk?.fat} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.buffaloMilk?.snf} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                    </div>
+                                  </div>
+                               </div>
+
+                               <div className="space-y-4">
+                                  <div className="flex items-center justify-between border-b pb-1"><span className="text-[10px] font-black uppercase tracking-widest text-slate-500">साहित्य (INVENTORY)</span><Button size="sm" variant="outline" onClick={() => addSupplierEquipment('gothaSuppliers', go.id)} className="h-6 text-[8px] font-black border-black">+ जोडा</Button></div>
+                                  <div className="space-y-2">
+                                    {(go.equipment || []).map(item => (
+                                      <div key={item.id} className="grid grid-cols-12 gap-1.5 items-center bg-slate-50 p-1.5 rounded-lg border border-black/10">
+                                        <div className="col-span-6"><Input value={item.name} onChange={e => updateSupplierEquipment('gothaSuppliers', go.id, item.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px] px-2 font-bold bg-white" placeholder="साहित्य" /></div>
+                                        <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateSupplierEquipment('gothaSuppliers', go.id, item.id, { quantity: Number(e.target.value) })} className="h-7 border-2 border-black text-center font-black text-[10px] bg-white" /></div>
+                                        <div className="col-span-3"><Select value={item.ownership} onValueChange={v => updateSupplierEquipment('gothaSuppliers', go.id, item.id, { ownership: v })}><SelectTrigger className="h-7 text-[9px] border-2 border-black font-black p-1 bg-white"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Self" className="font-bold">स्वतः</SelectItem><SelectItem value="Company" className="font-bold">डेअरी</SelectItem></SelectContent></Select></div>
+                                        <div className="col-span-1 text-center"><Button variant="ghost" size="icon" onClick={() => removeSupplierEquipment('gothaSuppliers', go.id, item.id)} className="h-7 w-7 text-rose-400"><X className="h-3.5 w-3.5"/></Button></div>
+                                      </div>
+                                    ))}
+                                  </div>
+                               </div>
+                               <div className="space-y-1"><Label className="text-[9px] font-black uppercase opacity-60">विशेष शेरा</Label><Textarea value={go.additionalInfo} onChange={e => updateSubItem('gothaSuppliers', go.id, { additionalInfo: e.target.value })} className="h-14 border-2 border-black text-[10px] p-2 rounded-xl" /></div>
+                            </div>
+                          )}
+                        </Card>
+                      )
+                    })}
                   </div>
                 </div>
               )}
