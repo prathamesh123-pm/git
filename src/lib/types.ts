@@ -71,6 +71,31 @@ export interface ProducerCenterAdditionalDetails {
   milk_decrease_reasons?: string;
   efforts_taken?: string;
   required_actions?: string;
+  // Internal Gotha fields for Center/Gavali
+  has_internal_gotha?: boolean;
+  internal_gotha_area?: string;
+  internal_gotha_fodder_area?: string;
+  internal_gotha_milking_morning?: string;
+  internal_gotha_milking_evening?: string;
+  internal_gotha_breed_info?: any[];
+  internal_gotha_worker_info?: any[];
+  internal_gotha_fodder_mgmt?: string;
+  internal_gotha_purchase_source?: string;
+  internal_gotha_prev_dairy?: string;
+  internal_gotha_hygiene_remark?: string;
+  internal_gotha_hygiene_checklist?: Record<string, boolean>;
+  // Gotha Specific (Dedicated)
+  gotha_total_area?: string;
+  gotha_fodder_area?: string;
+  gotha_purchase_source?: string;
+  gotha_previous_dairy?: string;
+  gotha_breed_info?: any[];
+  gotha_worker_info?: any[];
+  gotha_fodder_management?: string;
+  gotha_milking_shift_morning?: string;
+  gotha_milking_shift_evening?: string;
+  gotha_hygiene_remark?: string;
+  gotha_hygiene_checklist?: Record<string, boolean>;
 }
 
 export interface Supplier {
