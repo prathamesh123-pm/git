@@ -1,3 +1,4 @@
+
 export type TaskStatus = 'pending' | 'completed';
 
 export interface Task {
@@ -48,8 +49,6 @@ export interface ProducerCenterAdditionalDetails {
   morning_collection_time?: string;
   evening_collection_time?: string;
   start_year?: string;
-  start_milk?: number;
-  current_total_milk?: number;
   total_producers?: number;
   active_producers?: number;
   inactive_producers?: number;
@@ -59,32 +58,20 @@ export interface ProducerCenterAdditionalDetails {
   calves?: number;
   long_term_producers?: any[];
   decreasing_producers?: any[];
-  can_expand_8_10_cows?: boolean;
-  high_capacity_producer_list?: any[];
-  has_100_plus_milk?: boolean;
-  high_milk_producer_list?: any[];
-  facilities_provided?: any[];
-  lss_details?: any[];
-  competitor_dairies?: any[];
   local_employees?: any[];
   milkman_gavali_details?: any[];
+  competitor_dairies?: any[];
+  sub_routes?: any[];
+  collection_areas?: any[];
   milk_decrease_reasons?: string;
   efforts_taken?: string;
   required_actions?: string;
-  internal_gotha_breed_info?: any[];
-  internal_gotha_worker_info?: any[];
   internal_gothas?: any[];
   sub_gavali_info?: any[];
   gotha_total_area?: string;
   gotha_fodder_area?: string;
-  gotha_purchase_source?: string;
-  gotha_previous_dairy?: string;
-  gotha_breed_info?: any[];
-  gotha_worker_info?: any[];
-  gotha_fodder_management?: string;
   gotha_milking_shift_morning?: string;
   gotha_milking_shift_evening?: string;
-  gotha_hygiene_remark?: string;
   gotha_hygiene_checklist?: Record<string, boolean>;
 }
 
@@ -100,24 +87,16 @@ export interface Supplier {
   additionalInfo?: string;
   cowMilk?: MilkMetrics;
   buffaloMilk?: MilkMetrics;
-  adulterationKitInfo?: string;
   iceBlocks?: number;
   scaleBrand?: string;
   fatMachineBrand?: string;
-  collectionType?: string;
   cattleFeedBrand?: string;
   fssaiNumber?: string;
   fssaiExpiry?: string;
   operatorName?: string;
-  village?: string;
   paymentCycle?: string;
   spaceOwnership?: 'Self' | 'Rented';
   hygieneGrade?: string;
-  additionalNotes?: string;
-  milkCansCount?: number;
-  computerAvailable?: boolean;
-  upsInverterAvailable?: boolean;
-  solarAvailable?: boolean;
   chemicalsStock?: string;
   batteryCondition?: string;
   equipment?: EquipmentItem[];
@@ -125,6 +104,7 @@ export interface Supplier {
     additional_details?: ProducerCenterAdditionalDetails;
   };
   updatedAt: string;
+  isOpen?: boolean; // UI State
 }
 
 export interface ChillingRouteItem {
@@ -172,7 +152,6 @@ export interface ChillingCenter {
   staffHealthCheckDone: boolean;
   calibrationDone: boolean;
   fireSafetyOk: boolean;
-  // Sub-sections requested
   routes?: ChillingRouteItem[];
   gavaliSuppliers?: Supplier[];
   gothaSuppliers?: Supplier[];
@@ -203,22 +182,4 @@ export interface Report {
   fullData?: any;
   createdAt: string;
   updatedAt?: string;
-}
-
-export type FieldType = 'text' | 'number' | 'date' | 'textarea';
-
-export interface FormField {
-  id: string;
-  label: string;
-  type: FieldType;
-  required: boolean;
-}
-
-export interface FormDefinition {
-  id: string;
-  title: string;
-  description?: string;
-  fields: FormField[];
-  createdAt: string;
-  updatedAt: string;
 }

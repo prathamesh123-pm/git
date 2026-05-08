@@ -1,3 +1,4 @@
+
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
@@ -7,23 +8,25 @@ import { getFirestore } from 'firebase/firestore'
 
 /**
  * Initializes Firebase.
- * Uses a safe probe to check for App Hosting environment variables 
- * before falling back to the local config object to prevent app/no-options errors.
+ * Returns null values during SSR to prevent destructuring errors.
  */
 export function initializeFirebase() {
+  if (typeof window === 'undefined') {
+    return {
+      firebaseApp: null,
+      firestore: null,
+      auth: null
+    } as any;
+  }
+
   if (!getApps().length) {
-    let firebaseApp;
+    let firebaseApp: FirebaseApp;
     try {
-      // Probing for App Hosting environment variables safely
-      // In many environments, initializeApp() with no args throws if options are missing.
-      // We only attempt it if we're not in a typical local dev setup without vars.
-      if (process.env.NODE_ENV === "production" && !firebaseConfig.apiKey) {
-        firebaseApp = initializeApp();
-      } else {
-        firebaseApp = initializeApp(firebaseConfig);
-      }
+      // Basic initialization with config
+      firebaseApp = initializeApp(firebaseConfig);
     } catch (e) {
-      // Fallback to the hardcoded config if automatic init fails
+      console.error("Firebase init failed:", e);
+      // Fallback
       firebaseApp = initializeApp(firebaseConfig);
     }
 

@@ -1,20 +1,20 @@
 
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { 
   Plus, Search, Thermometer, Edit, X, ChevronRight,
   Printer, Milk, ShieldCheck, Box, Truck, 
   Zap, Warehouse, User, MapPin, CheckCircle2,
-  Trash2, Droplets, Sun, Waves, Wind, FlaskConical, Shirt, Clock, Calendar, Info, FileText,
-  Users, TrendingUp, IndianRupee, Layers, ListPlus, Activity, ClipboardCheck, ChevronUp, ChevronDown, Building2, Users2, Sparkles, Briefcase, PlusCircle, Laptop,
-  Flame, Scale, HeartPulse, ShieldAlert, ShoppingCart, Sprout, Hash
+  Trash2, Droplets, Sun, Waves, Wind, FlaskConical, Shirt, Clock, FileText,
+  Users, Activity, ClipboardCheck, ChevronUp, ChevronDown, Building2, Users2, Sparkles, Briefcase, PlusCircle, Laptop,
+  Flame, Scale, HeartPulse, ShieldAlert
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
-import { ChillingCenter, Supplier, EquipmentItem, SupplierType, ChillingRouteItem, TankItem, TankerLogItem } from "@/lib/types"
+import { ChillingCenter, Supplier, SupplierType, ChillingRouteItem, TankItem, TankerLogItem } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
@@ -77,7 +77,7 @@ export default function ChillingCentersPage() {
 
   useEffect(() => setMounted(true), [])
 
-  const handleOpenAdd = () => {
+  const handleOpenAdd = useCallback(() => {
     setDialogMode('add'); setEditingId(null); setActiveSubTab('main');
     setFormData({
       name: "", ownerName: "", code: "", address: "", mobile: "",
@@ -97,13 +97,13 @@ export default function ChillingCentersPage() {
       routes: [], gavaliSuppliers: [], gothaSuppliers: []
     })
     setIsDialogOpen(true)
-  }
+  }, [])
 
-  const handleOpenEdit = (center: ChillingCenter) => {
+  const handleOpenEdit = useCallback((center: ChillingCenter) => {
     setDialogMode('edit'); setEditingId(center.id); setActiveSubTab('main');
     setFormData(center)
     setIsDialogOpen(true)
-  }
+  }, [])
 
   const handleSave = () => {
     if (!formData.name || !formData.code || !db || !user) {
@@ -153,8 +153,7 @@ export default function ChillingCentersPage() {
         morning_collection_time: "", evening_collection_time: "", start_year: "",
         total_producers: 0, active_producers: 0, total_animals: 0, cows: 0, buffalo: 0, calves: 0,
         sub_gavali_info: [], internal_gothas: [], local_employees: [],
-        milkman_gavali_details: [], lss_details: [], competitor_dairies: [], sub_routes: [],
-        gotha_breed_info: [], gotha_worker_info: [],
+        milkman_gavali_details: [], competitor_dairies: [], sub_routes: [],
         collection_areas: [],
         gotha_hygiene_checklist: {
           floor_cleaned: false, animal_cleaned: false, utensils_sanitized: false,
@@ -201,7 +200,7 @@ export default function ChillingCentersPage() {
   const updateSupplierDeep = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string, updates: any) => {
     setFormData(prev => ({
       ...prev,
-      [listKey]: (prev[listKey] as Supplier[]).map(s => {
+      [listKey]: (prev[listKey] as Supplier[] || []).map(s => {
         if (s.id === suppId) {
           const currentDetails = s.producer_center?.additional_details || {};
           return {
@@ -220,7 +219,7 @@ export default function ChillingCentersPage() {
   const addSupplierTableRow = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string, detailKey: string, initial: any) => {
     setFormData(prev => ({
       ...prev,
-      [listKey]: (prev[listKey] as Supplier[]).map(s => {
+      [listKey]: (prev[listKey] as Supplier[] || []).map(s => {
         if (s.id === suppId) {
           const currentDetails = s.producer_center?.additional_details || {};
           const currentList = (currentDetails as any)[detailKey] || [];
@@ -240,7 +239,7 @@ export default function ChillingCentersPage() {
   const removeSupplierTableRow = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string, detailKey: string, rowId: string) => {
     setFormData(prev => ({
       ...prev,
-      [listKey]: (prev[listKey] as Supplier[]).map(s => {
+      [listKey]: (prev[listKey] as Supplier[] || []).map(s => {
         if (s.id === suppId) {
           const currentDetails = s.producer_center?.additional_details || {};
           const currentList = (currentDetails as any)[detailKey] || [];
@@ -260,7 +259,7 @@ export default function ChillingCentersPage() {
   const updateSupplierTableRow = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string, detailKey: string, rowId: string, rowUpdates: any) => {
     setFormData(prev => ({
       ...prev,
-      [listKey]: (prev[listKey] as Supplier[]).map(s => {
+      [listKey]: (prev[listKey] as Supplier[] || []).map(s => {
         if (s.id === suppId) {
           const currentDetails = s.producer_center?.additional_details || {};
           const currentList = (currentDetails as any)[detailKey] || [];
@@ -280,21 +279,21 @@ export default function ChillingCentersPage() {
   const addSupplierEquipment = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string) => {
     setFormData(prev => ({
       ...prev,
-      [listKey]: (prev[listKey] as Supplier[]).map(s => s.id === suppId ? { ...s, equipment: [...(s.equipment || []), { id: crypto.randomUUID(), name: "", quantity: 1, ownership: 'Company' }] } : s)
+      [listKey]: (prev[listKey] as Supplier[] || []).map(s => s.id === suppId ? { ...s, equipment: [...(s.equipment || []), { id: crypto.randomUUID(), name: "", quantity: 1, ownership: 'Company' }] } : s)
     }))
   }
 
   const updateSupplierEquipment = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string, eqId: string, updates: any) => {
     setFormData(prev => ({
       ...prev,
-      [listKey]: (prev[listKey] as Supplier[]).map(s => s.id === suppId ? { ...s, equipment: (s.equipment || []).map(e => e.id === eqId ? { ...e, ...updates } : e) } : s)
+      [listKey]: (prev[listKey] as Supplier[] || []).map(s => s.id === suppId ? { ...s, equipment: (s.equipment || []).map(e => e.id === eqId ? { ...e, ...updates } : e) } : s)
     }))
   }
 
   const removeSupplierEquipment = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string, eqId: string) => {
     setFormData(prev => ({
       ...prev,
-      [listKey]: (prev[listKey] as Supplier[]).map(s => s.id === suppId ? { ...s, equipment: (s.equipment || []).filter(e => e.id !== eqId) } : s)
+      [listKey]: (prev[listKey] as Supplier[] || []).map(s => s.id === suppId ? { ...s, equipment: (s.equipment || []).filter(e => e.id !== eqId) } : s)
     }))
   }
 
@@ -550,7 +549,7 @@ export default function ChillingCentersPage() {
                          { k: 'fireSafetyOk', l: 'फायर सेफ्टी Ok', i: Flame },
                        ].map(item => (
                          <div key={item.k} className="flex items-center space-x-2 bg-white p-1.5 rounded border border-black/10">
-                           <Checkbox checked={(formData as any)[item.k]} onCheckedChange={v => setFormData({...formData, [item.k]: !!v})} />
+                           <Checkbox checked={(formData as any)[item.k] || false} onCheckedChange={v => setFormData({...formData, [item.k]: !!v})} />
                            <Label className="text-[9px] font-black uppercase leading-none">{item.l}</Label>
                          </div>
                        ))}
@@ -715,7 +714,7 @@ export default function ChillingCentersPage() {
                                                   <TableRow key={b.id} className="h-8"><TableCell className="p-0 border-r"><Input value={b.breed || ""} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { breed: e.target.value })} className="h-7 border-none text-[10px] p-1 font-bold" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.count || 0} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { count: e.target.value })} className="h-7 border-none text-center text-[10px] font-black" /></TableCell><TableCell className="p-0 border-r"><Input type="number" value={b.avg_milk || 0} onChange={e => updateInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id, { avg_milk: e.target.value })} className="h-7 border-none text-center text-[10px] font-black" /></TableCell><TableCell className="p-0 text-center"><Button variant="ghost" size="icon" onClick={() => removeInternalGothaTableRow(g.id, gotha.id, 'breeds', b.id)} className="h-6 w-6 text-rose-400"><X className="h-3 w-3"/></Button></TableCell></TableRow>
                                                 ))}</TableBody></Table></div>
                                             </div>
-                                            <div className="space-y-1.5"><span className="text-[9px] font-black uppercase text-emerald-700">स्वच्छता चेकलिस्ट (SIDE-BY-SIDE)</span><div className="grid grid-cols-2 gap-1 bg-emerald-50/50 p-2 rounded-lg border border-emerald-100">
+                                            <div className="space-y-1.5"><span className="text-[9px] font-black uppercase text-emerald-700">स्वच्छता चेकलिस्ट</span><div className="grid grid-cols-2 gap-1 bg-emerald-50/50 p-2 rounded-lg border border-emerald-100">
                                               {[
                                                 { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
                                                 { key: 'animal_cleaned', label: 'जनावरे स्वच्छता' },
@@ -725,7 +724,7 @@ export default function ChillingCentersPage() {
                                                 { key: 'clean_water_trough', label: 'स्वच्छ पाणी/चारा' },
                                               ].map((item) => (
                                                 <div key={item.key} className="flex items-center space-x-1.5 bg-white p-1 rounded border border-emerald-100 shadow-sm">
-                                                  <Checkbox id={`hyg-${gotha.id}-${item.key}`} checked={gotha.hygiene_checklist?.[item.key]} onCheckedChange={(v) => updateInternalGotha(g.id, gotha.id, { hygiene_checklist: { ...gotha.hygiene_checklist, [item.key]: !!v } })} className="h-3 w-3 border-emerald-400" />
+                                                  <Checkbox id={`hyg-${gotha.id}-${item.key}`} checked={gotha.hygiene_checklist?.[item.key] || false} onCheckedChange={(v) => updateInternalGotha(g.id, gotha.id, { hygiene_checklist: { ...gotha.hygiene_checklist, [item.key]: !!v } })} className="h-3 w-3 border-emerald-400" />
                                                   <Label htmlFor={`hyg-${gotha.id}-${item.key}`} className="text-[8px] font-bold text-slate-700">{item.label}</Label>
                                                 </div>
                                               ))}
@@ -746,17 +745,17 @@ export default function ChillingCentersPage() {
                                   <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
                                     <Label className="text-[9px] font-black uppercase text-blue-600 flex items-center gap-1"><Milk className="h-3 w-3"/> गाय (Q/F/S)</Label>
                                     <div className="grid grid-cols-3 gap-1 mt-1">
-                                      <Input type="number" value={g.cowMilk?.quantity || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={g.cowMilk?.fat || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={g.cowMilk?.snf || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...g.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.cowMilk?.quantity || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...(g.cowMilk || {}), quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.cowMilk?.fat || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...(g.cowMilk || {}), fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.cowMilk?.snf || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { cowMilk: {...(g.cowMilk || {}), snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                                     </div>
                                   </div>
                                   <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
                                     <Label className="text-[9px] font-black uppercase text-amber-600 flex items-center gap-1"><Milk className="h-3 w-3"/> म्हैस (Q/F/S)</Label>
                                     <div className="grid grid-cols-3 gap-1 mt-1">
-                                      <Input type="number" value={g.buffaloMilk?.quantity || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={g.buffaloMilk?.fat || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={g.buffaloMilk?.snf || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...g.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.buffaloMilk?.quantity || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...(g.buffaloMilk || {}), quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.buffaloMilk?.fat || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...(g.buffaloMilk || {}), fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={g.buffaloMilk?.snf || 0} onChange={e => updateSubItem('gavaliSuppliers', g.id, { buffaloMilk: {...(g.buffaloMilk || {}), snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                                     </div>
                                   </div>
                                </div>
@@ -805,7 +804,7 @@ export default function ChillingCentersPage() {
                               {!go.isOpen && go.supplierId && <span className="text-[8px] font-bold opacity-60">(ID: {go.supplierId})</span>}
                             </div>
                             <div className="flex items-center gap-2">
-                              <Button size="icon" variant="ghost" className={cn("h-6 w-6", go.isOpen ? "text-white/50 hover:text-white" : "text-rose-500")} onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, gothaSuppliers: prev.gothaSuppliers?.filter(item => item.id !== go.id)})); }}><Trash2 className="h-4 w-4" /></Button>
+                              <Button size="icon" variant="ghost" className={cn("h-6 w-6", go.isOpen ? "text-white/50 hover:text-white" : "text-rose-500")} onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, gothaSuppliers: (prev.gothaSuppliers || []).filter(item => item.id !== go.id)})); }}><Trash2 className="h-4 w-4" /></Button>
                               {go.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                             </div>
                           </div>
@@ -840,7 +839,7 @@ export default function ChillingCentersPage() {
                                </div>
 
                                <div className="space-y-2">
-                                  <span className="text-[10px] font-black uppercase text-emerald-700 flex items-center gap-1.5"><ClipboardCheck className="h-3.5 w-3.5"/> गोठा स्वच्छता चेकलिस्ट (Side-by-Side)</span>
+                                  <span className="text-[10px] font-black uppercase text-emerald-700 flex items-center gap-1.5"><ClipboardCheck className="h-3.5 w-3.5"/> गोठा स्वच्छता चेकलिस्ट</span>
                                   <div className="grid grid-cols-2 gap-1.5 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
                                     {[
                                       { key: 'floor_cleaned', label: 'फरशी स्वच्छता' },
@@ -853,7 +852,7 @@ export default function ChillingCentersPage() {
                                       { key: 'health_records', label: 'आरोग्य रेकॉर्ड' },
                                     ].map((item) => (
                                       <div key={item.key} className="flex items-center space-x-1.5 bg-white p-1.5 rounded-lg border border-emerald-100 shadow-sm">
-                                        <Checkbox id={`hyg-go-${go.id}-${item.key}`} checked={d.gotha_hygiene_checklist?.[item.key]} onCheckedChange={(v) => { const current = d.gotha_hygiene_checklist || {}; updateSupplierDeep('gothaSuppliers', go.id, { gotha_hygiene_checklist: { ...current, [item.key]: !!v } }) }} className="h-3.5 w-3.5 border-emerald-400" />
+                                        <Checkbox id={`hyg-go-${go.id}-${item.key}`} checked={d.gotha_hygiene_checklist?.[item.key] || false} onCheckedChange={(v) => { const current = d.gotha_hygiene_checklist || {}; updateSupplierDeep('gothaSuppliers', go.id, { gotha_hygiene_checklist: { ...current, [item.key]: !!v } }) }} className="h-3.5 w-3.5 border-emerald-400" />
                                         <Label htmlFor={`hyg-go-${go.id}-${item.key}`} className="text-[9px] font-bold text-slate-700">{item.label}</Label>
                                       </div>
                                     ))}
@@ -864,17 +863,17 @@ export default function ChillingCentersPage() {
                                   <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
                                     <Label className="text-[9px] font-black uppercase text-blue-600">गाय (Q/F/S)</Label>
                                     <div className="grid grid-cols-3 gap-1 mt-1">
-                                      <Input type="number" value={go.cowMilk?.quantity || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={go.cowMilk?.fat || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={go.cowMilk?.snf || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...go.cowMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.cowMilk?.quantity || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...(go.cowMilk || {}), quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.cowMilk?.fat || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...(go.cowMilk || {}), fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.cowMilk?.snf || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { cowMilk: {...(go.cowMilk || {}), snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                                     </div>
                                   </div>
                                   <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
                                     <Label className="text-[9px] font-black uppercase text-amber-600">म्हेस (Q/F/S)</Label>
                                     <div className="grid grid-cols-3 gap-1 mt-1">
-                                      <Input type="number" value={go.buffaloMilk?.quantity || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={go.buffaloMilk?.fat || 0} onChange={e => updateSubItem('gavaliSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
-                                      <Input type="number" value={go.buffaloMilk?.snf || 0} onChange={e => updateSubItem('gavaliSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.buffaloMilk?.quantity || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...(go.buffaloMilk || {}), quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.buffaloMilk?.fat || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...(go.buffaloMilk || {}), fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
+                                      <Input type="number" value={go.buffaloMilk?.snf || 0} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...(go.buffaloMilk || {}), snf: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                                     </div>
                                   </div>
                                </div>
