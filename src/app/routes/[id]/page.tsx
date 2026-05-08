@@ -270,7 +270,7 @@ function RouteDetailsContent() {
     setFormData((prev: any) => ({ ...prev, [key]: (prev[key] || []).map((r: any) => r.id === id ? { ...r, ...updates } : r) }))
   }
 
-  const filteredSuppliers = useMemo(() => suppliersList.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase())), [suppliersList, searchQuery])
+  const filteredSuppliers = useMemo(() => suppliersList.filter(s => (s.name || "").toLowerCase().includes(searchQuery.toLowerCase())), [suppliersList, searchQuery])
 
   if (!mounted || isLoading) return <div className="p-10 text-center font-black uppercase text-[10px] opacity-50">लोड होत आहे...</div>
 
@@ -363,10 +363,10 @@ function RouteDetailsContent() {
 
           <ScrollArea className="flex-1 bg-white">
             <div className="p-3 space-y-8 pb-20 min-w-max">
-              <div className="max-w-[600px] space-y-6">
+              <div className="max-w-[800px] space-y-6">
                 <div>
                   <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
-                  <div className="grid grid-cols-1 gap-2.5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <Label className="text-[9px] font-black uppercase opacity-60">सप्लायर प्रकार</Label>
                       <Select value={formData.supplierType || "Center"} onValueChange={(v: any) => setFormData({...formData, supplierType: v})}>
@@ -390,7 +390,7 @@ function RouteDetailsContent() {
                   <div className="space-y-6">
                     <div>
                       <SectionTitle icon={Clock} title="२) संकलन वेळ & उत्पादक सारांश" />
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                         <div className="space-y-0.5"><Label className="text-[9px] font-black">सकाळ वेळ</Label><Input type="time" value={formData.morning_collection_time || ""} onChange={e => setFormData({...formData, morning_collection_time: e.target.value})} className="h-9 border-2 border-black" /></div>
                         <div className="space-y-0.5"><Label className="text-[9px] font-black">सायंकाळ वेळ</Label><Input type="time" value={formData.evening_collection_time || ""} onChange={e => setFormData({...formData, evening_collection_time: e.target.value})} className="h-9 border-2 border-black" /></div>
                         <div className="space-y-0.5"><Label className="text-[9px] font-black">एकूण उत्पादक</Label><Input type="number" value={formData.total_producers || "0"} onChange={e => setFormData({...formData, total_producers: e.target.value})} className="h-9 border-2 border-black text-center font-black" /></div>
@@ -427,6 +427,33 @@ function RouteDetailsContent() {
                         </div>
                       </>
                     )}
+
+                    {formData.supplierType === 'Gavali' && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between border-b-2 border-indigo-200 pb-1">
+                          <SectionTitle icon={Users2} title="सब-गवळी माहिती (SUB-GAVALI INFO)" color="text-indigo-700" />
+                          <Button size="sm" onClick={() => addRow('sub_gavali_info', { name: "", mobile: "", area: "", producers: "0", animals: "0", collection_type: "Spot" })} className="h-7 text-[9px] font-black uppercase px-3 bg-indigo-600 text-white rounded-lg shadow-md border-none"><Plus className="h-3 w-3 mr-1" /> सब-गवळी जोडा</Button>
+                        </div>
+                        <div className="space-y-3">
+                          {(formData.sub_gavali_info || []).map((sub: any, sIdx: number) => (
+                            <Card key={sub.id} className="border-2 border-indigo-100 overflow-hidden rounded-xl shadow-sm">
+                              <div className={cn("p-2 flex items-center justify-between cursor-pointer", sub.isOpen ? "bg-indigo-100" : "bg-indigo-50")} onClick={() => updateRow('sub_gavali_info', sub.id, { isOpen: !sub.isOpen })}>
+                                <div className="flex items-center gap-2"><Badge className="bg-indigo-600 text-white font-black text-[8px] h-5">SG-{sIdx + 1}</Badge><span className="text-[9px] font-black uppercase text-indigo-900">{sub.name || 'तपशील भरा'}</span></div>
+                                <div className="flex gap-1.5"><Button size="icon" variant="ghost" className="h-6 w-6 text-rose-400" onClick={(e) => { e.stopPropagation(); removeRow('sub_gavali_info', sub.id) }}><Trash2 className="h-3.5 w-3.5" /></Button>{sub.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</div>
+                              </div>
+                              {sub.isOpen && (
+                                <div className="p-3 bg-white space-y-4 animate-in slide-in-from-top-2 duration-300">
+                                  <div className="grid grid-cols-2 gap-2.5">
+                                    <div className="space-y-0.5"><Label className="text-[8px] font-black">नाव</Label><Input value={sub.name || ""} onChange={e => updateRow('sub_gavali_info', sub.id, { name: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                                    <div className="space-y-0.5"><Label className="text-[8px] font-black">मोबाईल</Label><Input value={sub.mobile || ""} onChange={e => updateRow('sub_gavali_info', sub.id, { mobile: e.target.value })} className="h-7 border-2 border-black text-[10px]" /></div>
+                                  </div>
+                                </div>
+                              )}
+                            </Card>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -438,7 +465,7 @@ function RouteDetailsContent() {
           </ScrollArea>
 
           <DialogFooter className="p-3 border-t bg-muted/10 shrink-0 flex flex-row gap-2 no-print z-[100] sticky bottom-0">
-            <Button variant="outline" onClick={() => { setIsAdding(false); setIsEditing(false); resetFormData(); }} className="flex-1 h-11 rounded-xl font-black uppercase text-[10px] border-2 border-black bg-white">रद्द</Button>
+            <Button variant="outline" onClick={() => { setIsDialogOpen(false); resetFormData(); }} className="flex-1 h-11 rounded-xl font-black uppercase text-[10px] border-2 border-black bg-white">रद्द</Button>
             <Button onClick={handleSave} className="flex-[2] h-11 rounded-xl shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest transition-all active:scale-95 bg-primary text-white"><CheckCircle2 className="h-4 w-4 mr-1.5" /> माहिती जतन करा</Button>
           </DialogFooter>
         </DialogContent>
