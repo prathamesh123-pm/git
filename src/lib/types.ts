@@ -26,6 +26,7 @@ export interface EquipmentItem {
   brand?: string;
   quantity: number;
   ownership: 'Self' | 'Company';
+  status?: string;
 }
 
 export interface TankItem {
