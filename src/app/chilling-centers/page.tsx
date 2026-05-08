@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -172,15 +171,31 @@ export default function ChillingCentersPage() {
     } else {
       const type = listKey === 'gavaliSuppliers' ? 'Gavali' : 'Gotha'
       const newItem = createInitialSupplier(type)
-      setFormData(prev => ({ ...prev, [listKey]: [...(prev[listKey] as any[] || []), { ...newItem, isOpen: true }] }))
+      setFormData(prev => ({ 
+        ...prev, 
+        [listKey]: [
+          ...(prev[listKey] as any[] || []).map(item => ({ ...item, isOpen: false })), 
+          { ...newItem, isOpen: true }
+        ] 
+      }))
     }
   }
 
   const updateSubItem = (listKey: 'routes' | 'gavaliSuppliers' | 'gothaSuppliers', id: string, updates: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [listKey]: (prev[listKey] as any[]).map(item => item.id === id ? { ...item, ...updates } : item)
-    }))
+    setFormData(prev => {
+      const list = (prev[listKey] as any[] || []);
+      // If toggling 'isOpen' to true, close others
+      if (updates.isOpen === true) {
+        return {
+          ...prev,
+          [listKey]: list.map(item => item.id === id ? { ...item, ...updates } : { ...item, isOpen: false })
+        }
+      }
+      return {
+        ...prev,
+        [listKey]: list.map(item => item.id === id ? { ...item, ...updates } : item)
+      }
+    })
   }
 
   const updateSupplierDeep = (listKey: 'gavaliSuppliers' | 'gothaSuppliers', suppId: string, updates: any) => {
@@ -288,12 +303,18 @@ export default function ChillingCentersPage() {
       id: crypto.randomUUID(), isOpen: true, owner_name: "", code: "", location: "", area: "", fodder_area: "",
       milking_morning: "", milking_evening: "", breeds: [], workers: [], hygiene_checklist: { floor_cleaned: false, animal_cleaned: false, utensils_sanitized: false, worker_hygiene: false, proper_drainage: false, clean_water_trough: false, pest_control: false, health_records: false }
     }
-    updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: [...(formData.gavaliSuppliers?.find(s => s.id === suppId)?.producer_center?.additional_details?.internal_gothas || []), newGotha] })
+    const currentGothas = (formData.gavaliSuppliers?.find(s => s.id === suppId)?.producer_center?.additional_details?.internal_gothas || []).map((g: any) => ({ ...g, isOpen: false }));
+    updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: [...currentGothas, newGotha] })
   }
 
   const updateInternalGotha = (suppId: string, gothaId: string, updates: any) => {
     const currentGothas = formData.gavaliSuppliers?.find(s => s.id === suppId)?.producer_center?.additional_details?.internal_gothas || [];
-    updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: currentGothas.map((g: any) => g.id === gothaId ? { ...g, ...updates } : g) })
+    // If opening one, close others
+    if (updates.isOpen === true) {
+      updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: currentGothas.map((g: any) => g.id === gothaId ? { ...g, ...updates } : { ...g, isOpen: false }) })
+    } else {
+      updateSupplierDeep('gavaliSuppliers', suppId, { internal_gothas: currentGothas.map((g: any) => g.id === gothaId ? { ...g, ...updates } : g) })
+    }
   }
 
   const removeInternalGotha = (suppId: string, gothaId: string) => {
@@ -556,7 +577,7 @@ export default function ChillingCentersPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="p-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl">
-                        <Label className="text-[9px] font-black uppercase text-blue-600 block mb-1">गाय (Cow Q/F/S)</Label>
+                        <Label className="text-[9px] font-black uppercase text-blue-600 block mb-1.5">गाय (Cow Q/F/S)</Label>
                         <div className="grid grid-cols-3 gap-1">
                           <Input type="number" value={formData.cowMilk?.quantity} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                           <Input type="number" value={formData.cowMilk?.fat} onChange={e => setFormData({...formData, cowMilk: {...formData.cowMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
@@ -564,7 +585,7 @@ export default function ChillingCentersPage() {
                         </div>
                       </div>
                       <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
-                        <Label className="text-[9px] font-black uppercase text-amber-600 block mb-1">म्हेस (Buf Q/F/S)</Label>
+                        <Label className="text-[9px] font-black uppercase text-amber-600 block mb-1.5">म्हेस (Buf Q/F/S)</Label>
                         <div className="grid grid-cols-3 gap-1">
                           <Input type="number" value={formData.buffaloMilk?.quantity} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                           <Input type="number" value={formData.buffaloMilk?.fat} onChange={e => setFormData({...formData, buffaloMilk: {...formData.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
@@ -613,16 +634,22 @@ export default function ChillingCentersPage() {
                       const d = g.producer_center?.additional_details || {};
                       return (
                         <Card key={g.id} className="border-2 border-black overflow-hidden rounded-2xl shadow-md bg-white">
-                          <div className="p-2 bg-primary text-white flex justify-between items-center cursor-pointer" onClick={() => updateSubItem('gavaliSuppliers', g.id, { isOpen: !g.isOpen })}>
-                            <span className="text-[10px] font-black uppercase">गवळी #{gIdx + 1}: {g.name || 'तपशील भरा'}</span>
+                          <div 
+                            className={cn("p-2 flex justify-between items-center cursor-pointer transition-colors", g.isOpen ? "bg-primary text-white" : "bg-slate-50 hover:bg-slate-100 text-slate-900")} 
+                            onClick={() => updateSubItem('gavaliSuppliers', g.id, { isOpen: !g.isOpen })}
+                          >
                             <div className="flex items-center gap-2">
-                              <Button size="icon" variant="ghost" className="h-6 w-6 text-white/50 hover:text-white" onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, gavaliSuppliers: prev.gavaliSuppliers?.filter(item => item.id !== g.id)})); }}><Trash2 className="h-4 w-4" /></Button>
+                              <Badge className={cn("font-black text-[8px] h-5", g.isOpen ? "bg-white text-primary" : "bg-primary text-white")}>#{gIdx + 1}</Badge>
+                              <span className="text-[10px] font-black uppercase">{g.name || 'गवळी तपशील भरा'}</span>
+                              {!g.isOpen && g.supplierId && <span className="text-[8px] font-bold opacity-60">(ID: {g.supplierId})</span>}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button size="icon" variant="ghost" className={cn("h-6 w-6", g.isOpen ? "text-white/50 hover:text-white" : "text-rose-500")} onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, gavaliSuppliers: prev.gavaliSuppliers?.filter(item => item.id !== g.id)})); }}><Trash2 className="h-4 w-4" /></Button>
                               {g.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                             </div>
                           </div>
                           {g.isOpen && (
                             <div className="p-3 space-y-6 animate-in slide-in-from-top-2 duration-300">
-                               {/* Detailed 16-point structure for Gavali */}
                                <div className="space-y-4">
                                   <SectionTitle icon={User} title="१) प्राथमिक माहिती" />
                                   <div className="grid grid-cols-2 gap-2.5">
@@ -668,8 +695,11 @@ export default function ChillingCentersPage() {
                                   <div className="space-y-3">
                                     {(d.internal_gothas || []).map((gotha: any, gIdx: number) => (
                                       <Card key={gotha.id} className="border-2 border-amber-100 overflow-hidden rounded-xl shadow-sm">
-                                        <div className="p-2 bg-amber-50 flex items-center justify-between cursor-pointer" onClick={() => updateInternalGotha(g.id, gotha.id, { isOpen: !gotha.isOpen })}>
-                                          <span className="text-[9px] font-black uppercase text-amber-900">गोठा #{gIdx + 1}: {gotha.owner_name || '---'}</span>
+                                        <div className={cn("p-2 flex items-center justify-between cursor-pointer", gotha.isOpen ? "bg-amber-100" : "bg-amber-50")} onClick={() => updateInternalGotha(g.id, gotha.id, { isOpen: !gotha.isOpen })}>
+                                          <div className="flex items-center gap-2">
+                                            <Badge className="bg-amber-600 text-white font-black text-[8px] h-5">G-{gIdx + 1}</Badge>
+                                            <span className="text-[9px] font-black uppercase text-amber-900">गोठा: {gotha.owner_name || '---'}</span>
+                                          </div>
                                           <div className="flex gap-1.5"><Button size="icon" variant="ghost" className="h-6 w-6 text-rose-400" onClick={(e) => { e.stopPropagation(); removeInternalGotha(g.id, gotha.id); }}><Trash2 className="h-3 w-3" /></Button>{gotha.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</div>
                                         </div>
                                         {gotha.isOpen && (
@@ -766,10 +796,17 @@ export default function ChillingCentersPage() {
                       const d = go.producer_center?.additional_details || {};
                       return (
                         <Card key={go.id} className="border-2 border-black overflow-hidden rounded-2xl shadow-md bg-white">
-                          <div className="p-2 bg-amber-600 text-white flex justify-between items-center cursor-pointer" onClick={() => updateSubItem('gothaSuppliers', go.id, { isOpen: !go.isOpen })}>
-                            <span className="text-[10px] font-black uppercase">गोठा #{goIdx + 1}: {go.name || 'तपशील भरा'}</span>
+                          <div 
+                            className={cn("p-2 flex justify-between items-center cursor-pointer transition-colors", go.isOpen ? "bg-amber-600 text-white" : "bg-amber-50 hover:bg-amber-100 text-amber-900")} 
+                            onClick={() => updateSubItem('gothaSuppliers', go.id, { isOpen: !go.isOpen })}
+                          >
                             <div className="flex items-center gap-2">
-                              <Button size="icon" variant="ghost" className="h-6 w-6 text-white/50 hover:text-white" onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, gothaSuppliers: prev.gothaSuppliers?.filter(item => item.id !== go.id)})); }}><Trash2 className="h-4 w-4" /></Button>
+                              <Badge className={cn("font-black text-[8px] h-5", go.isOpen ? "bg-white text-amber-600" : "bg-amber-600 text-white")}>#{goIdx + 1}</Badge>
+                              <span className="text-[10px] font-black uppercase">{go.name || 'गोठा तपशील भरा'}</span>
+                              {!go.isOpen && go.supplierId && <span className="text-[8px] font-bold opacity-60">(ID: {go.supplierId})</span>}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button size="icon" variant="ghost" className={cn("h-6 w-6", go.isOpen ? "text-white/50 hover:text-white" : "text-rose-500")} onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, gothaSuppliers: prev.gothaSuppliers?.filter(item => item.id !== go.id)})); }}><Trash2 className="h-4 w-4" /></Button>
                               {go.isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                             </div>
                           </div>
@@ -834,7 +871,7 @@ export default function ChillingCentersPage() {
                                     </div>
                                   </div>
                                   <div className="p-2.5 bg-amber-50 border-2 border-amber-200 rounded-xl">
-                                    <Label className="text-[9px] font-black uppercase text-amber-600">म्हैस (Q/F/S)</Label>
+                                    <Label className="text-[9px] font-black uppercase text-amber-600">म्हेस (Q/F/S)</Label>
                                     <div className="grid grid-cols-3 gap-1 mt-1">
                                       <Input type="number" value={go.buffaloMilk?.quantity} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, quantity: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
                                       <Input type="number" value={go.buffaloMilk?.fat} onChange={e => updateSubItem('gothaSuppliers', go.id, { buffaloMilk: {...go.buffaloMilk, fat: Number(e.target.value)}})} className="h-7 border-black text-center font-black text-[10px]" />
