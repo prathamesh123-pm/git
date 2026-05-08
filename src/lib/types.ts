@@ -58,7 +58,7 @@ export interface ProducerCenterAdditionalDetails {
   long_term_producers?: any[];
   decreasing_producers?: any[];
   local_employees?: any[];
-  milkman_gavali_details?: any[];
+  dairy_employees?: any[];
   local_gavali?: any[];
   lss_details?: any[];
   competitor_dairies?: any[];
@@ -77,6 +77,7 @@ export interface ProducerCenterAdditionalDetails {
   gotha_milking_shift_morning?: string;
   gotha_milking_shift_evening?: string;
   gotha_hygiene_checklist?: Record<string, boolean>;
+  gotha_breed_info?: any[];
 }
 
 export interface Supplier {
@@ -104,6 +105,11 @@ export interface Supplier {
   chemicalsStock?: string;
   batteryCondition?: string;
   equipment?: EquipmentItem[];
+  computerAvailable?: boolean;
+  upsInverterAvailable?: boolean;
+  solarAvailable?: boolean;
+  adulterationKitInfo?: string;
+  milkCansCount?: number;
   producer_center?: {
     additional_details?: ProducerCenterAdditionalDetails;
   };
