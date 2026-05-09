@@ -358,30 +358,57 @@ function RouteDetailsContent() {
                 </div>
 
                 {formData.supplierType === 'Gavali' && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between border-b-2 border-indigo-200 pb-1">
-                      <h3 className="text-[11px] font-black uppercase text-indigo-700 flex items-center gap-1.5"><Users2 className="h-4 w-4"/> सब-गवळी माहिती (SUB-GAVALI INFO)</h3>
-                      <Button size="sm" onClick={() => addRow('sub_gavali_info', { name: "", mobile: "", area: "", method: "Spot", producers: "0", animals: "0", cow_qty: "0", note: "" })} className="h-8 text-[10px] font-black bg-indigo-600 text-white rounded-xl shadow-lg">+ सब-गवळी जोडा</Button>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {formData.sub_gavali_info.map((sg: any, idx: number) => (
-                        <Card key={sg.id} className="border-2 border-indigo-100 overflow-hidden rounded-2xl shadow-md bg-white">
-                          <div className="p-2 bg-indigo-50 flex justify-between items-center border-b-2 border-indigo-100">
-                            <Badge className="bg-indigo-600 font-black h-5 uppercase">SG-{idx + 1} सब-गवळी</Badge>
-                            <Button variant="ghost" size="icon" onClick={() => removeRow('sub_gavali_info', sg.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4" /></Button>
-                          </div>
-                          <div className="p-3 space-y-3">
-                            <div className="grid grid-cols-2 gap-2">
-                              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">नाव</Label><Input value={sg.name} onChange={e => updateRow('sub_gavali_info', sg.id, { name: e.target.value })} className="h-8 text-[11px] border-black" /></div>
-                              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={sg.mobile} onChange={e => updateRow('sub_gavali_info', sg.id, { mobile: e.target.value })} className="h-8 text-[11px] border-black" /></div>
-                              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">एरिया</Label><Input value={sg.area} onChange={e => updateRow('sub_gavali_info', sg.id, { area: e.target.value })} className="h-8 text-[11px] border-black" /></div>
-                              <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">पद्धत</Label>
-                                <Select value={sg.method} onValueChange={v => updateRow('sub_gavali_info', sg.id, { method: v })}>
-                                  <SelectTrigger className="h-8 text-[10px] border-black"><SelectValue /></SelectTrigger>
-                                  <SelectContent><SelectItem value="Spot">Spot</SelectItem><SelectItem value="Route">Route</SelectItem></SelectContent>
-                                </Select>
+                  <>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b-2 border-indigo-200 pb-1">
+                        <h3 className="text-[11px] font-black uppercase text-indigo-700 flex items-center gap-1.5"><Users2 className="h-4 w-4"/> सब-गवळी माहिती (SUB-GAVALI INFO)</h3>
+                        <Button size="sm" onClick={() => addRow('sub_gavali_info', { name: "", mobile: "", area: "", method: "Spot", producers: "0", animals: "0", cow_qty: "0", note: "" })} className="h-8 text-[10px] font-black bg-indigo-600 text-white rounded-xl shadow-lg">+ सब-गवळी जोडा</Button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {formData.sub_gavali_info.map((sg: any, idx: number) => (
+                          <Card key={sg.id} className="border-2 border-indigo-100 overflow-hidden rounded-2xl shadow-md bg-white">
+                            <div className="p-2 bg-indigo-50 flex justify-between items-center border-b-2 border-indigo-100">
+                              <Badge className="bg-indigo-600 font-black h-5 uppercase">SG-{idx + 1} सब-गवळी</Badge>
+                              <Button variant="ghost" size="icon" onClick={() => removeRow('sub_gavali_info', sg.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4" /></Button>
+                            </div>
+                            <div className="p-3 space-y-3">
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">नाव</Label><Input value={sg.name} onChange={e => updateRow('sub_gavali_info', sg.id, { name: e.target.value })} className="h-8 text-[11px] border-black" /></div>
+                                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">मोबाईल</Label><Input value={sg.mobile} onChange={e => updateRow('sub_gavali_info', sg.id, { mobile: e.target.value })} className="h-8 text-[11px] border-black" /></div>
+                                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">एरिया</Label><Input value={sg.area} onChange={e => updateRow('sub_gavali_info', sg.id, { area: e.target.value })} className="h-8 text-[11px] border-black" /></div>
+                                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">पद्धत</Label>
+                                  <Select value={sg.method} onValueChange={v => updateRow('sub_gavali_info', sg.id, { method: v })}>
+                                    <SelectTrigger className="h-8 text-[10px] border-black"><SelectValue /></SelectTrigger>
+                                    <SelectContent><SelectItem value="Spot">Spot</SelectItem><SelectItem value="Route">Route</SelectItem></SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">उत्पादक</Label><Input value={sg.producers} onChange={e => updateRow('sub_gavali_info', sg.id, { producers: e.target.value })} className="h-8 text-[11px] border-black text-center" /></div>
+                                <div className="space-y-0.5"><Label className="text-[9px] font-black uppercase">गाय दूध</Label><Input value={sg.cow_qty} onChange={e => updateRow('sub_gavali_info', sg.id, { cow_qty: e.target.value })} className="h-8 text-[11px] border-black text-center font-black" /></div>
                               </div>
                             </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {(formData.supplierType === 'Center' || formData.supplierType === 'Gavali') && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b-2 border-primary/20 pb-1">
+                      <h3 className="text-[11px] font-black uppercase text-primary flex items-center gap-1.5"><Building2 className="h-4 w-4"/> अंतर्गत मोठे गोठे (INTERNAL GOTHAS)</h3>
+                      <Button size="sm" onClick={() => addRow('internal_gothas', { owner: "", location: "", breeds: [], hygiene: {} })} className="h-8 text-[10px] font-black bg-primary text-white rounded-xl shadow-lg">+ गोठा जोडा</Button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {formData.internal_gothas.map((gotha: any, idx: number) => (
+                        <Card key={gotha.id} className="border-2 border-primary/10 overflow-hidden rounded-2xl shadow-md bg-white">
+                          <div className="p-2 bg-primary/5 flex justify-between items-center border-b-2 border-primary/10">
+                            <Badge className="bg-primary font-black h-5 uppercase">G-{idx + 1} गोठा</Badge>
+                            <Button variant="ghost" size="icon" onClick={() => removeRow('internal_gothas', gotha.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4" /></Button>
+                          </div>
+                          <div className="p-3 grid grid-cols-2 gap-2">
+                             <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मालक नाव</Label><Input value={gotha.owner} onChange={e => updateRow('internal_gothas', gotha.id, { owner: e.target.value })} className="h-8 text-[11px] border-black" /></div>
+                             <div className="space-y-1"><Label className="text-[9px] font-black uppercase">लोकेशन</Label><Input value={gotha.location} onChange={e => updateRow('internal_gothas', gotha.id, { location: e.target.value })} className="h-8 text-[11px] border-black" /></div>
                           </div>
                         </Card>
                       ))}
@@ -389,26 +416,51 @@ function RouteDetailsContent() {
                   </div>
                 )}
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b-2 border-primary/20 pb-1">
-                    <h3 className="text-[11px] font-black uppercase text-primary flex items-center gap-1.5"><Building2 className="h-4 w-4"/> अंतर्गत मोठे गोठे (INTERNAL GOTHAS)</h3>
-                    <Button size="sm" onClick={() => addRow('internal_gothas', { owner: "", code: "", location: "", g_area: "", f_area: "", m_time: "", e_time: "", breeds: [], hygiene: {} })} className="h-8 text-[10px] font-black bg-primary text-white rounded-xl shadow-lg">+ गोठा जोडा</Button>
+                {formData.supplierType === 'Gotha' && (
+                  <div className="space-y-4">
+                    <SectionTitle icon={Building2} title="२) गोठा आकारमान & दूध वेळ" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1"><Label className="text-[10px] font-black uppercase">गोठा एकूण एरिया</Label><Input placeholder="उदा. १० गुंठे" value={formData.gotha_area || ""} onChange={e => setFormData({...formData, gotha_area: e.target.value})} className="h-10 border-2 border-black" /></div>
+                      <div className="space-y-1"><Label className="text-[10px] font-black uppercase">चारा एरिया</Label><Input placeholder="उदा. २ एकर" value={formData.fodder_area || ""} onChange={e => setFormData({...formData, fodder_area: e.target.value})} className="h-10 border-2 border-black" /></div>
+                      <div className="space-y-1"><Label className="text-[10px] font-black uppercase">सकाळ दूध वेळ</Label><Input type="time" value={formData.morning_milking_time || ""} onChange={e => setFormData({...formData, morning_milking_time: e.target.value})} className="h-10 border-2 border-black" /></div>
+                      <div className="space-y-1"><Label className="text-[10px] font-black uppercase">सायंकाळ दूध वेळ</Label><Input type="time" value={formData.evening_milking_time || ""} onChange={e => setFormData({...formData, evening_milking_time: e.target.value})} className="h-10 border-2 border-black" /></div>
+                    </div>
+                    
+                    <DynamicTable 
+                      title="जनावरे & ब्रीड माहिती" 
+                      data={formData.gotha_breeds || []} 
+                      columns={[{ key: 'breed', label: 'ब्रीड (जात)' }, { key: 'count', label: 'संख्या', type: 'number' }, { key: 'avg_milk', label: 'सरासरी दूध (L)', type: 'number' }]} 
+                      onAdd={() => addRow('gotha_breeds', { breed: "", count: "0", avg_milk: "0" })} 
+                      onRemove={(id: string) => removeRow('gotha_breeds', id)} 
+                      onUpdate={(id: string, u: any) => updateRow('gotha_breeds', id, u)} 
+                    />
+
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-black uppercase text-emerald-700 flex items-center gap-1.5"><ClipboardCheck className="h-4 w-4"/> गोठा स्वच्छता चेकलिस्ट</span>
+                      <div className="grid grid-cols-2 gap-2 bg-emerald-50/50 p-3 rounded-2xl border-2 border-emerald-100">
+                        {[
+                          { key: 'floor', label: 'फरशी स्वच्छता' },
+                          { key: 'animal', label: 'जनावरे स्वच्छता' },
+                          { key: 'utensils', label: 'भांडी निर्जंतुक' },
+                          { key: 'worker', label: 'कामगार स्वच्छता' },
+                          { key: 'drainage', label: 'सांडपाणी निचरा' },
+                          { key: 'pest', label: 'माश्या/डासांचे नियंत्रण' },
+                          { key: 'water', label: 'स्वच्छ पाणी/चारा' },
+                          { key: 'health', label: 'आरोग्य रेकॉर्ड' },
+                        ].map((item) => (
+                          <div key={item.key} className="flex items-center space-x-2 bg-white p-2 rounded-xl border border-emerald-100 shadow-sm">
+                            <Checkbox 
+                              checked={formData.hygiene?.[item.key] || false} 
+                              onCheckedChange={(v) => setFormData({...formData, hygiene: { ...(formData.hygiene || {}), [item.key]: !!v }})} 
+                              className="h-4 w-4 border-emerald-400" 
+                            />
+                            <Label className="text-[10px] font-bold text-slate-700">{item.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {formData.internal_gothas.map((gotha: any, idx: number) => (
-                      <Card key={gotha.id} className="border-2 border-primary/10 overflow-hidden rounded-2xl shadow-md bg-white">
-                        <div className="p-2 bg-primary/5 flex justify-between items-center border-b-2 border-primary/10">
-                          <Badge className="bg-primary font-black h-5 uppercase">G-{idx + 1} गोठा</Badge>
-                          <Button variant="ghost" size="icon" onClick={() => removeRow('internal_gothas', gotha.id)} className="h-7 w-7 text-rose-500"><X className="h-4 w-4" /></Button>
-                        </div>
-                        <div className="p-3 grid grid-cols-2 gap-2">
-                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">मालक नाव</Label><Input value={gotha.owner} onChange={e => updateRow('internal_gothas', gotha.id, { owner: e.target.value })} className="h-8 text-[11px] border-black" /></div>
-                           <div className="space-y-1"><Label className="text-[9px] font-black uppercase">लोकेशन</Label><Input value={gotha.location} onChange={e => updateRow('internal_gothas', gotha.id, { location: e.target.value })} className="h-8 text-[11px] border-black" /></div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
+                )}
 
                 <div className="space-y-4">
                   <SectionTitle icon={Clock} title="२) संकलन वेळ & उत्पादक सारांश" />
